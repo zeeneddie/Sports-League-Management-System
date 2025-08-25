@@ -41,8 +41,23 @@ body {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  opacity: 0.4;
-  filter: contrast(1.5) saturate(1.8) brightness(1.2);
+  opacity: 1.0;
+  z-index: 1;
+}
+
+/* Club 1919 logo as background in top right */
+.carousel-item::after {
+  content: "";
+  position: absolute;
+  top: -35px;
+  right: 20px;
+  width: 200px;
+  height: 200px;
+  background-image: url("/static/images/logo_club1919.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 1.0;
   z-index: 1;
 }
 
@@ -73,7 +88,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100%;
   text-align: center;
   position: relative;
   z-index: 10;
