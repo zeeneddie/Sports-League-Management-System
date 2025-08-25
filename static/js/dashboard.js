@@ -8,6 +8,7 @@ let countdownInterval = null;
 let currentCountdown = SCREEN_DURATION_SECONDS;
 let totalSlides = 0;
 let featuredTeamName = "";
+let carouselInitialized = false;
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
@@ -49,15 +50,15 @@ async function loadData() {
         // Add data slides  
         addStandingsSlide(data.league_table || [], data.all_matches || []);
         
-        // Add individual period slides
+        // Add individual period slides (only if matches have been played)
         if (data.raw_data && data.raw_data.period1) {
-            addPeriodSlide(data.raw_data.period1, 'Periode 1', 'period1', true);
+            addPeriodSlide(data.raw_data.period1, 'Periode 1', 'period1');
         }
         if (data.raw_data && data.raw_data.period2) {
-            addPeriodSlide(data.raw_data.period2, 'Periode 2', 'period2', true);
+            addPeriodSlide(data.raw_data.period2, 'Periode 2', 'period2');
         }
         if (data.raw_data && data.raw_data.period3) {
-            addPeriodSlide(data.raw_data.period3, 'Periode 3', 'period3', true);
+            addPeriodSlide(data.raw_data.period3, 'Periode 3', 'period3');
         }
         
         addLastWeekResultsSlide(data.last_week_results || []);
@@ -619,27 +620,35 @@ function initializeCarousel() {
     
     console.log('Initializing carousel with', totalSlides, 'slides');
     
-    carouselInstance = new bootstrap.Carousel(carouselElement, {
-        interval: false,  // Disable auto-advance - controlled by countdown timer
-        wrap: true
-    });
-    
-    // Add event listener for slide changes
-    carouselElement.addEventListener('slid.bs.carousel', function() {
-        updateScreenNumber();
-        startCountdown();
-    });
+    // Only initialize carousel instance once
+    if (!carouselInitialized) {
+        carouselInstance = new bootstrap.Carousel(carouselElement, {
+            interval: false,  // Disable auto-advance - controlled by countdown timer
+            wrap: true
+        });
+        
+        // Add event listener for slide changes (only once)
+        carouselElement.addEventListener('slid.bs.carousel', function() {
+            updateScreenNumber();
+            startCountdown();
+        });
+        
+        carouselInitialized = true;
+        console.log('Carousel initialized successfully');
+    } else {
+        console.log('Carousel already initialized, updating slide count only');
+    }
     
     updateScreenNumber();
     startCountdown();
-    
-    console.log('Carousel initialized successfully');
 }
 
 // Countdown functions
 function startCountdown() {
+    // Force clear any existing intervals and reset to null
     if (countdownInterval) {
         clearInterval(countdownInterval);
+        countdownInterval = null;
     }
     
     currentCountdown = SCREEN_DURATION_SECONDS;
@@ -651,6 +660,7 @@ function startCountdown() {
         
         if (currentCountdown <= 0) {
             clearInterval(countdownInterval);
+            countdownInterval = null;
             carouselInstance.next();
         }
     }, 1000);
