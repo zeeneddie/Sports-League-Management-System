@@ -1,0 +1,191 @@
+from flask import Flask, render_template, jsonify, send_from_directory
+from flask_wtf.csrf import CSRFProtect
+from config import Config
+from scheduler import data_scheduler
+import os
+
+app = Flask(__name__) 
+app.secret_key = Config.SECRET_KEY
+
+# CSRF Protection
+csrf = CSRFProtect(app)
+
+# Exempt API endpoints from CSRF (they're read-only)
+csrf.exempt('api')
+
+# Security headers
+@app.after_request
+def set_security_headers(response):
+    # Prevent XSS attacks
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+
+    # HTTPS enforcement (in production)
+    if not app.debug:
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+
+    # Content Security Policy - restrictive but allows Bootstrap CDN and inline scripts for dashboard
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
+        "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
+        "img-src 'self' data:; "
+        "font-src 'self' https://cdn.jsdelivr.net; "
+        "connect-src 'self';"
+    )
+    response.headers['Content-Security-Policy'] = csp
+
+    return response
+
+# Favicon route
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static', 'images'),
+                               'favicon.png', mimetype='image/png')
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'), 500
+
+@app.route('/')
+def landing():
+    return render_template('dashboard.html', 
+                         screen_duration_seconds=Config.SCREEN_DURATION_SECONDS)
+
+# API endpoint mappings
+API_DATA_MAPPINGS = {
+    'data': {'key': None, 'wrapper': None},  # Return all data
+    'standings': {'key': 'league_table', 'wrapper': 'league_table'},
+    'period-standings': {'key': 'period_standings', 'wrapper': 'period_standings'},
+    'last-week-results': {'key': 'last_week_results', 'wrapper': 'results'},
+    'next-week-matches': {'key': 'next_week_matches', 'wrapper': 'matches'},
+    'weekly-results': {'key': 'weekly_results', 'wrapper': 'weekly_results'},
+    'team-matrix': {'key': 'team_matrix', 'wrapper': 'team_matrix'},
+    'all-matches': {'key': 'all_matches', 'wrapper': 'matches'},
+}
+
+def _get_cached_data_with_error_handling():
+    """Get cached data with consistent error handling"""
+    data = data_scheduler.get_cached_data()
+    if not data:
+        return None, (jsonify({'error': 'No data available'}), 500)
+    return data, None
+
+def _format_api_response(data, data_key, wrapper_key):
+    """Format API response with consistent structure"""
+    if data_key is None:
+        return jsonify(data)
+    
+    response = {
+        wrapper_key: data.get(data_key, [] if wrapper_key != 'weekly_results' and wrapper_key != 'team_matrix' else {}),
+        'last_updated': data.get('last_updated')
+    }
+    return jsonify(response)
+
+@app.route('/api/data')
+def get_data():
+    """API endpoint to get all dashboard data"""
+    data, error = _get_cached_data_with_error_handling()
+    if error:
+        return error
+    
+    # Add featured team info to the main data endpoint
+    if data:
+        data['featured_team_name'] = Config.FEATURED_TEAM
+        data['featured_team_key'] = Config.FEATURED_TEAM_KEY
+    
+    return _format_api_response(data, None, None)
+
+@app.route('/api/standings')
+def get_standings():
+    """Get league table standings"""
+    data, error = _get_cached_data_with_error_handling()
+    if error:
+        return error
+    return _format_api_response(data, 'league_table', 'league_table')
+
+@app.route('/api/period-standings')
+def get_period_standings():
+    """Get period standings where matches have been played"""
+    data, error = _get_cached_data_with_error_handling()
+    if error:
+        return error
+    return _format_api_response(data, 'period_standings', 'period_standings')
+
+@app.route('/api/last-week-results')
+def get_last_week_results():
+    """Get results from the last week"""
+    data, error = _get_cached_data_with_error_handling()
+    if error:
+        return error
+    return _format_api_response(data, 'last_week_results', 'results')
+
+@app.route('/api/next-week-matches')
+def get_next_week_matches():
+    """Get matches for the next week"""
+    data, error = _get_cached_data_with_error_handling()
+    if error:
+        return error
+    return _format_api_response(data, 'next_week_matches', 'matches')
+
+@app.route('/api/featured-team-matches')
+def get_featured_team_matches_api():
+    """Get all featured team matches (dynamic based on USE_TEST_DATA)"""
+    data, error = _get_cached_data_with_error_handling()
+    if error:
+        return error
+    
+    featured_data = data.get('featured_team_matches', {})
+    
+    return jsonify({
+        'featured_team_matches': featured_data,
+        'featured_team_name': Config.FEATURED_TEAM,
+        'featured_team_key': Config.FEATURED_TEAM_KEY,
+        'last_updated': data.get('last_updated')
+    })
+
+@app.route('/api/weekly-results')
+def get_weekly_results():
+    """Get results grouped by week number"""
+    data, error = _get_cached_data_with_error_handling()
+    if error:
+        return error
+    return _format_api_response(data, 'weekly_results', 'weekly_results')
+
+@app.route('/api/team-matrix')
+def get_team_matrix():
+    """Get team vs team matrix"""
+    data, error = _get_cached_data_with_error_handling()
+    if error:
+        return error
+    return _format_api_response(data, 'team_matrix', 'team_matrix')
+
+@app.route('/api/all-matches')
+def get_all_matches():
+    """Get all matches (both played and upcoming)"""
+    data, error = _get_cached_data_with_error_handling()
+    if error:
+        return error
+    return _format_api_response(data, 'all_matches', 'matches')
+
+@app.route('/api/refresh')
+def refresh_data():
+    """Force refresh of data"""
+    try:
+        data_scheduler.fetch_and_process_data()
+        return jsonify({'success': True, 'message': 'Data refreshed successfully'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+if __name__ == '__main__':
+    # Start the data scheduler
+    data_scheduler.start_scheduler()
+    
+    # Only enable debug mode in development
+    debug_mode = os.getenv('FLASK_ENV', 'production') == 'development'
+    app.run(debug=debug_mode, host='127.0.0.1')

@@ -1,0 +1,4652 @@
+{
+  "raw_data": {
+    "leaguetable": [
+      {
+        "team": "AGOVV",
+        "position": 1,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "AVV Columbia",
+        "position": 2,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "SV Epe",
+        "position": 3,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "Groen Wit '62",
+        "position": 4,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "SV 't Harde",
+        "position": 5,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "VV Hattem",
+        "position": 6,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "SV Hatto Heim",
+        "position": 7,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "VV Heerde",
+        "position": 8,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "OWIOS",
+        "position": 9,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "VV SEH",
+        "position": 10,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "SP Teuge",
+        "position": 11,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "VIOS V",
+        "position": 12,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "VVOP",
+        "position": 13,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      },
+      {
+        "team": "Zwart-Wit '63",
+        "position": 14,
+        "played": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 0,
+        "goals_for": 0,
+        "goals_against": 0,
+        "points": 0
+      }
+    ],
+    "period1": [
+      {
+        "position": 1,
+        "name": "AGOVV",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 2,
+        "name": "AVV Columbia",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 3,
+        "name": "SV Epe",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 4,
+        "name": "Groen Wit '62",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 5,
+        "name": "SV 't Harde",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 6,
+        "name": "VV Hattem",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 7,
+        "name": "SV Hatto Heim",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 8,
+        "name": "VV Heerde",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 9,
+        "name": "OWIOS",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 10,
+        "name": "VV SEH",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 11,
+        "name": "SP Teuge",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 12,
+        "name": "VIOS V",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 13,
+        "name": "VVOP",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 14,
+        "name": "Zwart-Wit '63",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      }
+    ],
+    "period2": [
+      {
+        "position": 1,
+        "name": "AGOVV",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 2,
+        "name": "AVV Columbia",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 3,
+        "name": "SV Epe",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 4,
+        "name": "Groen Wit '62",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 5,
+        "name": "SV 't Harde",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 6,
+        "name": "VV Hattem",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 7,
+        "name": "SV Hatto Heim",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 8,
+        "name": "VV Heerde",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 9,
+        "name": "OWIOS",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 10,
+        "name": "VV SEH",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 11,
+        "name": "SP Teuge",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 12,
+        "name": "VIOS V",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 13,
+        "name": "VVOP",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 14,
+        "name": "Zwart-Wit '63",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      }
+    ],
+    "period3": [
+      {
+        "position": 1,
+        "name": "AGOVV",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 2,
+        "name": "AVV Columbia",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 3,
+        "name": "SV Epe",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 4,
+        "name": "Groen Wit '62",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 5,
+        "name": "SV 't Harde",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 6,
+        "name": "VV Hattem",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 7,
+        "name": "SV Hatto Heim",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 8,
+        "name": "VV Heerde",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 9,
+        "name": "OWIOS",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 10,
+        "name": "VV SEH",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 11,
+        "name": "SP Teuge",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 12,
+        "name": "VIOS V",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 13,
+        "name": "VVOP",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      },
+      {
+        "position": 14,
+        "name": "Zwart-Wit '63",
+        "matches": 0,
+        "wins": 0,
+        "ties": 0,
+        "losses": 0,
+        "points": 0,
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "pointsPunished": "0"
+      }
+    ],
+    "results": [],
+    "program": [
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-20 14:30:00",
+        "home": "AGOVV",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-20 14:30:00",
+        "home": "VV Hattem",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-20 14:30:00",
+        "home": "VV Heerde",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-20 14:30:00",
+        "home": "VIOS V",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-20 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-20 15:00:00",
+        "home": "AVV Columbia",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-20 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-27 14:30:00",
+        "home": "SV 't Harde",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-27 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-27 14:30:00",
+        "home": "OWIOS",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-27 14:30:00",
+        "home": "VV SEH",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-27 14:30:00",
+        "home": "VVOP",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-27 15:00:00",
+        "home": "SV Epe",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-27 15:00:00",
+        "home": "SP Teuge",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-04 14:30:00",
+        "home": "AGOVV",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-04 14:30:00",
+        "home": "SV 't Harde",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-04 14:30:00",
+        "home": "VV Hattem",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-04 14:30:00",
+        "home": "VV Heerde",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-04 14:30:00",
+        "home": "VIOS V",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-04 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-04 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-11 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-11 14:30:00",
+        "home": "OWIOS",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-11 14:30:00",
+        "home": "VV SEH",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-11 14:30:00",
+        "home": "VVOP",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-11 15:00:00",
+        "home": "AVV Columbia",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-11 15:00:00",
+        "home": "SV Epe",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-11 15:00:00",
+        "home": "SP Teuge",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-25 14:30:00",
+        "home": "AGOVV",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-25 14:30:00",
+        "home": "SV 't Harde",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-25 14:30:00",
+        "home": "VV Hattem",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-25 14:30:00",
+        "home": "VV Heerde",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-25 14:30:00",
+        "home": "VIOS V",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-25 14:30:00",
+        "home": "VVOP",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-25 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-01 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-01 14:30:00",
+        "home": "OWIOS",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-01 14:30:00",
+        "home": "VV SEH",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-01 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-01 15:00:00",
+        "home": "AVV Columbia",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-01 15:00:00",
+        "home": "SV Epe",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-01 15:00:00",
+        "home": "SP Teuge",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-08 14:30:00",
+        "home": "AGOVV",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-08 14:30:00",
+        "home": "SV 't Harde",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-08 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-08 14:30:00",
+        "home": "VV Heerde",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-08 14:30:00",
+        "home": "VIOS V",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-08 14:30:00",
+        "home": "VVOP",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-08 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-15 14:30:00",
+        "home": "VV Hattem",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-15 14:30:00",
+        "home": "OWIOS",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-15 14:30:00",
+        "home": "VV SEH",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-15 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-15 15:00:00",
+        "home": "AVV Columbia",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-15 15:00:00",
+        "home": "SV Epe",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-15 15:00:00",
+        "home": "SP Teuge",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-22 14:30:00",
+        "home": "SV 't Harde",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-22 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-22 14:30:00",
+        "home": "VV Heerde",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-22 14:30:00",
+        "home": "VIOS V",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-22 14:30:00",
+        "home": "VVOP",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-22 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-22 15:00:00",
+        "home": "SP Teuge",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-29 14:30:00",
+        "home": "AGOVV",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-29 14:30:00",
+        "home": "VV Hattem",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-29 14:30:00",
+        "home": "OWIOS",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-29 14:30:00",
+        "home": "VV SEH",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-29 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-29 15:00:00",
+        "home": "AVV Columbia",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-29 15:00:00",
+        "home": "SV Epe",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-12-06 14:30:00",
+        "home": "SV 't Harde",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-12-06 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-12-06 14:30:00",
+        "home": "VV Heerde",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-12-06 14:30:00",
+        "home": "OWIOS",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-12-06 14:30:00",
+        "home": "VIOS V",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-12-06 14:30:00",
+        "home": "VVOP",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-12-06 15:00:00",
+        "home": "SP Teuge",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-17 14:30:00",
+        "home": "SV 't Harde",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-17 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-17 14:30:00",
+        "home": "OWIOS",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-17 14:30:00",
+        "home": "VIOS V",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-17 14:30:00",
+        "home": "VVOP",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-17 15:00:00",
+        "home": "SV Epe",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-17 15:00:00",
+        "home": "SP Teuge",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-24 14:30:00",
+        "home": "AGOVV",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-24 14:30:00",
+        "home": "VV Hattem",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-24 14:30:00",
+        "home": "VV Heerde",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-24 14:30:00",
+        "home": "VV SEH",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-24 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-24 15:00:00",
+        "home": "AVV Columbia",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-24 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-31 14:30:00",
+        "home": "SV 't Harde",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-31 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-31 14:30:00",
+        "home": "OWIOS",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-31 14:30:00",
+        "home": "VV SEH",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-31 14:30:00",
+        "home": "VVOP",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-31 15:00:00",
+        "home": "SV Epe",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-31 15:00:00",
+        "home": "SP Teuge",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-07 14:30:00",
+        "home": "AGOVV",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-07 14:30:00",
+        "home": "VV Hattem",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-07 14:30:00",
+        "home": "VV Heerde",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-07 14:30:00",
+        "home": "VIOS V",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-07 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-07 15:00:00",
+        "home": "AVV Columbia",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-07 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-28 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-28 14:30:00",
+        "home": "OWIOS",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-28 14:30:00",
+        "home": "VV SEH",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-28 14:30:00",
+        "home": "VVOP",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-28 15:00:00",
+        "home": "AVV Columbia",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-28 15:00:00",
+        "home": "SV Epe",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-28 15:00:00",
+        "home": "SP Teuge",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-07 14:30:00",
+        "home": "AGOVV",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-07 14:30:00",
+        "home": "SV 't Harde",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-07 14:30:00",
+        "home": "VV Hattem",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-07 14:30:00",
+        "home": "VV Heerde",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-07 14:30:00",
+        "home": "VIOS V",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-07 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-07 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-14 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-14 14:30:00",
+        "home": "OWIOS",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-14 14:30:00",
+        "home": "VV SEH",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-14 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-14 15:00:00",
+        "home": "AVV Columbia",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-14 15:00:00",
+        "home": "SV Epe",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-14 15:00:00",
+        "home": "SP Teuge",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-21 14:30:00",
+        "home": "AGOVV",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-21 14:30:00",
+        "home": "SV 't Harde",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-21 14:30:00",
+        "home": "VV Hattem",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-21 14:30:00",
+        "home": "VV Heerde",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-21 14:30:00",
+        "home": "VIOS V",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-21 14:30:00",
+        "home": "VVOP",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-21 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-28 14:30:00",
+        "home": "VV Hattem",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-28 14:30:00",
+        "home": "OWIOS",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-28 14:30:00",
+        "home": "VV SEH",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-28 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-28 15:00:00",
+        "home": "AVV Columbia",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-28 15:00:00",
+        "home": "SV Epe",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-28 15:00:00",
+        "home": "SP Teuge",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-11 14:30:00",
+        "home": "AGOVV",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-11 14:30:00",
+        "home": "SV 't Harde",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-11 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-11 14:30:00",
+        "home": "VV Heerde",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-11 14:30:00",
+        "home": "VIOS V",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-11 14:30:00",
+        "home": "VVOP",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-11 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-18 14:30:00",
+        "home": "AGOVV",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-18 14:30:00",
+        "home": "VV Hattem",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-18 14:30:00",
+        "home": "OWIOS",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-18 14:30:00",
+        "home": "VV SEH",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-18 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-18 15:00:00",
+        "home": "AVV Columbia",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-18 15:00:00",
+        "home": "SV Epe",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-25 14:30:00",
+        "home": "SV 't Harde",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-25 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-25 14:30:00",
+        "home": "VV Heerde",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-25 14:30:00",
+        "home": "VIOS V",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-25 14:30:00",
+        "home": "VVOP",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-25 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-25 15:00:00",
+        "home": "SP Teuge",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-09 14:30:00",
+        "home": "AGOVV",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-09 14:30:00",
+        "home": "VV Hattem",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-09 14:30:00",
+        "home": "VV SEH",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-09 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-09 15:00:00",
+        "home": "AVV Columbia",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-09 15:00:00",
+        "home": "SV Epe",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-09 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-16 14:30:00",
+        "home": "SV 't Harde",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-16 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-16 14:30:00",
+        "home": "OWIOS",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-16 14:30:00",
+        "home": "VIOS V",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-16 14:30:00",
+        "home": "VVOP",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-16 15:00:00",
+        "home": "SV Epe",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-16 15:00:00",
+        "home": "SP Teuge",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-23 14:30:00",
+        "home": "AGOVV",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-23 14:30:00",
+        "home": "VV Hattem",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-23 14:30:00",
+        "home": "VV Heerde",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-23 14:30:00",
+        "home": "VV SEH",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-23 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-23 15:00:00",
+        "home": "AVV Columbia",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-23 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      }
+    ]
+  },
+  "league_table": [
+    {
+      "team": "AGOVV",
+      "position": 1,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "AVV Columbia",
+      "position": 2,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "SV Epe",
+      "position": 3,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "Groen Wit '62",
+      "position": 4,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "SV 't Harde",
+      "position": 5,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "VV Hattem",
+      "position": 6,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "SV Hatto Heim",
+      "position": 7,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "VV Heerde",
+      "position": 8,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "OWIOS",
+      "position": 9,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "VV SEH",
+      "position": 10,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "SP Teuge",
+      "position": 11,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "VIOS V",
+      "position": 12,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "VVOP",
+      "position": 13,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    },
+    {
+      "team": "Zwart-Wit '63",
+      "position": 14,
+      "played": 0,
+      "wins": 0,
+      "draws": 0,
+      "losses": 0,
+      "goals_for": 0,
+      "goals_against": 0,
+      "points": 0
+    }
+  ],
+  "period_standings": [],
+  "last_week_results": [],
+  "next_week_matches": [
+    {
+      "status": "Nog te spelen/Open",
+      "date": "2025-09-20 14:30:00",
+      "home": "AGOVV",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": "",
+      "week_label": "Week 38"
+    },
+    {
+      "status": "Nog te spelen/Open",
+      "date": "2025-09-20 14:30:00",
+      "home": "VV Hattem",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": "",
+      "week_label": "Week 38"
+    },
+    {
+      "status": "Nog te spelen/Open",
+      "date": "2025-09-20 14:30:00",
+      "home": "VV Heerde",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": "",
+      "week_label": "Week 38"
+    },
+    {
+      "status": "Nog te spelen/Open",
+      "date": "2025-09-20 14:30:00",
+      "home": "VIOS V",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": "",
+      "week_label": "Week 38"
+    },
+    {
+      "status": "Nog te spelen/Open",
+      "date": "2025-09-20 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": "",
+      "week_label": "Week 38"
+    },
+    {
+      "status": "Nog te spelen/Open",
+      "date": "2025-09-20 15:00:00",
+      "home": "AVV Columbia",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": "",
+      "week_label": "Week 38"
+    },
+    {
+      "status": "Nog te spelen/Open",
+      "date": "2025-09-20 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": "",
+      "week_label": "Week 38"
+    }
+  ],
+  "featured_team_matches": {
+    "played": [],
+    "upcoming": [
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-20 15:00:00",
+        "home": "AVV Columbia",
+        "away": "VV SEH",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-09-27 15:00:00",
+        "home": "SV Epe",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-04 14:30:00",
+        "home": "Zwart-Wit '63",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-11 15:00:00",
+        "home": "AVV Columbia",
+        "away": "VV Hattem",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-10-25 14:30:00",
+        "home": "AGOVV",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-01 15:00:00",
+        "home": "AVV Columbia",
+        "away": "Groen Wit '62",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-08 14:30:00",
+        "home": "VV Heerde",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-15 15:00:00",
+        "home": "AVV Columbia",
+        "away": "VIOS V",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-22 14:30:00",
+        "home": "SV 't Harde",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-11-29 15:00:00",
+        "home": "AVV Columbia",
+        "away": "VVOP",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2025-12-06 14:30:00",
+        "home": "SV Hatto Heim",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-17 14:30:00",
+        "home": "OWIOS",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-24 15:00:00",
+        "home": "AVV Columbia",
+        "away": "SP Teuge",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-01-31 14:30:00",
+        "home": "VV SEH",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-07 15:00:00",
+        "home": "AVV Columbia",
+        "away": "SV Epe",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-02-28 15:00:00",
+        "home": "AVV Columbia",
+        "away": "Zwart-Wit '63",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-07 14:30:00",
+        "home": "VV Hattem",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-14 15:00:00",
+        "home": "AVV Columbia",
+        "away": "AGOVV",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-21 15:00:00",
+        "home": "Groen Wit '62",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-03-28 15:00:00",
+        "home": "AVV Columbia",
+        "away": "VV Heerde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-11 14:30:00",
+        "home": "VIOS V",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-18 15:00:00",
+        "home": "AVV Columbia",
+        "away": "SV 't Harde",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-04-25 14:30:00",
+        "home": "VVOP",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-09 15:00:00",
+        "home": "AVV Columbia",
+        "away": "SV Hatto Heim",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-16 15:00:00",
+        "home": "SP Teuge",
+        "away": "AVV Columbia",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      },
+      {
+        "status": "Nog te spelen/Open",
+        "date": "2026-05-23 15:00:00",
+        "home": "AVV Columbia",
+        "away": "OWIOS",
+        "homeGoals": 0,
+        "awayGoals": 0,
+        "result": ""
+      }
+    ]
+  },
+  "weekly_results": {},
+  "team_matrix": {
+    "teams": [
+      "AGOVV",
+      "AVV Columbia",
+      "SV Epe",
+      "Groen Wit '62",
+      "SV 't Harde",
+      "VV Hattem",
+      "SV Hatto Heim",
+      "VV Heerde",
+      "OWIOS",
+      "VV SEH",
+      "SP Teuge",
+      "VIOS V",
+      "VVOP",
+      "Zwart-Wit '63"
+    ],
+    "matrix": {
+      "AGOVV": {
+        "AVV Columbia": "2025-10-25",
+        "SV Epe": "2026-04-11",
+        "Groen Wit '62": "2026-04-18",
+        "SV 't Harde": "2026-01-24",
+        "VV Hattem": "2025-11-08",
+        "SV Hatto Heim": "2025-09-20",
+        "VV Heerde": "2025-11-29",
+        "OWIOS": "2025-10-04",
+        "VV SEH": "2026-03-07",
+        "SP Teuge": "2026-02-07",
+        "VIOS V": "2026-05-09",
+        "VVOP": "2026-05-23",
+        "Zwart-Wit '63": "2026-03-21"
+      },
+      "AVV Columbia": {
+        "AGOVV": "2026-03-14",
+        "SV Epe": "2026-02-07",
+        "Groen Wit '62": "2025-11-01",
+        "SV 't Harde": "2026-04-18",
+        "VV Hattem": "2025-10-11",
+        "SV Hatto Heim": "2026-05-09",
+        "VV Heerde": "2026-03-28",
+        "OWIOS": "2026-05-23",
+        "VV SEH": "2025-09-20",
+        "SP Teuge": "2026-01-24",
+        "VIOS V": "2025-11-15",
+        "VVOP": "2025-11-29",
+        "Zwart-Wit '63": "2026-02-28"
+      },
+      "SV Epe": {
+        "AGOVV": "2025-11-15",
+        "AVV Columbia": "2025-09-27",
+        "Groen Wit '62": "2025-11-29",
+        "SV 't Harde": "2026-02-28",
+        "VV Hattem": "2025-11-01",
+        "SV Hatto Heim": "2026-03-28",
+        "VV Heerde": "2026-05-16",
+        "OWIOS": "2026-05-09",
+        "VV SEH": "2026-01-17",
+        "SP Teuge": "2026-04-18",
+        "VIOS V": "2026-01-31",
+        "VVOP": "2026-03-14",
+        "Zwart-Wit '63": "2025-10-11"
+      },
+      "Groen Wit '62": {
+        "AGOVV": "2025-11-22",
+        "AVV Columbia": "2026-03-21",
+        "SV Epe": "2026-04-25",
+        "SV 't Harde": "2026-05-23",
+        "VV Hattem": "2026-04-11",
+        "SV Hatto Heim": "2026-02-07",
+        "VV Heerde": "2026-05-09",
+        "OWIOS": "2026-03-07",
+        "VV SEH": "2025-10-25",
+        "SP Teuge": "2025-10-04",
+        "VIOS V": "2026-01-24",
+        "VVOP": "2025-09-20",
+        "Zwart-Wit '63": "2025-11-08"
+      },
+      "SV 't Harde": {
+        "AGOVV": "2026-05-16",
+        "AVV Columbia": "2025-11-22",
+        "SV Epe": "2025-10-04",
+        "Groen Wit '62": "2026-01-17",
+        "VV Hattem": "2025-12-06",
+        "SV Hatto Heim": "2025-10-25",
+        "VV Heerde": "2026-01-31",
+        "OWIOS": "2025-11-08",
+        "VV SEH": "2026-04-11",
+        "SP Teuge": "2026-03-21",
+        "VIOS V": "2025-09-27",
+        "VVOP": "2026-03-07",
+        "Zwart-Wit '63": "2026-04-25"
+      },
+      "VV Hattem": {
+        "AGOVV": "2026-03-28",
+        "AVV Columbia": "2026-03-07",
+        "SV Epe": "2026-03-21",
+        "Groen Wit '62": "2025-11-15",
+        "SV 't Harde": "2026-05-09",
+        "SV Hatto Heim": "2026-05-23",
+        "VV Heerde": "2026-04-18",
+        "OWIOS": "2026-02-07",
+        "VV SEH": "2025-10-04",
+        "SP Teuge": "2025-09-20",
+        "VIOS V": "2025-11-29",
+        "VVOP": "2026-01-24",
+        "Zwart-Wit '63": "2025-10-25"
+      },
+      "SV Hatto Heim": {
+        "AGOVV": "2026-01-31",
+        "AVV Columbia": "2025-12-06",
+        "SV Epe": "2025-11-08",
+        "Groen Wit '62": "2025-09-27",
+        "SV 't Harde": "2026-03-14",
+        "VV Hattem": "2026-01-17",
+        "VV Heerde": "2026-02-28",
+        "OWIOS": "2025-11-22",
+        "VV SEH": "2026-04-25",
+        "SP Teuge": "2026-04-11",
+        "VIOS V": "2025-10-11",
+        "VVOP": "2025-11-01",
+        "Zwart-Wit '63": "2026-05-16"
+      },
+      "VV Heerde": {
+        "AGOVV": "2026-04-25",
+        "AVV Columbia": "2025-11-08",
+        "SV Epe": "2026-01-24",
+        "Groen Wit '62": "2025-12-06",
+        "SV 't Harde": "2025-09-20",
+        "VV Hattem": "2025-11-22",
+        "SV Hatto Heim": "2025-10-04",
+        "OWIOS": "2025-10-25",
+        "VV SEH": "2026-03-21",
+        "SP Teuge": "2026-03-07",
+        "VIOS V": "2026-05-23",
+        "VVOP": "2026-02-07",
+        "Zwart-Wit '63": "2026-04-11"
+      },
+      "OWIOS": {
+        "AGOVV": "2026-02-28",
+        "AVV Columbia": "2026-01-17",
+        "SV Epe": "2025-12-06",
+        "Groen Wit '62": "2025-10-11",
+        "SV 't Harde": "2026-03-28",
+        "VV Hattem": "2025-09-27",
+        "SV Hatto Heim": "2026-04-18",
+        "VV Heerde": "2026-03-14",
+        "VV SEH": "2026-05-16",
+        "SP Teuge": "2025-11-29",
+        "VIOS V": "2025-11-01",
+        "VVOP": "2025-11-15",
+        "Zwart-Wit '63": "2026-01-31"
+      },
+      "VV SEH": {
+        "AGOVV": "2025-10-11",
+        "AVV Columbia": "2026-01-31",
+        "SV Epe": "2026-05-23",
+        "Groen Wit '62": "2026-03-14",
+        "SV 't Harde": "2025-11-15",
+        "VV Hattem": "2026-02-28",
+        "SV Hatto Heim": "2025-11-29",
+        "VV Heerde": "2025-11-01",
+        "OWIOS": "2026-01-24",
+        "SP Teuge": "2026-05-09",
+        "VIOS V": "2026-03-28",
+        "VVOP": "2026-04-18",
+        "Zwart-Wit '63": "2025-09-27"
+      },
+      "SP Teuge": {
+        "AGOVV": "2025-09-27",
+        "AVV Columbia": "2026-05-16",
+        "SV Epe": "2025-11-22",
+        "Groen Wit '62": "2026-02-28",
+        "SV 't Harde": "2025-11-01",
+        "VV Hattem": "2026-01-31",
+        "SV Hatto Heim": "2025-11-15",
+        "VV Heerde": "2025-10-11",
+        "OWIOS": "2026-04-25",
+        "VV SEH": "2025-12-06",
+        "VIOS V": "2026-03-14",
+        "VVOP": "2026-03-28",
+        "Zwart-Wit '63": "2026-01-17"
+      },
+      "VIOS V": {
+        "AGOVV": "2025-12-06",
+        "AVV Columbia": "2026-04-11",
+        "SV Epe": "2025-09-20",
+        "Groen Wit '62": "2026-05-16",
+        "SV 't Harde": "2026-02-07",
+        "VV Hattem": "2026-04-25",
+        "SV Hatto Heim": "2026-03-07",
+        "VV Heerde": "2026-01-17",
+        "OWIOS": "2026-03-21",
+        "VV SEH": "2025-11-08",
+        "SP Teuge": "2025-10-25",
+        "VVOP": "2025-10-04",
+        "Zwart-Wit '63": "2025-11-22"
+      },
+      "VVOP": {
+        "AGOVV": "2026-01-17",
+        "AVV Columbia": "2026-04-25",
+        "SV Epe": "2025-10-25",
+        "Groen Wit '62": "2026-01-31",
+        "SV 't Harde": "2025-10-11",
+        "VV Hattem": "2026-05-16",
+        "SV Hatto Heim": "2026-03-21",
+        "VV Heerde": "2025-09-27",
+        "OWIOS": "2026-04-11",
+        "VV SEH": "2025-11-22",
+        "SP Teuge": "2025-11-08",
+        "VIOS V": "2026-02-28",
+        "Zwart-Wit '63": "2025-12-06"
+      },
+      "Zwart-Wit '63": {
+        "AGOVV": "2025-11-01",
+        "AVV Columbia": "2025-10-04",
+        "SV Epe": "2026-03-07",
+        "Groen Wit '62": "2026-03-28",
+        "SV 't Harde": "2025-11-29",
+        "VV Hattem": "2026-03-14",
+        "SV Hatto Heim": "2026-01-24",
+        "VV Heerde": "2025-11-15",
+        "OWIOS": "2025-09-20",
+        "VV SEH": "2026-02-07",
+        "SP Teuge": "2026-05-23",
+        "VIOS V": "2026-04-18",
+        "VVOP": "2026-05-09"
+      }
+    }
+  },
+  "all_matches": [
+    {
+      "status": "upcoming",
+      "date": "2025-09-20 14:30:00",
+      "home": "AGOVV",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-20 14:30:00",
+      "home": "VV Hattem",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-20 14:30:00",
+      "home": "VV Heerde",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-20 14:30:00",
+      "home": "VIOS V",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-20 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-20 15:00:00",
+      "home": "AVV Columbia",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-20 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-27 14:30:00",
+      "home": "SV 't Harde",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-27 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-27 14:30:00",
+      "home": "OWIOS",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-27 14:30:00",
+      "home": "VV SEH",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-27 14:30:00",
+      "home": "VVOP",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-27 15:00:00",
+      "home": "SV Epe",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-09-27 15:00:00",
+      "home": "SP Teuge",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-04 14:30:00",
+      "home": "AGOVV",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-04 14:30:00",
+      "home": "SV 't Harde",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-04 14:30:00",
+      "home": "VV Hattem",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-04 14:30:00",
+      "home": "VV Heerde",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-04 14:30:00",
+      "home": "VIOS V",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-04 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-04 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-11 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-11 14:30:00",
+      "home": "OWIOS",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-11 14:30:00",
+      "home": "VV SEH",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-11 14:30:00",
+      "home": "VVOP",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-11 15:00:00",
+      "home": "AVV Columbia",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-11 15:00:00",
+      "home": "SV Epe",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-11 15:00:00",
+      "home": "SP Teuge",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-25 14:30:00",
+      "home": "AGOVV",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-25 14:30:00",
+      "home": "SV 't Harde",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-25 14:30:00",
+      "home": "VV Hattem",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-25 14:30:00",
+      "home": "VV Heerde",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-25 14:30:00",
+      "home": "VIOS V",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-25 14:30:00",
+      "home": "VVOP",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-10-25 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-01 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-01 14:30:00",
+      "home": "OWIOS",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-01 14:30:00",
+      "home": "VV SEH",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-01 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-01 15:00:00",
+      "home": "AVV Columbia",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-01 15:00:00",
+      "home": "SV Epe",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-01 15:00:00",
+      "home": "SP Teuge",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-08 14:30:00",
+      "home": "AGOVV",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-08 14:30:00",
+      "home": "SV 't Harde",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-08 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-08 14:30:00",
+      "home": "VV Heerde",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-08 14:30:00",
+      "home": "VIOS V",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-08 14:30:00",
+      "home": "VVOP",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-08 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-15 14:30:00",
+      "home": "VV Hattem",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-15 14:30:00",
+      "home": "OWIOS",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-15 14:30:00",
+      "home": "VV SEH",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-15 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-15 15:00:00",
+      "home": "AVV Columbia",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-15 15:00:00",
+      "home": "SV Epe",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-15 15:00:00",
+      "home": "SP Teuge",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-22 14:30:00",
+      "home": "SV 't Harde",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-22 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-22 14:30:00",
+      "home": "VV Heerde",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-22 14:30:00",
+      "home": "VIOS V",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-22 14:30:00",
+      "home": "VVOP",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-22 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-22 15:00:00",
+      "home": "SP Teuge",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-29 14:30:00",
+      "home": "AGOVV",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-29 14:30:00",
+      "home": "VV Hattem",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-29 14:30:00",
+      "home": "OWIOS",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-29 14:30:00",
+      "home": "VV SEH",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-29 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-29 15:00:00",
+      "home": "AVV Columbia",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-11-29 15:00:00",
+      "home": "SV Epe",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-12-06 14:30:00",
+      "home": "SV 't Harde",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-12-06 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-12-06 14:30:00",
+      "home": "VV Heerde",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-12-06 14:30:00",
+      "home": "OWIOS",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-12-06 14:30:00",
+      "home": "VIOS V",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-12-06 14:30:00",
+      "home": "VVOP",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2025-12-06 15:00:00",
+      "home": "SP Teuge",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-17 14:30:00",
+      "home": "SV 't Harde",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-17 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-17 14:30:00",
+      "home": "OWIOS",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-17 14:30:00",
+      "home": "VIOS V",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-17 14:30:00",
+      "home": "VVOP",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-17 15:00:00",
+      "home": "SV Epe",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-17 15:00:00",
+      "home": "SP Teuge",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-24 14:30:00",
+      "home": "AGOVV",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-24 14:30:00",
+      "home": "VV Hattem",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-24 14:30:00",
+      "home": "VV Heerde",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-24 14:30:00",
+      "home": "VV SEH",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-24 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-24 15:00:00",
+      "home": "AVV Columbia",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-24 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-31 14:30:00",
+      "home": "SV 't Harde",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-31 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-31 14:30:00",
+      "home": "OWIOS",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-31 14:30:00",
+      "home": "VV SEH",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-31 14:30:00",
+      "home": "VVOP",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-31 15:00:00",
+      "home": "SV Epe",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-01-31 15:00:00",
+      "home": "SP Teuge",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-07 14:30:00",
+      "home": "AGOVV",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-07 14:30:00",
+      "home": "VV Hattem",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-07 14:30:00",
+      "home": "VV Heerde",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-07 14:30:00",
+      "home": "VIOS V",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-07 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-07 15:00:00",
+      "home": "AVV Columbia",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-07 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-28 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-28 14:30:00",
+      "home": "OWIOS",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-28 14:30:00",
+      "home": "VV SEH",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-28 14:30:00",
+      "home": "VVOP",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-28 15:00:00",
+      "home": "AVV Columbia",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-28 15:00:00",
+      "home": "SV Epe",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-02-28 15:00:00",
+      "home": "SP Teuge",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-07 14:30:00",
+      "home": "AGOVV",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-07 14:30:00",
+      "home": "SV 't Harde",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-07 14:30:00",
+      "home": "VV Hattem",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-07 14:30:00",
+      "home": "VV Heerde",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-07 14:30:00",
+      "home": "VIOS V",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-07 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-07 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-14 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-14 14:30:00",
+      "home": "OWIOS",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-14 14:30:00",
+      "home": "VV SEH",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-14 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-14 15:00:00",
+      "home": "AVV Columbia",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-14 15:00:00",
+      "home": "SV Epe",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-14 15:00:00",
+      "home": "SP Teuge",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-21 14:30:00",
+      "home": "AGOVV",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-21 14:30:00",
+      "home": "SV 't Harde",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-21 14:30:00",
+      "home": "VV Hattem",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-21 14:30:00",
+      "home": "VV Heerde",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-21 14:30:00",
+      "home": "VIOS V",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-21 14:30:00",
+      "home": "VVOP",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-21 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-28 14:30:00",
+      "home": "VV Hattem",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-28 14:30:00",
+      "home": "OWIOS",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-28 14:30:00",
+      "home": "VV SEH",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-28 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-28 15:00:00",
+      "home": "AVV Columbia",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-28 15:00:00",
+      "home": "SV Epe",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-03-28 15:00:00",
+      "home": "SP Teuge",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-11 14:30:00",
+      "home": "AGOVV",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-11 14:30:00",
+      "home": "SV 't Harde",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-11 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-11 14:30:00",
+      "home": "VV Heerde",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-11 14:30:00",
+      "home": "VIOS V",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-11 14:30:00",
+      "home": "VVOP",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-11 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-18 14:30:00",
+      "home": "AGOVV",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-18 14:30:00",
+      "home": "VV Hattem",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-18 14:30:00",
+      "home": "OWIOS",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-18 14:30:00",
+      "home": "VV SEH",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-18 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-18 15:00:00",
+      "home": "AVV Columbia",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-18 15:00:00",
+      "home": "SV Epe",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-25 14:30:00",
+      "home": "SV 't Harde",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-25 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-25 14:30:00",
+      "home": "VV Heerde",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-25 14:30:00",
+      "home": "VIOS V",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-25 14:30:00",
+      "home": "VVOP",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-25 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-04-25 15:00:00",
+      "home": "SP Teuge",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-09 14:30:00",
+      "home": "AGOVV",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-09 14:30:00",
+      "home": "VV Hattem",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-09 14:30:00",
+      "home": "VV SEH",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-09 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-09 15:00:00",
+      "home": "AVV Columbia",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-09 15:00:00",
+      "home": "SV Epe",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-09 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-16 14:30:00",
+      "home": "SV 't Harde",
+      "away": "AGOVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-16 14:30:00",
+      "home": "SV Hatto Heim",
+      "away": "Zwart-Wit '63",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-16 14:30:00",
+      "home": "OWIOS",
+      "away": "VV SEH",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-16 14:30:00",
+      "home": "VIOS V",
+      "away": "Groen Wit '62",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-16 14:30:00",
+      "home": "VVOP",
+      "away": "VV Hattem",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-16 15:00:00",
+      "home": "SV Epe",
+      "away": "VV Heerde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-16 15:00:00",
+      "home": "SP Teuge",
+      "away": "AVV Columbia",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-23 14:30:00",
+      "home": "AGOVV",
+      "away": "VVOP",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-23 14:30:00",
+      "home": "VV Hattem",
+      "away": "SV Hatto Heim",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-23 14:30:00",
+      "home": "VV Heerde",
+      "away": "VIOS V",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-23 14:30:00",
+      "home": "VV SEH",
+      "away": "SV Epe",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-23 14:30:00",
+      "home": "Zwart-Wit '63",
+      "away": "SP Teuge",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-23 15:00:00",
+      "home": "AVV Columbia",
+      "away": "OWIOS",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    },
+    {
+      "status": "upcoming",
+      "date": "2026-05-23 15:00:00",
+      "home": "Groen Wit '62",
+      "away": "SV 't Harde",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "result": ""
+    }
+  ],
+  "last_updated": "2025-08-25T07:06:42.846111"
+}
