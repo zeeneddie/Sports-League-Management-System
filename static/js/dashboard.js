@@ -418,7 +418,7 @@ function addLastWeekResultsSlide(results) {
                     .sort(([weekA], [weekB]) => weekB.localeCompare(weekA)) // Most recent week first
                     .map(([weekLabel, weekResults]) => `
                     <div class="col-12 mb-4">
-                        <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem;">
+                        <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; text-align: center;">
                             ${weekLabel}
                         </h3>
                         <div class="row">
@@ -517,21 +517,95 @@ function getWeekNumber(date) {
     return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 }
 
+function groupUpcomingMatchesByWeek(matches) {
+    const weeklyMatches = {};
+    
+    console.log('Grouping upcoming matches by week, total matches:', matches ? matches.length : 0);
+    
+    if (!matches || matches.length === 0) {
+        return weeklyMatches;
+    }
+    
+    matches.forEach((match, index) => {
+        console.log(`Upcoming match ${index}:`, match);
+        
+        if (!match.date) {
+            console.log('No date for upcoming match:', match);
+            return;
+        }
+        
+        const matchDate = new Date(match.date);
+        console.log('Upcoming match date:', matchDate);
+        
+        const year = matchDate.getFullYear();
+        const weekNumber = getWeekNumber(matchDate);
+        const weekLabel = `Week ${weekNumber} (${year})`;
+        
+        if (!weeklyMatches[weekLabel]) {
+            weeklyMatches[weekLabel] = [];
+        }
+        
+        weeklyMatches[weekLabel].push(match);
+    });
+    
+    // Sort matches within each week: featured team matches first, then by date
+    Object.keys(weeklyMatches).forEach(week => {
+        weeklyMatches[week].sort((a, b) => {
+            const aIsFeatured = isFeaturedTeamMatch(a);
+            const bIsFeatured = isFeaturedTeamMatch(b);
+            
+            // Featured matches first
+            if (aIsFeatured && !bIsFeatured) return -1;
+            if (!aIsFeatured && bIsFeatured) return 1;
+            
+            // Then by date (earliest first for upcoming matches)
+            return new Date(a.date) - new Date(b.date);
+        });
+    });
+    
+    console.log('Grouped upcoming matches by week:', weeklyMatches);
+    return weeklyMatches;
+}
+
 function addNextWeekMatchesSlide(matches) {
     const slide = document.createElement('div');
     slide.className = 'carousel-item';
+    
+    // Group matches by week (similar to results)
+    const weeklyMatches = groupUpcomingMatchesByWeek(matches);
+    
+    const hasMatches = Object.keys(weeklyMatches).length > 0;
+    
     slide.innerHTML = `
         <div>
             <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">
                 Komende Wedstrijden
             </h2>
             <div class="row">
-                ${matches && matches.length > 0 ? matches.map(match => `
-                    <div class="col-md-6 mb-2">
-                        <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                            <div style="font-size: 1.6rem; font-weight: bold; color: #333;">${match.home} vs ${match.away}</div>
-                            <div style="font-size: 1.2rem; color: #666;">${new Date(match.date).toLocaleDateString('nl-NL')}</div>
-                            ${match.week_label ? `<div style="font-size: 1.2rem; color: #666;">${match.week_label}</div>` : ''}
+                ${hasMatches ? Object.entries(weeklyMatches)
+                    .sort(([weekA], [weekB]) => weekA.localeCompare(weekB)) // Earliest week first
+                    .map(([weekLabel, weekMatches]) => `
+                    <div class="col-12 mb-4">
+                        <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; text-align: center;">
+                            ${weekLabel}
+                        </h3>
+                        <div class="row">
+                            ${weekMatches.map(match => {
+                                const isFeaturedMatch = isFeaturedTeamMatch(match);
+                                const home = match.home || match.hometeam || 'Team A';
+                                const away = match.away || match.awayteam || 'Team B';
+                                const matchDate = new Date(match.date).toLocaleDateString('nl-NL');
+                                return `
+                                <div class="col-6 offset-3">
+                                    <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); ${isFeaturedMatch ? 'background-color: rgba(255, 215, 0, 0.2) !important; border: 2px solid #ffd700 !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;' : ''}">
+                                        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 15px;">
+                                            <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${home}</div>
+                                            <div style="text-align: center; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#0066cc'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${matchDate}</div>
+                                            <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${away}</div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            }).join('')}
                         </div>
                     </div>
                 `).join('') : `
