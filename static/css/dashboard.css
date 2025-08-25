@@ -180,10 +180,10 @@ body {
 }
 
 .form-circle {
-  font-size: 1.2rem;
+  font-size: 1.8rem;
   font-weight: bold;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: inline-block;
   text-align: center;

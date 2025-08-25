@@ -398,9 +398,13 @@ function addLastWeekResultsSlide(results) {
     const slide = document.createElement('div');
     slide.className = 'carousel-item';
     
-    // Use all available results, not just last 7
-    // Processing weekly results
-    const weeklyResults = groupResultsByWeek(results);
+    // Get only the last 7 played matches
+    const last7Results = results
+        .filter(result => result.status === 'Gespeeld' || (result.homeGoals !== undefined && result.awayGoals !== undefined))
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 7);
+    
+    const weeklyResults = groupResultsByWeek(last7Results);
     
     const hasResults = Object.keys(weeklyResults).length > 0;
     
@@ -425,12 +429,13 @@ function addLastWeekResultsSlide(results) {
                                 const home = result.home || result.hometeam || 'Team A';
                                 const away = result.away || result.awayteam || 'Team B';
                                 return `
-                                <div class="col-md-6 mb-2">
-                                    <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); ${isFeaturedMatch ? 'border-left: 4px solid #ffd700; background-color: rgba(255, 215, 0, 0.1);' : ''}">
-                                        <div style="font-size: 1.6rem; font-weight: bold; color: #333; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${home} vs ${away}</div>
-                                        <div style="font-size: 2rem; font-weight: bold; color: #0066cc; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${homeGoals} - ${awayGoals}</div>
-                                        <div style="font-size: 1.2rem; color: #666;">${new Date(result.date).toLocaleDateString('nl-NL')}</div>
-                                        ${isFeaturedMatch ? '<div style="font-size: 1rem; color: #b8860b; font-weight: bold; margin-top: 4px;">★ ' + featuredTeamName + '</div>' : ''}
+                                <div class="col-6 offset-3">
+                                    <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); ${isFeaturedMatch ? 'background-color: rgba(255, 215, 0, 0.2) !important; border: 2px solid #ffd700 !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;' : ''}">
+                                        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 15px;">
+                                            <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${home}</div>
+                                            <div style="text-align: center; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#0066cc'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${homeGoals} - ${awayGoals}</div>
+                                            <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${away}</div>
+                                        </div>
                                     </div>
                                 </div>`;
                             }).join('')}
