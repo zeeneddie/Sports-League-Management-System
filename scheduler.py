@@ -27,6 +27,12 @@ class DataScheduler:
         self.last_update = None
         self.cached_data = None
         
+    def clear_cache(self):
+        """Force clear all cached data"""
+        print("Clearing cached data...")
+        self.cached_data = None
+        self.last_update = None
+        
     def fetch_and_process_data(self):
         """Fetch data from API and process all required views"""
         print(f"Fetching data at {datetime.now()}")
@@ -70,24 +76,63 @@ class DataScheduler:
     
     def get_cached_data(self):
         """Get cached data, load from file if not in memory"""
-        if Config.USE_TEST_DATA:
+        current_mode = Config.USE_TEST_DATA
+        
+        if current_mode:
             print("Test mode enabled - fetching fresh test data...")
             self.fetch_and_process_data()
             return self.cached_data
             
+        # API mode - check if we need to fetch fresh data
+        need_fresh_data = False
+        
+        # Always check if cached data matches current mode, even if we have data in memory
+        if self.cached_data is not None:
+            # Check if in-memory cached data matches current mode
+            cached_featured_team = self.cached_data.get('raw_data', {}).get('leaguetable', [{}])[0].get('team', '')
+            expected_team = Config.FEATURED_TEAM
+            
+            if not (expected_team in cached_featured_team or cached_featured_team in expected_team):
+                print(f"In-memory cached data is for different mode (found: {cached_featured_team}, expected: {expected_team})")
+                self.cached_data = None  # Force reload
+                need_fresh_data = True
+            else:
+                print(f"In-memory cached data matches current mode: {expected_team}")
+                return self.cached_data
+        
         if self.cached_data is None:
+            # No data in memory, try to load from file
             try:
                 if os.path.exists(self.data_file):
                     with open(self.data_file, 'r', encoding='utf-8') as f:
-                        self.cached_data = json.load(f)
+                        cached_file_data = json.load(f)
+                        
+                    # Check if cached data matches current mode (API mode = Columbia, Test mode = Gorecht)
+                    cached_featured_team = cached_file_data.get('raw_data', {}).get('leaguetable', [{}])[0].get('team', '')
+                    expected_team = Config.FEATURED_TEAM  # Should be 'AVV Columbia' in API mode
+                    
+                    if expected_team in cached_featured_team or cached_featured_team in expected_team:
+                        # Cache matches current mode
+                        self.cached_data = cached_file_data
                         if 'last_updated' in self.cached_data:
                             self.last_update = datetime.fromisoformat(self.cached_data['last_updated'])
+                        print(f"Loaded cached data matching current mode: {expected_team}")
+                    else:
+                        # Cache doesn't match current mode
+                        print(f"Cached data is for different mode (found: {cached_featured_team}, expected: {expected_team})")
+                        need_fresh_data = True
                 else:
-                    print("No cached data file found, fetching fresh data...")
-                    self.fetch_and_process_data()
+                    print("No cached data file found")
+                    need_fresh_data = True
+                    
             except Exception as e:
                 print(f"Error loading cached data: {e}")
-                self.fetch_and_process_data()
+                need_fresh_data = True
+        
+        # Fetch fresh data if needed
+        if need_fresh_data:
+            print("Fetching fresh API data...")
+            self.fetch_and_process_data()
         
         return self.cached_data
     

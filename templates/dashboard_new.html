@@ -1068,14 +1068,1689 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Configuration
-        const SCREEN_DURATION_SECONDS = {{ screen_duration_seconds }};
-        
-        // Global variables
-        let carouselInstance = null;
-        let countdownInterval = null;
-        let currentCountdown = SCREEN_DURATION_SECONDS;
-        let totalSlides = 0;
-        let featuredTeamName = "AVV Columbia";
-        let featuredTeamKey = "columbia";
+            let slideIndex = 0;
+            let totalSlides = 0;
 
+            // Screen duration configuration from server
+            const SCREEN_DURATION_SECONDS = {{ screen_duration_seconds }};
+            const SCREEN_DURATION_MS = SCREEN_DURATION_SECONDS * 1000;
+            console.log('Screen duration configured:', SCREEN_DURATION_SECONDS, 'seconds');
+
+            // Featured team info - will be set dynamically from API
+            let featuredTeamName = "";
+            let featuredTeamKey = "";
+
+            // Simplified carousel variables
+            let countdownInterval = null;
+            let currentCountdown = SCREEN_DURATION_SECONDS;
+            let carouselInstance = null;
+            let isInitialized = false;
+
+            // Function to format date
+            function formatDate(dateString) {
+              if (!dateString) return "Onbekend";
+              const date = new Date(dateString);
+
+              // Nederlandse dag- en maandnamen
+              const dagen = ['zon', 'maa', 'din', 'woe', 'don', 'vri', 'zat'];
+              const maanden = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun',
+                              'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+
+              const dag = dagen[date.getDay()];
+              const dagVanMaand = String(date.getDate()).padStart(2, '0');
+              const maand = maanden[date.getMonth()];
+              const jaar = date.getFullYear();
+
+              return `${dag} ${dagVanMaand} ${maand} ${jaar}`;
+            }
+
+            // Function to format datetime
+            function formatDateTime(dateString) {
+              if (!dateString) return "Onbekend";
+              const date = new Date(dateString);
+              const day = String(date.getDate()).padStart(2, "0");
+              const month = String(date.getMonth() + 1).padStart(2, "0");
+              const year = String(date.getFullYear()).slice(-2);
+              const hours = String(date.getHours()).padStart(2, "0");
+              const minutes = String(date.getMinutes()).padStart(2, "0");
+              return `${day}-${month}-${year} ${hours}:${minutes}`;
+            }
+
+            // Countdown timer functions
+            function startCountdown() {
+              console.log('Starting countdown with', SCREEN_DURATION_SECONDS, 'seconds');
+              
+              // Clear any existing countdown
+              if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+              }
+              
+              currentCountdown = SCREEN_DURATION_SECONDS;
+              updateCountdownDisplay();
+              
+              countdownInterval = setInterval(() => {
+                currentCountdown--;
+                updateCountdownDisplay();
+                
+                if (currentCountdown <= 0) {
+                  clearInterval(countdownInterval);
+                  countdownInterval = null;
+                  
+                  if (carouselInstance) {
+                    carouselInstance.next();
+                  }
+                }
+              }, 1000);
+            }
+
+            function updateCountdownDisplay() {
+              const countdownElement = document.getElementById('countdown-display');
+              if (countdownElement) {
+                countdownElement.textContent = currentCountdown;
+              }
+            }
+
+            function stopCountdown() {
+              if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+              }
+            }
+
+            function validateScreenTiming() {
+              // Debug function to validate all screens are working correctly
+              console.log('=== SCREEN TIMING VALIDATION ===');
+              console.log('Screen duration configured:', SCREEN_DURATION_SECONDS, 'seconds');
+              console.log('Carousel interval (ms):', carouselIntervalMs);
+              console.log('Current countdown:', currentCountdown);
+              console.log('Countdown active:', isCountdownActive);
+              console.log('Is transitioning:', isTransitioning);
+              console.log('Carousel instance exists:', !!carouselInstance);
+
+              const activeSlide = document.querySelector('.carousel-item.active');
+              if (activeSlide) {
+                const contentType = detectContentType(activeSlide);
+                console.log('Active slide content type:', contentType);
+
+                // Count content elements for each type
+                const standingsRows = activeSlide.querySelectorAll('.standings-table tbody tr').length;
+                const resultRows = activeSlide.querySelectorAll('.result-row').length;
+                const featuredMatches = activeSlide.querySelectorAll('.featured-match').length;
+                const matrixTable = activeSlide.querySelector('.team-matrix table') ? 1 : 0;
+
+                console.log('Content elements - Standings:', standingsRows, 'Results:', resultRows, 'Featured:', featuredMatches, 'Matrix:', matrixTable);
+              }
+
+              // Check if countdown element is visible
+              const countdownElement = document.getElementById('countdown-display');
+              if (countdownElement) {
+                console.log('Countdown element display style:', countdownElement.style.display);
+                console.log('Countdown element text content:', countdownElement.textContent);
+              } else {
+                console.warn('Countdown element not found in DOM');
+              }
+
+              console.log('=== END VALIDATION ===');
+            }
+
+            function updateScreenNumber() {
+              console.log('updateScreenNumber called');
+              const activeSlide = document.querySelector('.carousel-item.active');
+              if (activeSlide && totalSlides > 0) {
+                const slides = document.querySelectorAll('.carousel-item');
+                let currentIndex = 0;
+                slides.forEach((slide, index) => {
+                  if (slide === activeSlide) {
+                    currentIndex = index;
+                  }
+                });
+
+                const screenNumberElement = document.getElementById('screen-number-display');
+                if (screenNumberElement) {
+                  const displayText = `${currentIndex + 1}/${totalSlides}`;
+                  screenNumberElement.textContent = displayText;
+                  console.log('Screen number updated:', displayText);
+                } else {
+                  console.warn('Screen number element not found');
+                }
+
+                console.log('Screen number updated:', currentIndex + 1, 'of', totalSlides);
+              } else {
+                console.warn('Could not update screen number - no active slide or totalSlides = 0');
+              }
+            }
+
+            function resetCountdown() {
+              updateScreenNumber();
+              startCountdown();
+            }
+
+            // Team logo mappings - Updated based on icon_set.csv
+            const teamLogos = {
+              "VV Gorecht": "/static/images/team_logos/t_184.png",
+              Columbia: "/static/images/team_logos/t_184.png",
+              "AVV Columbia": "/static/images/team_logos/t_184.png",
+              AGOVV: "/static/images/team_logos/t_23.png",
+              "SV Epe": "/static/images/team_logos/t_23.png",
+              "Groen Wit '62": "/static/images/team_logos/t_22.png",
+              "SV 't Harde": "/static/images/team_logos/t_22.png",
+              "VV Hattem": "/static/images/team_logos/t_48.png",
+              "SV Hatto Heim": "/static/images/team_logos/t_48.png",
+              "VV Heerde": "/static/images/team_logos/t_184.png",
+              OWIOS: "/static/images/team_logos/t_22.png",
+              "VV SEH": "/static/images/team_logos/t_43.png",
+              "SP Teuge": "/static/images/team_logos/t_22.png",
+              "VIOS V": "/static/images/team_logos/t_804.png",
+              VVOP: "/static/images/team_logos/t_664.png",
+              "Zwart-Wit '63": "/static/images/team_logos/t_136.png",
+            };
+
+            // Function to format team name with logo and Columbia highlighting
+            function formatTeamName(
+              teamName,
+              includeLogo = false,
+              showNameWithLogo = false
+            ) {
+              if (!teamName) return "";
+
+              let html = "";
+
+              // If logo requested
+              if (includeLogo) {
+                const logoPath =
+                  teamLogos[teamName] || "/static/images/team_logos/default_team.png";
+                html += `<img src="${logoPath}" class="team-logo" alt="${teamName}" title="${teamName}" onerror="this.src='/static/images/team_logos/default_team.png'">`;
+
+                // If we should show name with logo, add the name after logo with 3 spaces
+                if (showNameWithLogo) {
+                  html += "&nbsp;&nbsp;&nbsp;"; // 3 non-breaking spaces
+                  if (
+                    teamName.toLowerCase().includes(featuredTeamKey.toLowerCase())
+                  ) {
+                    html += `<span class="featured-team">${teamName}</span>`;
+                  } else {
+                    html += teamName;
+                  }
+                }
+
+                return html;
+              }
+
+              // Otherwise show team name with featured team highlighting
+              if (
+                featuredTeamKey &&
+                teamName.toLowerCase().includes(featuredTeamKey.toLowerCase())
+              ) {
+                return `<span class="featured-team">${teamName}</span>`;
+              } else {
+                return teamName;
+              }
+            }
+
+            // Function to get last 5 PLAYED matches for a team
+            function getTeamLastFiveMatches(teamName, allMatches) {
+              if (!allMatches || !teamName) {
+                return [];
+              }
+
+              // Filter matches where this team played AND the match was actually played
+              const teamMatches = allMatches.filter((match, index) => {
+                const homeTeam =
+                  match.hometeam || match.home_team || match.home || "";
+                const awayTeam =
+                  match.awayteam || match.away_team || match.away || "";
+
+                // Check if the team name matches (case-insensitive)
+                const homeMatch =
+                  homeTeam.toLowerCase().includes(teamName.toLowerCase()) ||
+                  teamName.toLowerCase().includes(homeTeam.toLowerCase());
+                const awayMatch =
+                  awayTeam.toLowerCase().includes(teamName.toLowerCase()) ||
+                  teamName.toLowerCase().includes(awayTeam.toLowerCase());
+
+                const isTeamMatch = homeMatch || awayMatch;
+
+                // ✅ CRITICAL FIX: Only include PLAYED matches
+                const isPlayedMatch = match.status === "played" || match.status === "Gespeeld";
+
+                const isValidMatch = isTeamMatch && isPlayedMatch;
+
+
+                return isValidMatch;
+              });
+
+              // Sort by date (most recent first) - only include matches with valid dates
+              teamMatches.sort((a, b) => {
+                const dateA = new Date(a.date || "1900-01-01");
+                const dateB = new Date(b.date || "1900-01-01");
+                return dateB - dateA;
+              });
+
+              // Return last 5 PLAYED matches
+              return teamMatches.slice(0, 5);
+            }
+
+            // Function to determine match result for a team
+            function getMatchResult(match, teamName) {
+              const homeTeam = match.hometeam || match.home_team || match.home || "";
+              const awayTeam = match.awayteam || match.away_team || match.away || "";
+
+              // Check if match has been played - look for various score fields and status
+              const homeScore =
+                match.homeGoals || match.homescore || match.home_score;
+              const awayScore =
+                match.awayGoals || match.awayscore || match.away_score;
+              const status = match.status;
+
+              // EXTRA DEBUG for match result
+
+              // Check if this is a played match
+              const hasScores =
+                homeScore !== undefined &&
+                homeScore !== null &&
+                awayScore !== undefined &&
+                awayScore !== null;
+              const isPlayedStatus = status === "played" || status === "Gespeeld";
+
+              if (!hasScores && !isPlayedStatus) {
+                return "no-match"; // Not played yet
+              }
+
+              // Convert scores to integers, default to 0 if null/undefined
+              const homeScoreInt = parseInt(homeScore || 0);
+              const awayScoreInt = parseInt(awayScore || 0);
+
+              // Check if the team name matches (case-insensitive and partial match)
+              const isHomeTeam =
+                homeTeam.toLowerCase().includes(teamName.toLowerCase()) ||
+                teamName.toLowerCase().includes(homeTeam.toLowerCase());
+              const isAwayTeam =
+                awayTeam.toLowerCase().includes(teamName.toLowerCase()) ||
+                teamName.toLowerCase().includes(awayTeam.toLowerCase());
+
+              if (isHomeTeam) {
+                // Team played at home
+                const result = homeScoreInt > awayScoreInt ? "win" :
+                               homeScoreInt === awayScoreInt ? "draw" : "loss";
+                return result;
+              } else if (isAwayTeam) {
+                // Team played away
+                const result = awayScoreInt > homeScoreInt ? "win" :
+                               awayScoreInt === homeScoreInt ? "draw" : "loss";
+                return result;
+              }
+
+              return "no-match"; // Team not involved in this match
+            }
+
+            // Function to generate form indicators HTML
+            function generateFormIndicators(teamName, allMatches) {
+              const lastFiveMatches = getTeamLastFiveMatches(teamName, allMatches);
+
+              let html = '<div class="form-indicators">';
+
+              // Always show 5 dots
+              for (let i = 0; i < 5; i++) {
+                if (i < lastFiveMatches.length) {
+                  const match = lastFiveMatches[i];
+                  const result = getMatchResult(match, teamName);
+                  const title = getMatchTooltip(match, teamName, result);
+                  html += `<span class="form-dot ${result}" title="${title}"></span>`;
+                } else {
+                  // No match data available
+                  html += `<span class="form-dot no-match" title="Geen wedstrijd"></span>`;
+                }
+              }
+
+              html += "</div>";
+              return html;
+            }
+
+            // Function to create tooltip for match
+            function getMatchTooltip(match, teamName, result) {
+              const homeTeam = match.hometeam || match.home_team || match.home || "";
+              const awayTeam = match.awayteam || match.away_team || match.away || "";
+              const homeScore =
+                match.homeGoals || match.homescore || match.home_score || 0;
+              const awayScore =
+                match.awayGoals || match.awayscore || match.away_score || 0;
+              const date = match.date || "";
+
+              let resultText = "";
+              switch (result) {
+                case "win":
+                  resultText = "Gewonnen";
+                  break;
+                case "draw":
+                  resultText = "Gelijkspel";
+                  break;
+                case "loss":
+                  resultText = "Verloren";
+                  break;
+                case "no-match":
+                  resultText = "Niet gespeeld";
+                  break;
+              }
+
+              if (result === "no-match") {
+                return `${homeTeam} - ${awayTeam} (${date}): ${resultText}`;
+              } else {
+                return `${homeTeam} ${homeScore}-${awayScore} ${awayTeam} (${date}): ${resultText}`;
+              }
+            }
+
+            // Function to create carousel indicators
+            function createCarouselIndicators(count) {
+              const indicatorsContainer = document.getElementById(
+                "carousel-indicators"
+              );
+              if (!indicatorsContainer) return;
+
+              indicatorsContainer.innerHTML = "";
+
+              for (let i = 0; i < count; i++) {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.setAttribute("data-bs-target", "#carousel");
+                button.setAttribute("data-bs-slide-to", i.toString());
+                if (i === 0) button.classList.add("active");
+                button.setAttribute("aria-label", `Slide ${i + 1}`);
+                indicatorsContainer.appendChild(button);
+              }
+            }
+
+            // Function to create slide
+            function createSlide(title, content, slideNum, isActive = false) {
+              // Check if title contains HTML tags
+              const titleHTML = title.includes("<")
+                ? title
+                : `<h2 class="mb-4">${title}</h2>`;
+
+              return `
+                      <div class="carousel-item ${isActive ? "active" : ""}">
+                          <div class="d-flex justify-content-center align-items-center h-100" style="position: relative; z-index: 2;">
+                              <div class="text-center w-100">
+                                  ${titleHTML}
+                                  <div id="slide-content-${slideNum}">
+                                      ${content}
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  `;
+            }
+
+            // Generate standings table
+            function generateStandingsTable(
+              standings,
+              useColumns = false,
+              allMatches = []
+            ) {
+              if (!standings || standings.length === 0) {
+                return "<p>Geen gegevens beschikbaar</p>";
+              }
+
+              // If using columns and we have enough teams (>10), split into 2 columns
+              if (useColumns && standings.length > 10) {
+                const halfPoint = Math.ceil(standings.length / 2);
+                const column1 = standings.slice(0, halfPoint);
+                const column2 = standings.slice(halfPoint);
+
+                let html = '<div class="row">';
+
+                // Column 1
+                html += '<div class="col-md-6">';
+                html +=
+                  '<table class="table table-striped standings-table"><thead><tr>';
+                html +=
+                  '<th class="position-header">P</th><th class="team-name-col">Team</th><th class="form-header">V</th><th class="stats-header">G</th><th class="stats-header">W</th><th class="stats-header">G</th><th class="stats-header">V</th><th class="stats-header">P</th>';
+                html += "</tr></thead><tbody>";
+
+                column1.forEach((team, index) => {
+                  const teamName = formatTeamName(team.team || team.name, true, true);
+                  const isFeatured =
+                    featuredTeamKey &&
+                    (team.team || team.name)
+                      .toLowerCase()
+                      .includes(featuredTeamKey.toLowerCase());
+                  const rowClass = isFeatured ? "featured-row" : "";
+                  const formIndicators = generateFormIndicators(
+                    team.team || team.name,
+                    allMatches
+                  );
+                  html += `<tr class="${rowClass}">
+                              <td class="position-cell">${index + 1}</td>
+                              <td class="team-name-cell">${teamName}</td>
+                              <td class="form-cell">${formIndicators}</td>
+                              <td class="stats-cell">${
+                                team.played || team.ges || 0
+                              }</td>
+                              <td class="stats-cell">${team.wins || team.w || 0}</td>
+                              <td class="stats-cell">${team.draws || team.g || 0}</td>
+                              <td class="stats-cell">${
+                                team.losses || team.v || 0
+                              }</td>
+                              <td class="points-cell">${
+                                team.points || team.pnt || 0
+                              }</td>
+                          </tr>`;
+                });
+
+                html += "</tbody></table></div>";
+
+                // Column 2
+                html += '<div class="col-md-6">';
+                html +=
+                  '<table class="table table-striped standings-table"><thead><tr>';
+                html +=
+                  '<th class="position-header">P</th><th class="team-name-col">Team</th><th class="form-header">V</th><th class="stats-header">G</th><th class="stats-header">W</th><th class="stats-header">G</th><th class="stats-header">V</th><th class="stats-header">P</th>';
+                html += "</tr></thead><tbody>";
+
+                column2.forEach((team, index) => {
+                  const teamName = formatTeamName(team.team || team.name, true, true);
+                  const isFeatured =
+                    featuredTeamKey &&
+                    (team.team || team.name)
+                      .toLowerCase()
+                      .includes(featuredTeamKey.toLowerCase());
+                  const rowClass = isFeatured ? "featured-row" : "";
+                  const formIndicators = generateFormIndicators(
+                    team.team || team.name,
+                    allMatches
+                  );
+                  html += `<tr class="${rowClass}">
+                              <td class="position-cell">${halfPoint + index + 1}</td>
+                              <td class="team-name-cell">${teamName}</td>
+                              <td class="form-cell">${formIndicators}</td>
+                              <td class="stats-cell">${
+                                team.played || team.ges || 0
+                              }</td>
+                              <td class="stats-cell">${team.wins || team.w || 0}</td>
+                              <td class="stats-cell">${team.draws || team.g || 0}</td>
+                              <td class="stats-cell">${
+                                team.losses || team.v || 0
+                              }</td>
+                              <td class="points-cell">${
+                                team.points || team.pnt || 0
+                              }</td>
+                          </tr>`;
+                });
+
+                html += "</tbody></table></div>";
+                html += "</div>";
+
+                return html;
+              }
+
+              // Default single table layout
+              let html =
+                '<table class="table table-striped standings-table"><thead><tr>';
+              html +=
+                '<th class="position-header">P</th><th class="team-name-col">Team</th><th class="form-header">V</th><th class="stats-header">G</th><th class="stats-header">W</th><th class="stats-header">G</th><th class="stats-header">V</th><th class="stats-header">P</th>';
+              html += "</tr></thead><tbody>";
+
+              standings.forEach((team, index) => {
+                const teamName = formatTeamName(team.team || team.name, true, true);
+                const isFeatured =
+                  featuredTeamKey &&
+                  (team.team || team.name)
+                    .toLowerCase()
+                    .includes(featuredTeamKey.toLowerCase());
+                const rowClass = isFeatured ? "featured-row" : "";
+                const formIndicators = generateFormIndicators(
+                  team.team || team.name,
+                  allMatches
+                );
+                html += `<tr class="${rowClass}">
+                          <td class="position-cell">${index + 1}</td>
+                          <td class="team-name-cell">${teamName}</td>
+                          <td class="form-cell">${formIndicators}</td>
+                          <td class="stats-cell">${team.played || team.ges || 0}</td>
+                          <td class="stats-cell">${team.wins || team.w || 0}</td>
+                          <td class="stats-cell">${team.draws || team.g || 0}</td>
+                          <td class="stats-cell">${team.losses || team.v || 0}</td>
+                          <td class="points-cell">${team.points || team.pnt || 0}</td>
+                      </tr>`;
+              });
+
+              html += "</tbody></table>";
+              return html;
+            }
+
+            // Generate weekly results
+            function generateWeeklyResults(matches) {
+              if (!matches || matches.length === 0) {
+                return "<p>Geen wedstrijden in deze week</p>";
+              }
+
+              // Limit to 8 matches maximum
+              const limitedMatches = matches.slice(0, 8);
+
+              let html = '<div class="results-table">';
+
+              limitedMatches.forEach((match, index) => {
+                const homeTeam = formatTeamName(match.hometeam || match.home_team);
+                const awayTeam = formatTeamName(match.awayteam || match.away_team);
+                const homeScore = match.homescore || match.home_score || 0;
+                const awayScore = match.awayscore || match.away_score || 0;
+
+                html += `<div class="result-row">
+                          <div class="result-home">${homeTeam}</div>
+                          <div class="result-score">${homeScore} - ${awayScore}</div>
+                          <div class="result-away">${awayTeam}</div>
+                      </div>`;
+              });
+
+              html += "</div>";
+              return html;
+            }
+
+            // Generate last played week results - shows matches from the week of the most recent played match
+            function generateLastPlayedWeekResults(allMatches) {
+              if (!allMatches || allMatches.length === 0) {
+                return "<p>Geen wedstrijden beschikbaar</p>";
+              }
+
+              // Filter only played matches
+              const playedMatches = allMatches.filter(match =>
+                match.status === "played" || match.status === "Gespeeld"
+              );
+
+              if (playedMatches.length === 0) {
+                return "<p>Geen gespeelde wedstrijden beschikbaar</p>";
+              }
+
+              // Find the most recent played match date
+              const mostRecentDate = playedMatches
+                .map(match => new Date(match.date))
+                .sort((a, b) => b - a)[0];
+
+              if (!mostRecentDate || isNaN(mostRecentDate)) {
+                return "<p>Geen geldige wedstrijddatum gevonden</p>";
+              }
+
+              // Calculate the week number of the most recent match
+              const weekNumber = getWeekNumber(mostRecentDate);
+              const year = mostRecentDate.getFullYear();
+
+              // Filter matches from the same week as the most recent match
+              const weekMatches = playedMatches.filter(match => {
+                const matchDate = new Date(match.date);
+                if (isNaN(matchDate)) return false;
+
+                const matchWeekNumber = getWeekNumber(matchDate);
+                const matchYear = matchDate.getFullYear();
+
+                return matchWeekNumber === weekNumber && matchYear === year;
+              });
+
+              if (weekMatches.length === 0) {
+                return "<p>Geen wedstrijden in deze week</p>";
+              }
+
+              // Sort matches by date
+              weekMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+              // Limit to 8 matches maximum
+              const limitedMatches = weekMatches.slice(0, 8);
+
+              let html = `<div class="week-header">Week ${weekNumber} (${year})</div>`;
+              html += '<div class="results-table">';
+
+              limitedMatches.forEach((match, index) => {
+                const homeTeam = formatTeamName(
+                  match.hometeam || match.home_team || match.home || ""
+                );
+                const awayTeam = formatTeamName(
+                  match.awayteam || match.away_team || match.away || ""
+                );
+                const homeScore = match.homescore || match.home_score || match.homeGoals || 0;
+                const awayScore = match.awayscore || match.away_score || match.awayGoals || 0;
+
+                html += `<div class="result-row">
+                          <div class="result-home">${homeTeam}</div>
+                          <div class="result-score">${homeScore} - ${awayScore}</div>
+                          <div class="result-away">${awayTeam}</div>
+                      </div>`;
+              });
+
+              html += "</div>";
+              return html;
+            }
+
+            // Helper function to get ISO week number
+            function getWeekNumber(date) {
+              const d = new Date(date);
+              d.setHours(0, 0, 0, 0);
+              // Set to nearest Thursday: current date + 4 - current day number
+              // Make Sunday's day number 7
+              d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+              // Get first day of year
+              const yearStart = new Date(d.getFullYear(), 0, 1);
+              // Calculate full weeks to nearest Thursday
+              const weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+              return weekNo;
+            }
+
+
+            // Generate upcoming week matches - show matches from week after first upcoming match, grouped by week
+            function generateUpcomingMatches(matches) {
+              if (!matches || matches.length === 0) {
+                return "<p>Geen wedstrijden beschikbaar</p>";
+              }
+
+              // Group matches by week_label (provided by backend)
+              const matchesByWeek = {};
+
+              matches.forEach((match) => {
+                const weekLabel = match.week_label || "Onbekende week";
+
+                if (!matchesByWeek[weekLabel]) {
+                  matchesByWeek[weekLabel] = [];
+                }
+                matchesByWeek[weekLabel].push(match);
+              });
+
+              // Sort weeks by week number and year
+              const sortedWeekLabels = Object.keys(matchesByWeek).sort((a, b) => {
+                // Extract week number and year from "Week X" or "Week X (YYYY)" format
+                const matchA = a.match(/Week (\d+)(?: \((\d+)\))?/);
+                const matchB = b.match(/Week (\d+)(?: \((\d+)\))?/);
+
+                const weekNumA = parseInt(matchA?.[1] || "0");
+                const yearA = parseInt(matchA?.[2] || new Date().getFullYear());
+
+                const weekNumB = parseInt(matchB?.[1] || "0");
+                const yearB = parseInt(matchB?.[2] || new Date().getFullYear());
+
+                // First sort by year, then by week number
+                if (yearA !== yearB) {
+                  return yearA - yearB;
+                }
+                return weekNumA - weekNumB;
+              });
+
+              if (sortedWeekLabels.length === 0) {
+                return "<p>Geen toekomstige wedstrijden beschikbaar</p>";
+              }
+
+              let html = '<div class="results-table">';
+
+              // Display matches grouped by week with week headers
+              sortedWeekLabels.forEach((weekLabel) => {
+                const weekMatches = matchesByWeek[weekLabel];
+
+                // Sort matches within the week
+                weekMatches.sort((a, b) => {
+                  // Check if either match involves featured team
+                  const aHasFeatured =
+                    featuredTeamKey &&
+                    ((a.home || a.hometeam || a.home_team || "")
+                      .toLowerCase()
+                      .includes(featuredTeamKey.toLowerCase()) ||
+                      (a.away || a.awayteam || a.away_team || "")
+                        .toLowerCase()
+                        .includes(featuredTeamKey.toLowerCase()));
+                  const bHasFeatured =
+                    featuredTeamKey &&
+                    ((b.home || b.hometeam || b.home_team || "")
+                      .toLowerCase()
+                      .includes(featuredTeamKey.toLowerCase()) ||
+                      (b.away || b.awayteam || b.away_team || "")
+                        .toLowerCase()
+                        .includes(featuredTeamKey.toLowerCase()));
+
+                  // Featured team matches first
+                  if (aHasFeatured && !bHasFeatured) return -1;
+                  if (!aHasFeatured && bHasFeatured) return 1;
+
+                  // If both have featured team or both don't have featured team, sort by date and time
+                  const dateA = new Date(a.date + (a.time ? " " + a.time : ""));
+                  const dateB = new Date(b.date + (b.time ? " " + b.time : ""));
+                  return dateA - dateB;
+                });
+
+                // Add week header
+                html += `<div class="week-header">${weekLabel}</div>`;
+
+                // Add matches for this week
+                weekMatches.forEach((match) => {
+                  const homeTeam = formatTeamName(
+                    match.home || match.hometeam || match.home_team,
+                    true,
+                    true
+                  );
+                  const awayTeam = formatTeamName(
+                    match.away || match.awayteam || match.away_team,
+                    true,
+                    true
+                  );
+                  const matchDate = formatDate(match.date);
+                  const matchTime = match.time || "";
+                  const dateTimeDisplay = matchTime
+                    ? `${matchDate} ${matchTime}`
+                    : matchDate;
+
+                  html += `<div class="result-row">
+                            <div class="result-home">${homeTeam}</div>
+                            <div class="result-score">${dateTimeDisplay}</div>
+                            <div class="result-away">${awayTeam}</div>
+                          </div>`;
+                });
+              });
+
+              html += "</div>";
+              return html;
+            }
+
+            // Generate featured team matches in two columns (home/away) with played matches first
+            function generateFeaturedTeamMatches(featuredData) {
+              if (!featuredData || !featuredData.featured_team_matches) {
+                return `<p>Geen ${featuredTeamName} wedstrijden beschikbaar</p>`;
+              }
+
+              const playedMatches = featuredData.featured_team_matches.played || [];
+              const upcomingMatches =
+                featuredData.featured_team_matches.upcoming || [];
+
+              // Combine and separate matches by home/away
+              const allMatches = [...playedMatches, ...upcomingMatches];
+
+              const homeMatches = [];
+              const awayMatches = [];
+
+              allMatches.forEach((match) => {
+                const homeTeam =
+                  match.home || match.hometeam || match.home_team || "";
+                const awayTeam =
+                  match.away || match.awayteam || match.away_team || "";
+
+                if (
+                  featuredTeamKey &&
+                  homeTeam.toLowerCase().includes(featuredTeamKey.toLowerCase())
+                ) {
+                  homeMatches.push({ ...match, type: "home" });
+                } else if (
+                  featuredTeamKey &&
+                  awayTeam.toLowerCase().includes(featuredTeamKey.toLowerCase())
+                ) {
+                  awayMatches.push({ ...match, type: "away" });
+                }
+              });
+
+              // Debug fallback: show all matches if no upcoming matches found
+              if (upcomingMatches.length === 0 && allMatches.length > 0) {
+                let debugHtml =
+                  '<div class="results-table"><p style="color: orange; font-size: 1rem;">Debug: Alle wedstrijden (geen toekomstige gevonden):</p>';
+
+
+
+                  debugHtml += `<div class="result-row">
+                            <div class="result-home">${homeTeam}</div>
+                            <div class="result-score">${dateTimeDisplay}</div>
+                            <div class="result-away">${awayTeam}</div>
+                        </div>`;
+                });
+
+                debugHtml += "</div>";
+                // You can decide how to render this, e.g. inject into DOM or console.log
+                // For now, this code just prepares debugHtml as a string
+              }
+
+              // Sort matches: played first (by checking if score exists), then by date
+              const sortMatches = (matches) => {
+                return matches.sort((a, b) => {
+                  // Check if match is played (has score)
+                  const aPlayed =
+                    (a.homeGoals !== undefined && a.homeGoals !== null) ||
+                    (a.homescore !== undefined && a.homescore !== null) ||
+                    (a.home_score !== undefined && a.home_score !== null);
+                  const bPlayed =
+                    (b.homeGoals !== undefined && b.homeGoals !== null) ||
+                    (b.homescore !== undefined && b.homescore !== null) ||
+                    (b.home_score !== undefined && b.home_score !== null);
+
+                  if (aPlayed && !bPlayed) return -1;
+                  if (!aPlayed && bPlayed) return 1;
+
+                  // If both played or both unplayed, sort by date
+                  const dateA = new Date(a.date || "");
+                  const dateB = new Date(b.date || "");
+                  return dateA - dateB;
+                });
+              };
+
+              const sortedHomeMatches = sortMatches(homeMatches);
+              const sortedAwayMatches = sortMatches(awayMatches);
+
+              // Generate HTML
+              let html = '<div class="featured-matches-container row">';
+
+              // Left column - Home matches
+              html += '<div class="featured-column col-md-6">';
+              html += '<h4 class="text-center mb-3">Thuis</h4>';
+
+              if (sortedHomeMatches.length === 0) {
+                html += '<p class="text-center">Geen thuiswedstrijden</p>';
+              } else {
+                sortedHomeMatches.forEach((match) => {
+                  const opponent =
+                    match.away || match.awayteam || match.away_team || "Onbekend";
+                  const homeScore =
+                    match.homeGoals || match.homescore || match.home_score;
+                  const awayScore =
+                    match.awayGoals || match.awayscore || match.away_score;
+                  const matchDate = match.date ? formatDate(match.date) : "Onbekend";
+
+                  html += '<div class="featured-match">';
+                  html += '<div class="match-line">';
+                  html += `<div class="opponent-name">${featuredTeamName} - ${formatTeamName(
+                    opponent
+                  )}</div>`;
+
+                  if (
+                    homeScore !== undefined &&
+                    homeScore !== null &&
+                    awayScore !== undefined &&
+                    awayScore !== null
+                  ) {
+                    // Played match - show score
+                    html += `<div class="match-result">${homeScore}-${awayScore}</div>`;
+                  } else {
+                    // Upcoming match - show date
+                    html += `<div class="match-date">${matchDate}</div>`;
+                  }
+
+                  html += "</div>";
+                  html += "</div>";
+                });
+              }
+
+              html += "</div>";
+
+              // Right column - Away matches
+              html += '<div class="featured-column col-md-6">';
+              html += '<h4 class="text-center mb-3">Uit</h4>';
+
+              if (sortedAwayMatches.length === 0) {
+                html += '<p class="text-center">Geen uitwedstrijden</p>';
+              } else {
+                sortedAwayMatches.forEach((match) => {
+                  const opponent =
+                    match.home || match.hometeam || match.home_team || "Onbekend";
+                  const homeScore =
+                    match.homeGoals || match.homescore || match.home_score;
+                  const awayScore =
+                    match.awayGoals || match.awayscore || match.away_score;
+                  const matchDate = match.date ? formatDate(match.date) : "Onbekend";
+
+                  html += '<div class="featured-match">';
+                  html += '<div class="match-line">';
+                  html += `<div class="opponent-name">${formatTeamName(
+                    opponent
+                  )} - ${featuredTeamName}</div>`;
+
+                  if (
+                    homeScore !== undefined &&
+                    homeScore !== null &&
+                    awayScore !== undefined &&
+                    awayScore !== null
+                  ) {
+                    // Played match - show score
+                    html += `<div class="match-result">${homeScore}-${awayScore}</div>`;
+                  } else {
+                    // Upcoming match - show date
+                    html += `<div class="match-date">${matchDate}</div>`;
+                  }
+
+                  html += "</div>";
+                  html += "</div>";
+                });
+              }
+
+              html += "</div>";
+              html += "</div>";
+
+              return html;
+            }
+
+
+            // Generate team matrix
+            function generateTeamMatrix(matrixData) {
+              if (!matrixData || !matrixData.teams || !matrixData.matrix) {
+                return "<p>Geen team matrix beschikbaar</p>";
+              }
+
+              const teams = matrixData.teams;
+              const matrix = matrixData.matrix;
+
+              // Function to format date without year or show score as-is with color styling
+              function formatMatrixDate(dateStr) {
+                if (!dateStr) return { value: "", style: "" };
+
+                // If it's a score (contains dash but no numbers longer than 2 digits)
+                if (dateStr.match(/^\d{1,2}-\d{1,2}$/)) {
+                  return { value: dateStr, style: "color: #0066cc; font-weight: bold;" }; // Blue for scores
+                }
+
+                // If it's a date (YYYY-MM-DD format)
+                if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                  const date = new Date(dateStr);
+                  const formattedDate = date.toLocaleDateString("nl-NL", {
+                    day: "2-digit",
+                    month: "2-digit",
+                  });
+                  return { value: formattedDate, style: "color: #28a745; font-weight: bold;" }; // Green for dates
+                }
+
+                return { value: dateStr, style: "" };
+              }
+
+              let html =
+                '<div class="team-matrix"><table class="table table-bordered table-sm">';
+
+              // Header row with only logos
+              html += '<thead><tr><th class="matrix-empty-corner"></th>';
+              teams.forEach((team) => {
+                const logoPath =
+                  teamLogos[team] || "/static/images/team_logos/default_team.png";
+                const logoContent = `<img src="${logoPath}" class="team-logo" alt="${team}" title="${team}" onerror="this.src='/static/images/team_logos/default_team.png'">`;
+                html += `<th title="${team}" class="matrix-header-cell">${logoContent}</th>`;
+              });
+              html += "</tr></thead><tbody>";
+
+              // Data rows
+              teams.forEach((homeTeam) => {
+                // Show full team name in row header, no logo
+                html += `<tr><th title="${homeTeam}" class="matrix-row-header">${homeTeam}</th>`;
+                teams.forEach((awayTeam) => {
+                  if (homeTeam === awayTeam) {
+                    html += '<td style="background-color: #f8f9fa;">-</td>';
+                  } else {
+                    const cellValue =
+                      matrix[homeTeam] && matrix[homeTeam][awayTeam]
+                        ? matrix[homeTeam][awayTeam]
+                        : "";
+                    const formatResult = cellValue ? formatMatrixDate(cellValue) : { value: "", style: "" };
+                    const styleAttr = formatResult.style ? ` style="${formatResult.style}"` : "";
+                    html += `<td title="${cellValue}"${styleAttr}>${formatResult.value}</td>`;
+                  }
+                });
+                html += "</tr>";
+              });
+
+              html += "</tbody></table></div>";
+              return html;
+            }
+
+            // Intro screen animation management
+            function startIntroAnimation() {
+              const competitionStatus = document.getElementById('competition-status');
+              const competitionTitle = document.getElementById('competition-main-title');
+
+              // Update status messages during loading
+              const statusMessages = [
+                'Verbinding maken met competitie server...',
+                'Uitslagen ophalen...',
+                'Standen berekenen...',
+                'Team informatie laden...',
+                'Dashboard voorbereiden...',
+                'Welkom bij AVV Columbia!'
+              ];
+
+              let messageIndex = 0;
+              const statusInterval = setInterval(() => {
+                if (messageIndex < statusMessages.length) {
+                  competitionStatus.textContent = statusMessages[messageIndex];
+                  messageIndex++;
+                } else {
+                  clearInterval(statusInterval);
+                }
+              }, 800);
+
+              // Dynamic team name update based on featured team
+              setTimeout(() => {
+                if (featuredTeamName) {
+                  competitionTitle.textContent = featuredTeamName.toUpperCase();
+                }
+              }, 1500);
+
+              return new Promise(resolve => {
+                // Resolve after intro animation completes
+                setTimeout(() => {
+                  console.log('Intro animation completed, resolving promise');
+                  resolve();
+                }, SCREEN_DURATION_MS);
+              });
+            }
+
+            // Add smooth transitions to screens
+            function addScreenTransitions() {
+              const carouselInner = document.getElementById('carousel-inner');
+              const slides = carouselInner.querySelectorAll('.carousel-item');
+
+              slides.forEach((slide, index) => {
+                // Skip the intro screen
+                if (slide.classList.contains('intro-screen')) return;
+
+                // Add specific screen classes based on content type
+                const standingsTable = slide.querySelector('.standings-table');
+                if (standingsTable) {
+                  // Confirm that Standing screen actually has standings rows, not just header
+                  const rows = standingsTable.querySelectorAll('tbody tr');
+                  if (rows.length > 0) {
+                    slide.classList.add('standings-screen');
+                  }
+                } else if (slide.querySelector('.results-table')) {
+                  // Results screen
+                  slide.classList.add('results-screen');
+                } else if (slide.querySelector('.featured-matches-container')) {
+                  // Featured team screen
+                  slide.classList.add('featured-screen');
+                } else if (slide.querySelector('.team-matrix')) {
+                  // Matrix screen
+                  slide.classList.add('matrix-screen');
+                }
+              });
+            }
+
+            // Create slide with animation classes
+            function createSlideWithAnimations(title, content, slideNum, isActive = false) {
+              // Enhanced slide creation with animation support
+              const titleHTML = title.includes("<")
+                ? title
+                : `<h2 class="mb-4">${title}</h2>`;
+
+
+
+            // Create slide element without animations
+            function createSlideElement(title, content, slideNum, isActive = false) {
+              console.log('Creating slide element:', {title, slideNum, isActive});
+
+              // DOM-based slide creation without animations
+              const carouselItem = document.createElement('div');
+              carouselItem.className = `carousel-item ${isActive ? 'active' : ''}`;
+              carouselItem.setAttribute('data-slide-num', slideNum);
+
+              const outerDiv = document.createElement('div');
+              outerDiv.className = 'd-flex justify-content-center align-items-center h-100';
+              outerDiv.style.position = 'relative';
+              outerDiv.style.zIndex = '2';
+
+              const innerDiv = document.createElement('div');
+              innerDiv.className = 'text-center w-100';
+
+              // Handle title
+              if (title && title.includes('<')) {
+                innerDiv.innerHTML = title + content;
+              } else if (title) {
+                const titleElement = document.createElement('h2');
+                titleElement.className = 'mb-4';
+                titleElement.textContent = title;
+                innerDiv.appendChild(titleElement);
+                innerDiv.innerHTML += content;
+              } else {
+                innerDiv.innerHTML = content;
+              }
+
+              // Add last updated timestamp
+              const timestamp = document.createElement('div');
+              timestamp.className = 'last-updated';
+              timestamp.textContent = `Laatst bijgewerkt: ${new Date().toLocaleTimeString('nl-NL')}`;
+              innerDiv.appendChild(timestamp);
+
+              outerDiv.appendChild(innerDiv);
+              carouselItem.appendChild(outerDiv);
+
+              console.log('Slide element created:', carouselItem);
+              return carouselItem;
+            }
+
+            // Initialize dashboard
+            async function initializeDashboard() {
+                console.log('initializeDashboard called');
+                return new Promise(async (resolve, reject) => {
+                  try {
+                    // Start intro animation
+                    console.log('Starting intro animation');
+                    await startIntroAnimation();
+
+                    // Load all data first
+                    console.log('Loading data...');
+                    const [
+                      standingsResponse,
+                      periodsResponse,
+                      allMatchesResponse,
+                      featuredResponse,
+                      weeklyResponse,
+                      nextWeekResponse,
+                      matrixResponse,
+                    ] = await Promise.all([
+                      fetch("/api/standings"),
+                      fetch("/api/period-standings"),
+                      fetch("/api/all-matches"),
+                      fetch("/api/featured-team-matches"),
+                      fetch("/api/weekly-results"),
+                      fetch("/api/next-week-matches"),
+                      fetch("/api/team-matrix"),
+                    ]);
+
+                    const standingsData = await standingsResponse.json();
+                    const periodsData = await periodsResponse.json();
+                    const allMatchesData = await allMatchesResponse.json();
+                    const featuredData = await featuredResponse.json();
+                    const weeklyData = await weeklyResponse.json();
+                    const nextWeekData = await nextWeekResponse.json();
+                    const matrixData = await matrixResponse.json();
+
+                    console.log('Data loaded successfully');
+
+                    // Set featured team info globally
+                    featuredTeamName = featuredData.featured_team_name || "";
+                    featuredTeamKey = featuredData.featured_team_key || "";
+
+                    // Build slides array
+                    const slides = [];
+                    let slideNum = 0;
+
+                    // 1. Main standings
+                    console.log('Generating standings table');
+                    slides.push({
+                      title: "", // No title/header for standings
+                      content: generateStandingsTable(
+                        standingsData.league_table,
+                        true,
+                        allMatchesData.matches
+                      ),
+                      slideNum: slideNum++,
+                      lastUpdated: standingsData.last_updated,
+                    });
+
+                    // 2. Individual period slides
+                    if (
+                      periodsData.period_standings &&
+                      periodsData.period_standings.length > 0
+                    ) {
+                      console.log('Generating period standings');
+                      periodsData.period_standings.forEach((period) => {
+                        slides.push({
+                          title: period.name,
+                          content: generateStandingsTable(
+                            period.standings,
+                            true,
+                            allMatchesData.matches
+                          ),
+                          slideNum: slideNum++,
+                          lastUpdated: periodsData.last_updated,
+                        });
+                      });
+                    }
+
+                    // 3. Last played week results
+                    console.log('Generating last played week results');
+                    slides.push({
+                      title: "Uitslagen",
+                      content: generateLastPlayedWeekResults(allMatchesData.matches || []),
+                      slideNum: slideNum++,
+                      lastUpdated: allMatchesData.last_updated,
+                    });
+
+                    // 4. Next week matches
+                    console.log('Generating upcoming matches');
+                    let upcomingMatchesContent;
+                    try {
+                      // If no next week matches, try to use all matches data as fallback
+                      if (!nextWeekData.matches || nextWeekData.matches.length === 0) {
+                        upcomingMatchesContent = generateUpcomingMatches(
+                          allMatchesData.matches || []
+                        );
+                      } else {
+                        upcomingMatchesContent = generateUpcomingMatches(
+                          nextWeekData.matches
+                        );
+                      }
+                    } catch (error) {
+                      upcomingMatchesContent = "<p>Fout bij laden van wedstrijden</p>";
+                    }
+
+                    slides.push({
+                      title: "Volgende Wedstrijden",
+                      content: upcomingMatchesContent,
+                      slideNum: slideNum++,
+                      lastUpdated:
+                        nextWeekData.last_updated,
+                    });
+
+                    // 5. Featured team matches
+                    console.log('Generating featured team matches');
+                    const featuredContent = generateFeaturedTeamMatches(featuredData);
+
+                    slides.push({
+                      title: featuredTeamName.toUpperCase(),
+                      content: featuredContent,
+                      slideNum: slideNum++,
+                      lastUpdated:
+                        featuredData.last_updated || new Date().toISOString(),
+                    });
+
+                    // 6. Team matrix
+                    console.log('Generating team matrix');
+                    slides.push({
+                      title: "Competitie Zaterdag 3N OOST",
+                      content: generateTeamMatrix(matrixData.team_matrix),
+                      slideNum: slideNum++,
+                      lastUpdated: matrixData.last_updated,
+                    });
+
+                    console.log('Total slides prepared:', slides.length);
+
+                    // Create carousel
+                    totalSlides = slides.length + 1; // +1 for intro screen
+                    createCarouselIndicators(totalSlides);
+
+                    const carouselInner = document.getElementById("carousel-inner");
+                    if (!carouselInner) {
+                      console.error('Carousel inner container not found');
+                      reject(new Error('Carousel inner container not found'));
+                      return;
+                    }
+
+                    // Keep intro screen and add new slides
+                    const introScreen = carouselInner.querySelector('.intro-screen');
+                    console.log('Intro screen found:', !!introScreen);
+
+                    // Clear all except intro screen
+                    while (carouselInner.children.length > 1) {
+                      carouselInner.removeChild(carouselInner.lastChild);
+                    }
+
+                    if (!introScreen) {
+                      console.warn('Intro screen not found, creating new one');
+                      // Create a simple intro screen if it doesn't exist
+                      const newIntro = document.createElement('div');
+                      newIntro.className = 'carousel-item active intro-screen';
+                      newIntro.innerHTML = `
+                        <div class="d-flex justify-content-center align-items-center h-100">
+                          <div class="text-center">
+                            <h1>Welkom</h1>
+                            <p>Dashboard wordt geladen...</p>
+                          </div>
+                        </div>
+                      `;
+                      carouselInner.appendChild(newIntro);
+                    }
+
+                    // Add all dashboard slides without animations using proper DOM methods
+                    console.log('Adding', slides.length, 'slides to carousel');
+                    slides.forEach((slide, index) => {
+                      console.log('Creating slide', index, 'with title:', slide.title);
+                      const slideElement = createSlideElement(
+                        slide.title,
+                        slide.content,
+                        slide.slideNum,
+                        false // Intro screen stays active initially
+                      );
+                      carouselInner.appendChild(slideElement);
+                    });
+
+                    // Log how many carousel items we now have
+                    const allItems = carouselInner.querySelectorAll('.carousel-item');
+                    console.log('Total carousel items in DOM:', allItems.length);
+
+                    // Add screen transitions
+                    addScreenTransitions();
+
+                    // Initialize screen number display
+                    updateScreenNumber();
+
+                    resolve();
+                  } catch (error) {
+                    console.error('Error in initializeDashboard:', error);
+                    reject(error);
+                  }
+                });
+              }
+
+      // Load dashboard when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log('DOM Content Loaded');
+
+        // First check if Bootstrap is loaded
+        if (typeof bootstrap === "undefined") {
+          console.error('Bootstrap is not loaded');
+          // Try to load it manually
+          const script = document.createElement('script');
+          script.src = "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js";
+          script.onload = function() {
+            console.log('Bootstrap loaded manually');
+            initializeDashboardAfterBootstrap();
+          };
+          document.head.appendChild(script);
+          return;
+        }
+
+        console.log('Bootstrap is loaded, initializing dashboard');
+        initializeDashboardAfterBootstrap();
+      });
+
+      function initializeDashboardAfterBootstrap() {
+        console.log('Initializing dashboard after Bootstrap');
+
+        if (isInitialized) {
+          console.log('Dashboard already initialized, skipping');
+          return;
+        }
+
+        initializeDashboard()
+          .then(() => {
+            console.log('Dashboard initialized successfully');
+            initializeCarousel();
+            isInitialized = true;
+          })
+          .catch((error) => {
+            console.error('Dashboard initialization error:', error);
+          });
+      }
+
+      function initializeCarousel() {
+        const carouselElement = document.getElementById("carousel");
+        if (!carouselElement) {
+          console.error('Carousel element not found');
+          return;
+        }
+
+        const carouselItems = carouselElement.querySelectorAll(".carousel-item");
+        if (carouselItems.length < 1) {
+          console.error('No carousel items found');
+          return;
+        }
+
+        try {
+          carouselInstance = new bootstrap.Carousel(carouselElement, {
+            interval: false,
+            ride: false,
+            wrap: true,
+          });
+
+          totalSlides = carouselItems.length;
+          createCarouselIndicators(totalSlides);
+          updateScreenNumber();
+
+          carouselElement.addEventListener('slid.bs.carousel', function () {
+            resetCountdown();
+          });
+
+          startCountdown();
+          console.log('Carousel initialized successfully');
+        } catch (error) {
+          console.error('Carousel setup error:', error);
+        }
+      }
+
+
+
+                  try {
+                    carouselInstance = new bootstrap.Carousel(carouselElement, {
+                      interval: false, // Disable automatic cycling - we control it with countdown
+                      ride: false,
+                      wrap: true,
+                    });
+
+                    // Setup enhanced carousel transitions
+                    // setupCarouselTransitions(); // Removed transition setup
+
+                  } catch (error) {
+                    console.error('Error initializing carousel:', error);
+                  }
+
+                    // Add keyboard navigation with improved implementation
+                    document.addEventListener("keydown", function (event) {
+                      if (isTransitioning) {
+                        console.log('Transition in progress, ignoring key event');
+                        return;
+                      }
+
+                      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+                        event.preventDefault();
+                        isTransitioning = true;
+
+                        if (event.key === "ArrowLeft") {
+                          console.log('Previous slide requested via keyboard');
+                          carouselInstance?.prev();
+                        } else {
+                          console.log('Next slide requested via keyboard');
+                          carouselInstance?.next();
+                        }
+
+                        setTimeout(() => {
+                          isTransitioning = false;
+                        }, 1000);
+                      }
+                    });
+
+                    // Auto-transition from intro screen to first dashboard screen after intro completes
+                    setTimeout(() => {
+                      console.log('Intro animation complete, transitioning to first dashboard screen');
+
+                      // Update total slides to include intro + dashboard screens
+                      totalSlides = carouselItems.length;
+                      createCarouselIndicators(totalSlides);
+                      updateScreenNumber();
+
+                      // Ensure countdown is reset before transitioning
+                      currentCountdown = SCREEN_DURATION_SECONDS;
+                      updateCountdownDisplay();
+
+                      const carouselElement = document.getElementById("carousel");
+                      // Add carousel transition event listeners
+                      if (carouselElement) {
+                        // When slide transition completes
+                        carouselElement.addEventListener('slid.bs.carousel', function () {
+                          console.log('Carousel slide transition completed');
+                          // Reset any transition classes on all slides
+                          document.querySelectorAll('.carousel-item').forEach(item => {
+                            item.classList.remove('fade-in', 'fade-out');
+                          });
+                          // Add fade-in effect on active slide
+                          const activeSlide = document.querySelector('.carousel-item.active');
+                          if (activeSlide) {
+                            activeSlide.classList.add('fade-in');
+                            console.log('Applied fade-in to active slide');
+                          }
+                          // Restart countdown for new slide
+                          resetCountdown();
+                        });
+
+                        // Handle slide transition start
+                        carouselElement.addEventListener('slide.bs.carousel', function () {
+                          console.log('Carousel slide transition starting');
+                          isTransitioning = true;
+                          // Clear any existing countdown during transition
+                          if (countdownInterval) {
+                            clearInterval(countdownInterval);
+                            countdownInterval = null;
+                            isCountdownActive = false;
+                          }
+                        });
+                      }
+
+                      console.log('Executing transition from intro to first dashboard screen');
+
+                      // Add transition effect from intro to first dashboard screen
+                      const introScreen = document.querySelector('.intro-screen');
+                      const firstDashboardScreen = document.querySelector('.carousel-item:not(.intro-screen)');
+                      if (introScreen && firstDashboardScreen) {
+                        // Add fade-out effect to intro screen
+                        introScreen.classList.add('fade-out');
+
+                        // Add fade-in effect to first dashboard screen
+                        firstDashboardScreen.classList.add('fade-in');
+
+                        // After transition completes, proceed with carousel transition
+                        setTimeout(() => {
+                          if (carouselInstance) {
+                            try {
+                              carouselInstance.next();
+                              // Start countdown after successful transition
+                              startCountdown();
+                            } catch (error) {
+                              console.error('Error during carousel transition:', error);
+                              // Removed fallback to reinitializeCarousel
+                            }
+                          }
+                          // Reset transitioning flag after a delay
+
+      initializeDashboard()
+        .then(() => {
+          // Check if carousel was already initialized
+          if (!carouselInstance) {
+            // Start carousel manually after content is loaded
+            const carouselElement = document.getElementById("carousel");
+            if (!carouselElement) {
+              console.error('Carousel element not found');
+              return;
+            }
+
+            // Check if carousel items exist
+            const carouselItems = carouselElement.querySelectorAll(".carousel-item");
+
+            if (carouselItems.length <= 1) {
+              console.log('Not enough slides for carousel');
+              return;
+            }
+
+            try {
+              carouselInstance = new bootstrap.Carousel(carouselElement, {
+                interval: false, // Disable automatic cycling - we control it with countdown
+                ride: false,
+                wrap: true,
+              });
+
+              // Update total slides count
+              totalSlides = carouselItems.length;
+              createCarouselIndicators(totalSlides);
+              updateScreenNumber();
+
+              // Start the countdown
+              startCountdown();
+            } catch (error) {
+              console.error('Carousel setup error:', error);
+            }
+          }
+
+          // Refresh data every 30 minutes
+          setInterval(() => {
+            console.log('Refreshing dashboard data');
+            initializeDashboard().then(() => {
+              // Restart countdown after data refresh
+              if (carouselInstance) {
+                console.log('Data refresh complete, resetting countdown');
+                resetCountdown();
+              } else {
+                console.log('No carousel instance, starting carousel');
+                // Re-initialize carousel if needed
+                const carouselElement = document.getElementById("carousel");
+                if (carouselElement) {
+                  const carouselItems = carouselElement.querySelectorAll(".carousel-item");
+                  if (carouselItems.length > 1) {
+                    try {
+                      carouselInstance = new bootstrap.Carousel(carouselElement, {
+                        interval: false,
+                        ride: false,
+                        wrap: true,
+                      });
+                      // Update total slides count
+                      totalSlides = carouselItems.length;
+                      createCarouselIndicators(totalSlides);
+                      updateScreenNumber();
+                      resetCountdown();
+                    }
+                  }
+                }
+              }
+            }).catch((error) => {
+              console.error('Error refreshing dashboard data:', error);
+              // Even if data refresh fails, restart countdown to keep carousel running
+              if (carouselInstance) {
+                resetCountdown();
+              }
+            });
+          }, 30 * 60 * 1000);
+
+          // Fallback: Ensure carousel starts even if intro animation fails
+          setTimeout(() => {
+            // Fallback removed: Initialization disabled to prevent delayed carousel start
+            }
+          }, SCREEN_DURATION_MS + 2000);
+
+                          setTimeout(() => {
+                            isTransitioning = false;
+                          }, 1000);
+                        }, 800); // Slightly shorter than CSS transition to ensure smoothness
+                      } else {
+                        // Fallback to direct transition if elements not found
+                        if (carouselInstance) {
+                          try {
+                            carouselInstance.next();
+                            startCountdown();
+                          } catch (error) {
+                            console.error('Error during fallback transition:', error);
+                            reinitializeCarousel();
+                          }
+                        } else {
+                          console.warn('No carousel instance available');
+                          reinitializeCarousel();
+                        }
+                        // Reset transitioning flag after a delay
+                        setTimeout(() => {
+                          isTransitioning = false;
+                        }, 1000);
+                      } else {
+                        // Fallback to direct transition if elements not found
+                        if (carouselInstance) {
+                          carouselInstance.next();
+                        }
+                        // Start countdown after the first transition
+                        startCountdown();
+                      }
+                    }, SCREEN_DURATION_MS); // Wait for intro animation to complete
+
+                  } catch (error) {
+                    console.error('Carousel setup error:', error);
+                  }
+                })
+                .catch((error) => {
+                  // Silent error handling
+                });
+
+              // Refresh data every 30 minutes
+              setInterval(() => {
+                initializeDashboard().then(() => {
+                  // Restart countdown after data refresh
+                  if (carouselInstance) {
+                    resetCountdown();
+                  }
+                });
+              }, 30 * 60 * 1000);
+
+                            // Add a test function to manually trigger carousel
+              window.testCarousel = function() {
+                console.log('Manual carousel test triggered');
+                if (carouselInstance) {
+                  console.log('Carousel instance exists, triggering next slide');
+                  carouselInstance.next();
+                } else {
+                  console.log('No carousel instance, trying manual trigger');
+                  const carouselElement = document.getElementById("carousel");
+                  if (carouselElement) {
+                    const nextButton = carouselElement.querySelector('[data-bs-slide="next"]');
+                    if (nextButton) {
+                      nextButton.click();
+                    }
+                  }
+                }
+              };
+    </script>
+  </body>
+</html>
