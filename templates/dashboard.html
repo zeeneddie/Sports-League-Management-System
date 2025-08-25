@@ -301,6 +301,15 @@
           <div class="countdown-timer" id="countdown-display">{{ screen_duration_seconds }}</div>
         </div>
       </div>
+      
+      <!-- TEST MODE Indicator -->
+      <div class="test-mode-indicator" id="testModeIndicator" style="display: none;">
+        <div class="badge bg-warning text-dark position-fixed" 
+             style="top: 15px; right: 15px; font-size: 1.4rem; z-index: 1000; padding: 10px 18px; 
+                    border: 2px solid #ffc107; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+          🧪 TEST MODE
+        </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -340,6 +349,9 @@
                 // Set featured team info globally
                 featuredTeamName = data.featured_team_name || "Featured Team";
                 updateTeamName();
+                
+                // Check and display TEST MODE indicator
+                checkTestMode(data);
                 
                 // Clear existing slides except intro
                 const carouselInner = document.getElementById('carousel-inner');
@@ -390,6 +402,24 @@
             }
         }
 
+        // Check if in test mode and show/hide indicator
+        function checkTestMode(data) {
+            const indicator = document.getElementById('testModeIndicator');
+            // Test mode uses 'VV Gorecht' as featured team
+            if (data.featured_team_name === 'VV Gorecht') {
+                indicator.style.display = 'block';
+                console.log('🧪 TEST MODE geactiveerd - VV Gorecht test data');
+            } else {
+                indicator.style.display = 'none';
+                console.log('🌐 API MODE geactiveerd - Live Hollandse Velden data');
+            }
+        }
+
+        // Helper function to get first valid (non-null, non-undefined) value
+        function getFirstValidValue(...values) {
+            return values.find(val => val !== undefined && val !== null);
+        }
+
         // Calculate form data for last 5 matches
         function calculateTeamForm(teamName, allMatches) {
             if (!allMatches || !teamName) return '';
@@ -404,40 +434,101 @@
                 })
                 .sort((a, b) => new Date(a.date) - new Date(b.date));
             
-            // Get last 5 matches
-            const last5 = teamMatches.slice(-5);
+            // EERST filteren op ALLEEN gespeelde wedstrijden, DAN laatste 5 nemen
+            const playedMatches = teamMatches.filter(match => {
+                const status = match.status || match.matchStatus || '';
+                
+                // First check status - this is most reliable
+                const isPlayedStatus = status === 'played' || status === 'Gespeeld';
+                
+                // Only use score validation as fallback if no status is available
+                if (status && status !== '') {
+                    return isPlayedStatus;
+                }
+                
+                // Fallback: check if there are valid scores (only when no status available)
+                const homeScore = getFirstValidValue(match.homeGoals, match.homescore, match.home_goals, match.home_score);
+                const awayScore = getFirstValidValue(match.awayGoals, match.awayscore, match.away_goals, match.away_score);
+                const hasValidScores = !isNaN(parseInt(homeScore)) && !isNaN(parseInt(awayScore));
+                
+                return hasValidScores;
+            });
+            
+            // Get last 5 PLAYED matches
+            const last5PlayedMatches = playedMatches.slice(-5);
+            
+            // Debug logging for team form
+            console.log(`🎯 TEAM FORM DEBUG voor ${teamName}:`);
+            console.log(`   Totaal wedstrijden gevonden: ${teamMatches.length}`);
+            console.log(`   Gespeelde wedstrijden (status='played'/'Gespeeld' of geldige scores): ${playedMatches.length}`);
+            console.log(`   Laatste 5 gespeelde wedstrijden:`);
             
             let formHtml = '<div class="team-form">';
             
             // Add up to 5 circles, with unfilled ones on the left
             for (let i = 0; i < 5; i++) {
-                if (i < 5 - last5.length) {
-                    // Grey circle for unplayed matches (left side)
+                if (i < 5 - last5PlayedMatches.length) {
+                    // Grey circle for teams with less than 5 played matches (left side)
+                    console.log(`   ${i+1}. Geen gespeelde wedstrijd beschikbaar -> GRIJS rondje`);
                     formHtml += '<span class="form-circle form-unplayed">●</span>';
                 } else {
-                    const match = last5[i - (5 - last5.length)];
-                    const isHome = (match.home || match.hometeam || '').includes(teamName) || 
-                                  teamName.includes(match.home || match.hometeam || '');
+                    const match = last5PlayedMatches[i - (5 - last5PlayedMatches.length)];
+                    // Check if team is playing home or away (improved matching)
+                    const homeTeam = match.home || match.hometeam || match.home_team || '';
+                    const awayTeam = match.away || match.awayteam || match.away_team || '';
                     
-                    let result = '';
-                    if (match.homeGoals !== undefined && match.awayGoals !== undefined) {
-                        const homeGoals = parseInt(match.homeGoals || match.homescore || 0);
-                        const awayGoals = parseInt(match.awayGoals || match.awayscore || 0);
+                    const isHome = homeTeam.toLowerCase().includes(teamName.toLowerCase()) || 
+                                  teamName.toLowerCase().includes(homeTeam.toLowerCase());
+                    const isAway = awayTeam.toLowerCase().includes(teamName.toLowerCase()) || 
+                                  teamName.toLowerCase().includes(awayTeam.toLowerCase());
+                    
+                    let result = 'unplayed'; // Default to unplayed (grey)
+                    let resultText = 'ONBEKEND';
+                    let colorText = 'GRIJS';
+                    
+                    // All matches in this array are already filtered to played status or valid scores
+                    const matchStatus = match.status || match.matchStatus || '';
+                    
+                    if (isHome || isAway) {
+                        // Check all possible score field variations using helper function
+                        const homeScore = getFirstValidValue(match.homeGoals, match.homescore, match.home_goals, match.home_score);
+                        const awayScore = getFirstValidValue(match.awayGoals, match.awayscore, match.away_goals, match.away_score);
                         
-                        if (homeGoals === awayGoals) {
-                            result = 'draw'; // Blue
-                        } else if ((isHome && homeGoals > awayGoals) || (!isHome && awayGoals > homeGoals)) {
-                            result = 'win'; // Green
+                        const homeGoals = parseInt(homeScore);
+                        const awayGoals = parseInt(awayScore);
+                        
+                        if (!isNaN(homeGoals) && !isNaN(awayGoals)) {
+                            if (homeGoals === awayGoals) {
+                                result = 'draw'; // Blue for draws
+                                resultText = 'GELIJK';
+                                colorText = 'BLAUW';
+                            } else if ((isHome && homeGoals > awayGoals) || (isAway && awayGoals > homeGoals)) {
+                                result = 'win'; // Green for wins
+                                resultText = 'GEWONNEN';
+                                colorText = 'GROEN';
+                            } else {
+                                result = 'loss'; // Red for losses
+                                resultText = 'VERLOREN';
+                                colorText = 'ROOD';
+                            }
                         } else {
-                            result = 'loss'; // Red
+                            resultText = 'GEEN GELDIGE SCORE';
                         }
+                    } else {
+                        resultText = 'TEAM MATCH FOUT';
                     }
+                    
+                    const homeDisplay = isHome ? `${homeTeam} (THUIS)` : homeTeam;
+                    const awayDisplay = isAway ? `${awayTeam} (UIT)` : awayTeam;
+                    
+                    console.log(`   ${i+1}. ${homeDisplay} vs ${awayDisplay} | ${match.homeGoals || 0}-${match.awayGoals || 0} | Status: ${matchStatus} | isHome: ${isHome} | isAway: ${isAway} | ${resultText} -> ${colorText} rondje`);
                     
                     formHtml += `<span class="form-circle form-${result}">●</span>`;
                 }
             }
             
             formHtml += '</div>';
+            console.log(`🏁 Team form voor ${teamName} compleet\n`);
             return formHtml;
         }
 
@@ -548,7 +639,7 @@
                 console.log(`Force showing ${periodTitle} regardless of match status`);
             }
             
-            console.log(`Adding ${periodTitle} with ${periodData.length} teams`);
+            // Adding period slide
             
             const slide = document.createElement('div');
             slide.className = 'carousel-item';
@@ -622,7 +713,7 @@
             slide.className = 'carousel-item';
             
             // Use all available results, not just last 7
-            console.log('Processing results:', results.length, 'total results found');
+            // Processing weekly results
             const weeklyResults = groupResultsByWeek(results);
             
             const hasResults = Object.keys(weeklyResults).length > 0;

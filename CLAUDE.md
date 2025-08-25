@@ -130,3 +130,5 @@ To test the application:
 3. Verify carousel displays 6 screens
 4. Check API endpoints at `/api/*` routes
 5. Verify data updates according to schedule
+- git gebruik voor feature-wise development. elke feature moet gepushed worden. help me herinneren en geef voorbeelden hoe het kan
+- accoord voor commit moet je altijd vragen nadat ik heb kunnen testen.
