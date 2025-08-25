@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Liga Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* === GLOBAL STYLES === */
+      body {
+        font-size: 1.4rem; /* Larger base font for HD displays */
+        background-color: #d4d4d4 !important; /* Much darker grey background (4 shades darker total) */
+        background-image: repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 2cm,
+          #ffffe0 2cm,
+          #ffffe0 calc(2cm + 2px)
+        ) !important;
+      }
+
+      /* === CAROUSEL CONTAINER === */
+      /* Used by all 6 dashboard screens as main container */
+      .carousel-item {
+        min-height: 100vh;
+        padding: 30px 30px 60px 30px; /* Extra bottom padding for countdown footer */
+        position: relative;
+        background-color: #d4d4d4; /* Much darker grey background (4 shades darker total) */
+        background-image: repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 2cm,
+          #ffffe0 2cm,
+          #ffffe0 calc(2cm + 2px)
+        );
+      }
+
+      /* Columbia logo as background in top left */
+      .carousel-item::before {
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 100px;
+        height: 100px;
+        background-image: url("/static/images/team_logos/t_184.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.4;
+        filter: contrast(1.5) saturate(1.8) brightness(1.2);
+        z-index: 1;
+      }
+
+      /* === SCHERM 1 & 2: MAIN STANDINGS + PERIOD STANDINGS === */
+      /* Main table container for league standings */
+      .standings-table {
+        font-size: 1.3rem;
+        margin-top: 1cm;
+      }
+
+      /* All table headers and cells padding */
+      .standings-table th,
+      .standings-table td {
+        padding: 12px 8px;
+      }
+
+      /* Generic table headers */
+      .standings-table th {
+        font-size: 2.6rem; /* 2x the normal table font size (was 1.3rem) */
+        font-weight: bold;
+      }
+
+      /* Position column (#) header in standings table */
+      .position-header {
+        font-size: 3.9rem; /* 1.5x van 2.6rem = 3.9rem */
+      }
+
+      /* Position number cells in standings table */
+      .position-cell {
+        font-size: 1.95rem; /* 1.5x van 1.3rem = 1.95rem */
+        font-weight: bold;
+      }
+
+      /* Statistics headers (G, W, G, V) in standings table */
+      .stats-header {
+        font-size: 3.9rem; /* 1.5x van 2.6rem = 3.9rem */
+      }
+
+      /* Statistics data cells in standings table */
+      .stats-cell {
+        font-size: 1.95rem; /* 1.5x van 1.3rem = 1.95rem */
+      }
+
+      /* Points column cells in standings table */
+      .points-cell {
+        font-size: 1.95rem; /* 1.5x van 1.3rem = 1.95rem */
+        font-weight: bold;
+      }
+
+      /* Team name column width and alignment */
+      .team-name-col {
+        min-width: 360px;
+        text-align: left;
+      }
+
+      /* Team name cells with logo and text */
+      .team-name-cell {
+        font-size: 2.5rem;
+        font-weight: 500;
+        text-align: left;
+      }
+
+      /* === SCHERM 3 & 4: LAST WEEK RESULTS + NEXT WEEK MATCHES === */
+      /* Legacy match result class (not actively used in current screens) */
+      .match-result {
+        margin-bottom: 15px;
+        padding: 10px 0;
+        font-size: 1.3rem;
+      }
+
+      /* Container for results and upcoming matches screens */
+      .results-table {
+        max-width: 800px;
+        margin: 0 auto;
+        font-size: 1.3rem;
+      }
+
+      /* Week header for results screen */
+      .week-header {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #0066cc;
+      }
+
+      /* Individual match rows in results and upcoming matches screens */
+      .result-row {
+        display: flex;
+        align-items: center;
+        padding: 8px 0; /* Increased padding for larger text */
+        border-bottom: 1px solid #e9ecef;
+        font-size: 1.512rem;
+        height: 60px; /* Increased height for larger text */
+      }
+
+      .result-row:last-child {
+        border-bottom: none;
+      }
+
+      /* Home team display in results/upcoming matches */
+      .result-home {
+        flex: 1;
+        text-align: left;
+        font-size: 2.5rem;
+        font-weight: 500;
+        color: #495057;
+        padding-right: 2px;
+        margin-left: -6.5cm;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Score display (results) or date/time display (upcoming matches) */
+      .result-score {
+        flex: 0 0 auto;
+        text-align: center;
+        font-size: 1.95rem;
+        font-weight: bold;
+        color: #0066cc;
+        min-width: 120px;
+        padding: 0 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Away team display in results/upcoming matches */
+      .result-away {
+        flex: 1;
+        text-align: left;
+        font-size: 2.5rem;
+        font-weight: 500;
+        color: #495057;
+        padding-left: 1cm;
+        margin-right: -5cm;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Team logos in results and upcoming matches screens */
+      .result-home .team-logo,
+      .result-away .team-logo {
+        width: 40px;
+        height: 40px;
+      }
+
+      /* === SCHERM 6: TEAM MATRIX === */
+      /* Main container for team vs team results matrix */
+      .team-matrix {
+        font-size: 1.02rem;
+        overflow-x: auto;
+        max-width: 100%;
+        margin-top: 1cm;
+      }
+
+      /* Matrix table layout */
+      .team-matrix table {
+        table-layout: fixed;
+        width: 100%;
+        max-width: 100vw;
+      }
+
+      /* All matrix cells (scores/dates) */
+      .team-matrix th,
+      .team-matrix td {
+        width: 60px;
+        height: 40px;
+        padding: 2px;
+        text-align: center;
+        border: 1px solid #ddd;
+       a font-size: 1.512rem;
+        vertical-align: middle;
+        word-wrap: break-word;
+        overflow: hidden;
+      }
+
+      /* First column (team names) in matrix */
+      .team-matrix th:first-child {
+        width: 80px;
+        text-align: left;
+        font-size: 1.3rem;
+        font-weight: normal;
+      }
+
+      /* Header cells containing team logos */
+      .matrix-header-cell {
+        height: 40px;
+        vertical-align: middle;
+        padding: 4px;
+        text-align: center;
+        width: 60px;
+      }
+
+      /* Team logos in matrix header */
+      .matrix-header-cell .team-logo {
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto;
+      }
+
+      /* Empty top-left cell in matrix - remove left and top borders */
+      .matrix-empty-corner {
+        border-left: none !important;
+        border-top: none !important;
+      }
+
+      /* Team name cells in matrix rows */
+      .matrix-row-header {
+        text-align: left;
+        font-size: 2.457rem;
+        max-width: 80px;
+        width: 80px;
+        overflow: visible;
+        white-space: normal;
+        word-wrap: break-word;
+        line-height: 1.2;
+        padding: 2px;
+        vertical-align: middle;
+      }
+
+      /* === GENERAL UI ELEMENTS === */
+      /* Last updated timestamp on each screen */
+      .last-updated {
+        font-size: 1rem;
+        color: #666;
+        position: absolute;
+        bottom: 15px;
+        right: 20px;
+      }
+
+      /* Footer bar at bottom of screen */
+      .screen-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 10px 20px;
+        border-top: 2px solid #0066cc;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* Screen number indicator on the left */
+      .screen-number {
+        font-size: 1.2rem;
+        color: #0066cc;
+        font-weight: bold;
+      }
+
+      /* Countdown timer on the right */
+      .countdown-timer {
+        font-size: 1.2rem;
+        color: #0066cc;
+        font-weight: bold;
+        display: block !important; /* Ensure countdown is always displayed */
+      }
+
+      /* === SCHERM 5: COLUMBIA TEAM MATCHES (THUIS/UIT) === */
+      /* Main container for Columbia matches - splits home/away in 2 columns */
+      .featured-matches-container {
+        display: flex;
+        gap: 30px;
+      }
+
+      /* Individual columns (Thuis/Uit) */
+      .featured-column {
+        flex: 1;
+      }
+
+      /* Make THUIS and UIT headers 1.5x larger */
+      .featured-column h4 {
+        font-size: calc(1.5 * 1.5rem); /* 1.5x the default h4 size */
+      }
+
+      /* Individual match container - FIXED HEIGHT FOR CONSISTENCY */
+      .featured-match {
+        border: none;
+        margin-bottom: 0;
+        padding: 8px 14px; /* Increased padding for better vertical spacing */
+        border-bottom: 1px solid #e9ecef;
+        font-size: 1.512rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px; /* FIXED HEIGHT instead of min-height for consistency */
+        width: 100%;
+        line-height: 1.2; /* Added consistent line-height */
+      }
+
+      .featured-match:last-child {
+        border-bottom: none;
+      }
+
+      /* Legacy classes - kept for backwards compatibility */
+      .featured-match .teams {
+        flex: 1;
+      }
+
+      .featured-match .date {
+        font-weight: 500;
+        color: #0066cc;
+        white-space: nowrap;
+        margin-left: 26px;
+        font-size: 1.93rem;
+        min-width: 175px;
+        text-align: right;
+        line-height: 1.2; /* Added consistent line-height */
+      }
+
+      .featured-match .score {
+        font-weight: 500;
+        color: #006600;
+        margin-left: 26px;
+        font-size: 1.93rem;
+        min-width: 175px;
+        text-align: right;
+        line-height: 1.2; /* Added consistent line-height */
+      }
+
+      /* Match layout container within featured-match */
+      .match-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        height: 100%; /* Full height of parent container */
+      }
+
+      /* Opponent team name in Columbia matches */
+      .opponent-name {
+        text-align: left;
+        flex: 1;
+        font-size: 1.93rem;
+        font-weight: 500;
+        line-height: 1.2; /* Added consistent line-height */
+      }
+
+      /* Score and date classes used in Columbia matches - FIXED STYLING */
+      .match-result,
+      .match-date {
+        text-align: right;
+        font-weight: 500;
+        white-space: nowrap;
+        font-size: 1.93rem;
+        min-width: 175px;
+        line-height: 1.2; /* Added consistent line-height for better alignment */
+        height: 100%; /* Full height of parent */
+        display: flex;
+        align-items: center; /* Vertical centering */
+        justify-content: flex-end; /* Right alignment */
+      }
+
+      /* Score display for played Columbia matches */
+      .match-result {
+        color: #006600;
+      }
+
+      /* Date display for upcoming Columbia matches */
+      .match-date {
+        color: #0066cc;
+      }
+
+      /* === TEAM HIGHLIGHTING ACROSS SCREENS === */
+      /* Highlights Columbia team name in text */
+      .featured-team {
+        font-weight: bold;
+      }
+
+      /* Highlights Columbia team row in standings tables */
+      .featured-row {
+        font-weight: bold;
+      }
+
+      .featured-row td {
+        font-weight: bold;
+      }
+
+      /* === TEAM LOGOS ACROSS ALL SCREENS === */
+      /* Default team logo size */
+      .team-logo {
+        width: 20px;
+        height: 20px;
+        border-radius: 2px;
+        vertical-align: middle;
+        margin-right: 0px;
+      }
+
+      /* Larger team logos in standings tables */
+      .standings-table .team-logo {
+        width: 48px;
+        height: 48px;
+      }
+
+      /* === LEGACY CLASSES === */
+      /* Legacy date styling - may be used in JavaScript */
+      .match-date {
+        font-weight: bold;
+        color: #0066cc;
+      }
+
+      /* Legacy score styling - may be used in JavaScript */
+      .match-score {
+        font-weight: bold;
+        color: #006600;
+      }
+
+      /* Week section container - used for weekly results grouping */
+      .week-section {
+        margin-bottom: 40px;
+      }
+
+      .week-section h4 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+      }
+
+      /* === FORM INDICATORS (LAATSTE 5 WEDSTRIJDEN) - USED IN STANDINGS === */
+      /* Container for form dots in standings table */
+      .form-indicators {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Individual form dots (win/draw/loss/no-match) */
+      .form-dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: inline-block;
+        border: 2px solid #ddd;
+        margin: 0 1px;
+      }
+
+      /* Win form dot - green */
+      .form-dot.win {
+        background-color: #28a745;
+        border-color: #1e7e34;
+      }
+
+      /* Draw form dot - blue */
+      .form-dot.draw {
+        background-color: #007bff;
+        border-color: #0056b3;
+      }
+
+      /* Loss form dot - red */
+      .form-dot.loss {
+        background-color: #dc3545;
+        border-color: #bd2130;
+      }
+
+      /* No match form dot - gray */
+      .form-dot.no-match {
+        background-color: #6c757d;
+        border-color: #545b62;
+      }
+
+      /* Form column header in standings table */
+      .form-header {
+        text-align: center;
+        min-width: 80px;
+      }
+
+      /* Form column cell in standings table */
+      .form-cell {
+        text-align: center;
+        padding: 8px 4px !important;
+        min-width: 80px;
+        vertical-align: middle;
+      }
+
+      /* Form indicators legend (currently not displayed) */
+      .form-legend {
+        font-size: 0.8rem;
+        color: #666;
+        text-align: center;
+        margin-top: 10px;
+      }
+
+      .form-legend .legend-item {
+        display: inline-block;
+        margin: 0 8px;
+      }
+
+      .form-legend .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 4px;
+        vertical-align: middle;
+        border: 1px solid #ddd;
+      }
+
+      /* === TYPOGRAPHY ACROSS ALL SCREENS === */
+      /* Standard screen titles */
+      h2 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+      }
+
+      /* Large header for main standings screen */
+      h2.competitiestand-header {
+        font-size: 4.8rem;
+        margin-bottom: 35px;
+      }
+
+      /* Sub-section headers */
+      h3 {
+        font-size: 2rem;
+        margin-bottom: 25px;
+      }
+
+      /* Column headers (Thuis/Uit in Columbia matches) */
+      h4 {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+      }
+
+      /* === ANIMATED INTRO SCREEN === */
+      /* Intro screen with Columbia competition announcement */
+      .intro-screen {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        position: relative;
+        overflow: hidden;
+        min-height: 100vh;
+      }
+
+      /* Football field background animation */
+      .football-field {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent 48%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 52%
+          ),
+          linear-gradient(
+            0deg,
+            transparent 48%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 52%
+          );
+        background-size: 100px 100px;
+        animation: fieldMove 20s linear infinite;
+        opacity: 0.3;
+      }
+
+      @keyframes fieldMove {
+        0% {
+          transform: translate(0, 0);
+        }
+        100% {
+          transform: translate(-100px, -100px);
+        }
+      }
+
+      /* Bouncing football particles */
+      .football-particle {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        opacity: 0.8;
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #f0f0f0 50%,
+          #ffffff 100%
+        );
+        border: 2px solid #333;
+        /* Football pattern using CSS */
+        background-image: radial-gradient(
+            circle at 30% 30%,
+            #333 2px,
+            transparent 2px
+          ),
+          radial-gradient(circle at 70% 30%, #333 2px, transparent 2px),
+          radial-gradient(circle at 50% 70%, #333 2px, transparent 2px);
+        background-size: 8px 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .football-particle:nth-child(1) {
+        left: 15%;
+        animation: bounceFootball1 4s infinite ease-in-out;
+        animation-delay: 0s;
+      }
+      .football-particle:nth-child(2) {
+        left: 35%;
+        animation: bounceFootball2 3.5s infinite ease-in-out;
+        animation-delay: 1s;
+      }
+      .football-particle:nth-child(3) {
+        left: 65%;
+        animation: bounceFootball3 4.2s infinite ease-in-out;
+        animation-delay: 2s;
+      }
+      .football-particle:nth-child(4) {
+        left: 85%;
+        animation: bounceFootball4 3.8s infinite ease-in-out;
+        animation-delay: 0.5s;
+      }
+
+      @keyframes bounceFootball1 {
+        0%,
+        100% {
+          transform: translateY(calc(100vh - 50px)) rotate(0deg);
+          opacity: 0.8;
+        }
+        25% {
+          transform: translateY(calc(100vh - 200px)) rotate(90deg);
+          opacity: 1;
+        }
+        50% {
+          transform: translateY(calc(100vh - 300px)) rotate(180deg);
+          opacity: 1;
+        }
+        75% {
+          transform: translateY(calc(100vh - 150px)) rotate(270deg);
+          opacity: 1;
+        }
+      }
+
+      @keyframes bounceFootball2 {
+        0%,
+        100% {
+          transform: translateY(calc(100vh - 50px)) rotate(0deg);
+          opacity: 0.7;
+        }
+        30% {
+          transform: translateY(calc(100vh - 250px)) rotate(120deg);
+          opacity: 1;
+        }
+        60% {
+          transform: translateY(calc(100vh - 180px)) rotate(240deg);
+          opacity: 1;
+        }
+      }
+
+      @keyframes bounceFootball3 {
+        0%,
+        100% {
+          transform: translateY(calc(100vh - 50px)) rotate(0deg);
+          opacity: 0.8;
+        }
+        20% {
+          transform: translateY(calc(100vh - 350px)) rotate(72deg);
+          opacity: 1;
+        }
+        40% {
+          transform: translateY(calc(100vh - 100px)) rotate(144deg);
+          opacity: 1;
+        }
+        60% {
+          transform: translateY(calc(100vh - 280px)) rotate(216deg);
+          opacity: 1;
+        }
+        80% {
+          transform: translateY(calc(100vh - 120px)) rotate(288deg);
+          opacity: 1;
+        }
+      }
+
+      @keyframes bounceFootball4 {
+        0%,
+        100% {
+          transform: translateY(calc(100vh - 50px)) rotate(0deg);
+          opacity: 0.6;
+        }
+        35% {
+          transform: translateY(calc(100vh - 220px)) rotate(135deg);
+          opacity: 1;
+        }
+        70% {
+          transform: translateY(calc(100vh - 160px)) rotate(270deg);
+          opacity: 1;
+        }
+      }
+
+      /* Main intro content */
+      .intro-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        color: white;
+        padding: 5vh 2rem;
+      }
+
+      /* Columbia logo large display */
+      .columbia-logo-large {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 2rem;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        animation: logoGlow 3s ease-in-out infinite;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .columbia-logo-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
+      }
+
+      @keyframes logoGlow {
+        0%,
+        100% {
+          box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+          transform: scale(1);
+        }
+        50% {
+          box-shadow: 0 0 60px rgba(255, 255, 255, 0.6);
+          transform: scale(1.05);
+        }
+      }
+
+      /* Competition announcement text */
+      .competition-title {
+        font-size: 3.5rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        margin-bottom: 1rem;
+        animation: titleSlideIn 2s ease-out;
+      }
+
+      .competition-subtitle {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+        animation: subtitleFadeIn 2s ease-out 0.5s both;
+      }
+
+      .competition-details {
+        font-size: 1.5rem;
+        margin-bottom: 3rem;
+        opacity: 0.8;
+        animation: detailsFadeIn 2s ease-out 1s both;
+      }
+
+      @keyframes titleSlideIn {
+        0% {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes subtitleFadeIn {
+        0% {
+          transform: translateX(-30px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateX(0);
+          opacity: 0.9;
+        }
+      }
+
+      @keyframes detailsFadeIn {
+        0% {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 0.8;
+        }
+      }
+
+      /* Loading progress bar */
+      .loading-progress {
+        width: 60%;
+        max-width: 500px;
+        margin: 0 auto;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+        overflow: hidden;
+        animation: progressBarFadeIn 2s ease-out 1.5s both;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #fff, #ffeb3b, #fff);
+        border-radius: 3px;
+        animation: progressFill 3s ease-in-out 2s both;
+      }
+
+      @keyframes progressBarFadeIn {
+        0% {
+          transform: scaleX(0);
+          opacity: 0;
+        }
+        100% {
+          transform: scaleX(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes progressFill {
+        0% {
+          width: 0%;
+          transform: translateX(-100%);
+        }
+        50% {
+          width: 100%;
+          transform: translateX(0%);
+        }
+        100% {
+          width: 100%;
+          transform: translateX(0%);
+        }
+      }
+
+      /* === PAGE TRANSITION ANIMATIONS === */
+      /* Slide transition effects for carousel screens */
+      .carousel-item {
+        /* Transition styles removed - ready for custom transitions */
+      }
+
+      /* Override Bootstrap's carousel transitions */
+      .carousel-item-next,
+      .carousel-item-prev,
+      .carousel-item.active {
+        /* Transition styles removed - ready for custom transitions */
+      }
+
+      .carousel-item-left,
+      .carousel-item-right {
+        /* Transition styles removed - ready for custom transitions */
+      }
+
+      /* === TRANSITION FROM ANIMATION TO STANDINGS === */
+      /* Special transition effect for intro to first dashboard screen */
+      .intro-screen {
+        transition: all 1s ease-in-out;
+      }
+
+      .intro-screen.fade-out {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+
+      .standings-screen {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 1s ease-in-out;
+      }
+
+      .standings-screen.fade-in {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @keyframes matrixContentFadeIn {
+        0% {
+          opacity: 0;
+          transform: translateY(30px) scale(0.95);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* === CONTENT ENTRY ANIMATIONS === */
+      /* All content starts visible instantly, no animation */
+      .carousel-item .standings-table tbody tr,
+      .carousel-item .result-row,
+      .carousel-item .featured-match {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      /* Higher specificity rule for matrix table to override Bootstrap table styles */
+      .carousel-item .team-matrix table.table {
+        opacity: 1 !important;
+        transform: scale(1);
+        visibility: visible;
+      }
+
+      /* === RESPONSIVE DESIGN === */
+      /* Smaller padding on smaller screens */
+      @media (max-width: 1920px) {
+        .carousel-item {
+          padding: 20px 20px 60px 20px; /* Keep bottom padding for countdown footer */
+        }
+
+        .carousel-item::before {
+          top: 15px;
+          left: 15px;
+          width: 80px;
+          height: 80px;
+        }
+
+        .competition-title {
+          font-size: 2.5rem;
+        }
+
+        .columbia-logo-large {
+          width: 150px;
+          height: 150px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div
+        id="carousel"
+        class="carousel"
+        data-bs-ride="carousel"
+        data-bs-interval="{{ (screen_duration_seconds * 1000) | int }}"
+      >
+        <div class="carousel-indicators" id="carousel-indicators">
+          <!-- Will be populated dynamically -->
+        </div>
+
+        <div class="carousel-inner" id="carousel-inner">
+          <!-- Animated Intro Screen -->
+          <div class="carousel-item active intro-screen">
+            <div class="football-field"></div>
+
+            <!-- Floating football particles -->
+            <div class="football-particle"></div>
+            <div class="football-particle"></div>
+            <div class="football-particle"></div>
+            <div class="football-particle"></div>
+
+            <div class="d-flex justify-content-center align-items-center h-100">
+              <div class="intro-content">
+                <!-- Columbia Logo Large -->
+                <div class="columbia-logo-large">
+                  <img
+                    src="/static/images/team_logos/t_184.png"
+                    alt="AVV Columbia"
+                    onerror="this.style.display='none';"
+                  />
+                </div>
+
+                <!-- Competition Announcement -->
+                <h1 class="competition-title" id="competition-main-title">
+                  AVV COLUMBIA
+                </h1>
+                <h2 class="competition-subtitle">Competitie Dashboard</h2>
+                <div class="competition-details">
+                  <p>Zaterdag 3N OOST • Seizoen 2025-2026</p>
+                  <p id="competition-status">Dashboard wordt geladen...</p>
+                </div>
+
+                <!-- Loading Progress -->
+                <div class="loading-progress">
+                  <div class="progress-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carousel"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carousel"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+
+      <!-- Footer with screen number and countdown -->
+      <div class="screen-footer">
+        <div class="screen-number" id="screen-number-display"></div>
+        <div class="countdown-timer" id="countdown-display"></div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Configuration
+        const SCREEN_DURATION_SECONDS = {{ screen_duration_seconds }};
+        
+        // Global variables
+        let carouselInstance = null;
+        let countdownInterval = null;
+        let currentCountdown = SCREEN_DURATION_SECONDS;
+        let totalSlides = 0;
+        let featuredTeamName = "AVV Columbia";
+        let featuredTeamKey = "columbia";
+

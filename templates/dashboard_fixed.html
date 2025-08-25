@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Liga Dashboard</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* === GLOBAL STYLES === */
+      body {
+        font-size: 1.4rem; /* Larger base font for HD displays */
+        background-color: #d4d4d4 !important; /* Much darker grey background (4 shades darker total) */
+        background-image: repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 2cm,
+          #ffffe0 2cm,
+          #ffffe0 calc(2cm + 2px)
+        ) !important;
+      }
+
+      /* === CAROUSEL CONTAINER === */
+      /* Used by all 6 dashboard screens as main container */
+      .carousel-item {
+        min-height: 100vh;
+        padding: 30px 30px 60px 30px; /* Extra bottom padding for countdown footer */
+        position: relative;
+        background-color: #d4d4d4; /* Much darker grey background (4 shades darker total) */
+        background-image: repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 2cm,
+          #ffffe0 2cm,
+          #ffffe0 calc(2cm + 2px)
+        );
+      }
+
+      /* Columbia logo as background in top left */
+      .carousel-item::before {
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 100px;
+        height: 100px;
+        background-image: url("/static/images/team_logos/t_184.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.4;
+        filter: contrast(1.5) saturate(1.8) brightness(1.2);
+        z-index: 1;
+      }
+
+      /* === INTRO SCREEN === */
+      .intro-screen {
+        background: linear-gradient(
+          135deg,
+          #ffd700 0%,
+          #ffed4a 25%,
+          #fff9c4 50%,
+          #ffed4a 75%,
+          #ffd700 100%
+        ) !important;
+        background-size: 400% 400% !important;
+        animation: gradientShift 8s ease infinite;
+        border: 8px solid #333;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .welcome-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+        position: relative;
+        z-index: 10;
+      }
+
+      .competition-title {
+        font-size: 6rem;
+        font-weight: 900;
+        color: #000;
+        text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.8);
+        margin-bottom: 1rem;
+        letter-spacing: 0.1em;
+      }
+
+      .competition-subtitle {
+        font-size: 3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 2rem;
+        text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
+      }
+
+      .welcome-message {
+        font-size: 4rem;
+        font-weight: 700;
+        color: #000;
+        margin-bottom: 2rem;
+        text-shadow: 3px 3px 6px rgba(255, 255, 255, 0.7);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+
+      .competition-details {
+        font-size: 1.8rem;
+        color: #555;
+        font-weight: 500;
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+      }
+
+      /* === SCHERM 1 & 2: MAIN STANDINGS + PERIOD STANDINGS === */
+      /* Main table container for league standings */
+      .standings-table {
+        font-size: 1.3rem;
+        margin-top: 1cm;
+      }
+
+      /* All table headers and cells padding */
+      .standings-table th,
+      .standings-table td {
+        padding: 12px 8px;
+      }
+
+      /* Generic table headers */
+      .standings-table th {
+        font-size: 2.6rem; /* 2x the normal table font size (was 1.3rem) */
+        font-weight: bold;
+      }
+
+      /* Position column (#) header in standings table */
+      .position-header {
+        font-size: 3.9rem; /* 1.5x van 2.6rem = 3.9rem */
+      }
+
+      /* Position number cells in standings table */
+      .position-cell {
+        font-size: 1.95rem; /* 1.5x van 1.3rem = 1.95rem */
+        font-weight: bold;
+      }
+
+      /* Statistics headers (G, W, G, V) in standings table */
+      .stats-header {
+        font-size: 3.9rem; /* 1.5x van 2.6rem = 3.9rem */
+      }
+
+      /* Statistics data cells in standings table */
+      .stats-cell {
+        font-size: 1.95rem; /* 1.5x van 1.3rem = 1.95rem */
+      }
+
+      /* Points column cells in standings table */
+      .points-cell {
+        font-size: 1.95rem; /* 1.5x van 1.3rem = 1.95rem */
+        font-weight: bold;
+        color: #0066cc; /* Blue color for points */
+      }
+
+      /* Team name cells in standings table */
+      .team-name-cell {
+        font-size: 1.95rem; /* 1.5x van 1.3rem = 1.95rem */
+        font-weight: bold;
+        color: #333;
+      }
+
+      /* === FOOTER ELEMENTS === */
+      .screen-footer {
+        background-color: rgba(0, 0, 0, 0.8) !important;
+        backdrop-filter: blur(10px);
+      }
+
+      .screen-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .countdown-timer {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #ffc107;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid p-0">
+      <!-- Carousel -->
+      <div id="carousel" class="carousel slide" data-bs-ride="false">
+        <div class="carousel-inner" id="carousel-inner">
+          <!-- Intro Screen -->
+          <div class="carousel-item active intro-screen">
+            <div class="welcome-container">
+              <div class="welcome-message">Bezoekers Welkom</div>
+              <h1 class="competition-title" id="competition-main-title">
+                AVV COLUMBIA
+              </h1>
+              <h2 class="competition-subtitle">Competitie Dashboard</h2>
+              <div class="competition-details">
+                <p>Zaterdag 3N OOST • Seizoen 2025-2026</p>
+                <p id="competition-status">Dashboard wordt geladen...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+      
+      <!-- Footer -->
+      <div class="screen-footer position-fixed bottom-0 start-0 end-0 p-3 bg-dark text-white">
+        <div class="d-flex justify-content-between">
+          <div class="screen-number" id="screen-number-display">1/6</div>
+          <div class="countdown-timer" id="countdown-display">{{ screen_duration_seconds }}</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Configuration
+        const SCREEN_DURATION_SECONDS = {{ screen_duration_seconds }};
+        
+        // Global variables
+        let carouselInstance = null;
+        let countdownInterval = null;
+        let currentCountdown = SCREEN_DURATION_SECONDS;
+        let totalSlides = 0;
+        let featuredTeamName = "";
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData().then(() => {
+                initializeCarousel();
+                updateCompetitionStatus('Dashboard geladen - Carousel actief');
+            }).catch(error => {
+                console.error('Data loading failed:', error);
+                updateCompetitionStatus('Dashboard geladen - Beperkte functionaliteit');
+            });
+        });
+
+        // Load data from API
+        async function loadData() {
+            try {
+                console.log('Loading data from /api/data...');
+                const response = await fetch('/api/data');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Data loaded:', data);
+                
+                // Set featured team info globally
+                featuredTeamName = data.featured_team_name || "Featured Team";
+                updateTeamName();
+                
+                // Clear existing slides except intro
+                const carouselInner = document.getElementById('carousel-inner');
+                const introSlide = carouselInner.querySelector('.intro-screen');
+                
+                // Keep intro slide, remove others
+                const otherSlides = carouselInner.querySelectorAll('.carousel-item:not(.intro-screen)');
+                otherSlides.forEach(slide => slide.remove());
+                
+                // Add data slides
+                addStandingsSlide(data.league_table || []);
+                addPeriodStandingsSlide(data.period_standings || []);
+                addLastWeekResultsSlide(data.last_week_results || []);
+                addNextWeekMatchesSlide(data.next_week_matches || []);
+                addFeaturedMatchesSlide(data.featured_team_matches || {played: [], upcoming: []});
+                addTeamMatrixSlide(data.team_matrix || {teams: [], matrix: {}});
+                
+                console.log('All slides added successfully');
+                return data;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                throw error;
+            }
+        }
+
+        function updateTeamName() {
+            const titleElement = document.getElementById('competition-main-title');
+            if (titleElement && featuredTeamName) {
+                titleElement.textContent = featuredTeamName.toUpperCase();
+            }
+        }
+
+        function updateCompetitionStatus(message) {
+            const statusElement = document.getElementById('competition-status');
+            if (statusElement) {
+                statusElement.textContent = message;
+            }
+        }
+
+        // Add slides functions with original styling
+        function addStandingsSlide(standings) {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-item';
+            slide.innerHTML = `
+                <div>
+                    <table class="table table-striped standings-table">
+                        <thead>
+                            <tr>
+                                <th class="position-header">#</th>
+                                <th>Team</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">W</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">V</th>
+                                <th class="stats-header">+/-</th>
+                                <th class="position-header">PTS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${standings.map(team => `
+                                <tr>
+                                    <td class="position-cell">${team.position}</td>
+                                    <td class="team-name-cell">${team.name}</td>
+                                    <td class="stats-cell">${team.matches || team.played || 0}</td>
+                                    <td class="stats-cell">${team.wins || 0}</td>
+                                    <td class="stats-cell">${team.ties || team.draws || 0}</td>
+                                    <td class="stats-cell">${team.losses || 0}</td>
+                                    <td class="stats-cell">${(team.goalsFor || team.goals_for || 0) - (team.goalsAgainst || team.goals_against || 0)}</td>
+                                    <td class="points-cell">${team.points}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('carousel-inner').appendChild(slide);
+        }
+
+        function addPeriodStandingsSlide(periods) {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-item';
+            slide.innerHTML = `
+                <div>
+                    <div class="row">
+                        ${periods.map(period => `
+                            <div class="col-md-6 mb-3">
+                                <h3 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333;">${period.name}</h3>
+                                <table class="table table-sm standings-table">
+                                    <tbody>
+                                        ${period.standings.slice(0, 8).map(team => `
+                                            <tr>
+                                                <td class="position-cell">${team.position}</td>
+                                                <td class="team-name-cell">${team.name}</td>
+                                                <td class="points-cell">${team.points}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('carousel-inner').appendChild(slide);
+        }
+
+        function addLastWeekResultsSlide(results) {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-item';
+            slide.innerHTML = `
+                <div>
+                    <div class="row">
+                        ${results.map(result => `
+                            <div class="col-md-6 mb-2">
+                                <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    <div style="font-size: 1.6rem; font-weight: bold; color: #333;">${result.home} vs ${result.away}</div>
+                                    <div style="font-size: 2rem; font-weight: bold; color: #0066cc;">${result.homeGoals} - ${result.awayGoals}</div>
+                                    <div style="font-size: 1.2rem; color: #666;">${new Date(result.date).toLocaleDateString('nl-NL')}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('carousel-inner').appendChild(slide);
+        }
+
+        function addNextWeekMatchesSlide(matches) {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-item';
+            slide.innerHTML = `
+                <div>
+                    <div class="row">
+                        ${matches.map(match => `
+                            <div class="col-md-6 mb-2">
+                                <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 15px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    <div style="font-size: 1.6rem; font-weight: bold; color: #333;">${match.home} vs ${match.away}</div>
+                                    <div style="font-size: 1.2rem; color: #666;">${new Date(match.date).toLocaleDateString('nl-NL')}</div>
+                                    ${match.week_label ? `<div style="font-size: 1.2rem; color: #666;">${match.week_label}</div>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('carousel-inner').appendChild(slide);
+        }
+
+        function addFeaturedMatchesSlide(matches) {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-item';
+            slide.innerHTML = `
+                <div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333;">Gespeeld</h3>
+                            ${matches.played.slice(-10).map(match => `
+                                <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 12px; margin-bottom: 8px; border-left: 4px solid #0066cc;">
+                                    <div style="font-size: 1.6rem; font-weight: bold; color: #333;">${match.home} vs ${match.away}</div>
+                                    <div style="font-size: 2rem; font-weight: bold; color: #0066cc;">${match.homeGoals} - ${match.awayGoals}</div>
+                                    <div style="font-size: 1.2rem; color: #666;">${new Date(match.date).toLocaleDateString('nl-NL')}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="col-md-6">
+                            <h3 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333;">Komend</h3>
+                            ${matches.upcoming.slice(0, 10).map(match => `
+                                <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 12px; margin-bottom: 8px; border-left: 4px solid #0066cc;">
+                                    <div style="font-size: 1.6rem; font-weight: bold; color: #333;">${match.home} vs ${match.away}</div>
+                                    <div style="font-size: 1.2rem; color: #666;">${new Date(match.date).toLocaleDateString('nl-NL')}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('carousel-inner').appendChild(slide);
+        }
+
+        function addTeamMatrixSlide(matrix) {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-item';
+            slide.innerHTML = `
+                <div>
+                    <div class="table-responsive">
+                        <table style="font-size: 0.9rem; background-color: rgba(255, 255, 255, 0.95);" class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px;"></th>
+                                    ${(matrix.teams || []).map(team => `<th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px;">${team.substring(0, 8)}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${(matrix.teams || []).map(team => `
+                                    <tr>
+                                        <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px;">${team.substring(0, 8)}</th>
+                                        ${(matrix.teams || []).map(opponent => {
+                                            const result = matrix.matrix && matrix.matrix[team] ? matrix.matrix[team][opponent] : null;
+                                            return `<td style="text-align: center; padding: 6px 3px; border: 1px solid #dee2e6;">
+                                                ${result ? (result.includes('-') ? result : new Date(result).toLocaleDateString('nl-NL').substring(0, 5)) : '-'}
+                                            </td>`;
+                                        }).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            document.getElementById('carousel-inner').appendChild(slide);
+        }
+
+        // Initialize carousel
+        function initializeCarousel() {
+            const carouselElement = document.getElementById('carousel');
+            const slides = carouselElement.querySelectorAll('.carousel-item');
+            totalSlides = slides.length;
+            
+            console.log('Initializing carousel with', totalSlides, 'slides');
+            
+            carouselInstance = new bootstrap.Carousel(carouselElement, {
+                interval: false,
+                ride: false,
+                wrap: true
+            });
+            
+            // Add event listener for slide changes
+            carouselElement.addEventListener('slid.bs.carousel', function() {
+                updateScreenNumber();
+                startCountdown();
+            });
+            
+            updateScreenNumber();
+            startCountdown();
+            
+            console.log('Carousel initialized successfully');
+        }
+
+        // Countdown functions
+        function startCountdown() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+            
+            currentCountdown = SCREEN_DURATION_SECONDS;
+            updateCountdownDisplay();
+            
+            countdownInterval = setInterval(() => {
+                currentCountdown--;
+                updateCountdownDisplay();
+                
+                if (currentCountdown <= 0) {
+                    clearInterval(countdownInterval);
+                    carouselInstance.next();
+                }
+            }, 1000);
+        }
+
+        function updateCountdownDisplay() {
+            const element = document.getElementById('countdown-display');
+            if (element) {
+                element.textContent = currentCountdown;
+            }
+        }
+
+        function updateScreenNumber() {
+            const slides = document.querySelectorAll('.carousel-item');
+            let currentIndex = 0;
+            
+            slides.forEach((slide, index) => {
+                if (slide.classList.contains('active')) {
+                    currentIndex = index;
+                }
+            });
+            
+            const element = document.getElementById('screen-number-display');
+            if (element) {
+                element.textContent = `${currentIndex + 1}/${totalSlides}`;
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                carouselInstance?.prev();
+            } else if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                carouselInstance?.next();
+            }
+        });
+
+        // Refresh data every 30 minutes
+        setInterval(() => {
+            console.log('Refreshing data...');
+            loadData().catch(error => {
+                console.error('Data refresh failed:', error);
+            });
+        }, 30 * 60 * 1000);
+
+    </script>
+</body>
+</html>
