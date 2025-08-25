@@ -908,7 +908,9 @@ function startCountdown() {
 function updateCountdownDisplay() {
     const element = document.getElementById('countdown-display');
     if (element) {
-        element.textContent = currentCountdown;
+        // Add leading zero for numbers under 10
+        const displayValue = currentCountdown < 10 ? `0${currentCountdown}` : currentCountdown;
+        element.textContent = displayValue;
     }
 }
 
