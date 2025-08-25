@@ -106,6 +106,37 @@ function getFirstValidValue(...values) {
     return values.find(val => val !== undefined && val !== null);
 }
 
+// Format date for team matrix display (convert YYYY-MM-DD to DD-MM)
+function formatDateForMatrix(dateString) {
+    if (!dateString || typeof dateString !== 'string') {
+        return dateString;
+    }
+    
+    // Check if it's a score (contains dash and is short)
+    if (dateString.includes('-') && dateString.length <= 5) {
+        return dateString;
+    }
+    
+    // Check if it's a date in YYYY-MM-DD format
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (dateRegex.test(dateString)) {
+        const [year, month, day] = dateString.split('-');
+        return `${day}-${month}`;
+    }
+    
+    // If it's already a valid date object or other format, try standard conversion
+    try {
+        const date = new Date(dateString);
+        if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
+        }
+    } catch (e) {
+        // If date parsing fails, return original string
+    }
+    
+    return dateString;
+}
+
 // Calculate form data for last 5 matches
 function calculateTeamForm(teamName, allMatches) {
     if (!allMatches || !teamName) return '';
@@ -766,21 +797,21 @@ function addTeamMatrixSlide(matrix) {
                 Team vs Team Matrix
             </h2>
             <div class="table-responsive">
-                <table style="font-size: 0.9rem; background-color: rgba(255, 255, 255, 0.95);" class="table table-sm table-bordered">
+                <table style="font-size: 1.025rem; background-color: rgba(255, 255, 255, 0.95);" class="table table-sm table-bordered">
                     <thead>
                         <tr>
                             <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px;"></th>
-                            ${(matrix.teams || []).map(team => `<th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px;">${team.substring(0, 8)}</th>`).join('')}
+                            ${(matrix.teams || []).map(team => `<th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px; font-size: 1.35rem;">${team.substring(0, 8)}</th>`).join('')}
                         </tr>
                     </thead>
                     <tbody>
                         ${(matrix.teams || []).map(team => `
                             <tr>
-                                <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px;">${team.substring(0, 8)}</th>
+                                <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px; font-size: 1.35rem;">${team.substring(0, 8)}</th>
                                 ${(matrix.teams || []).map(opponent => {
                                     const result = matrix.matrix && matrix.matrix[team] ? matrix.matrix[team][opponent] : null;
-                                    return `<td style="text-align: center; padding: 6px 3px; border: 1px solid #dee2e6;">
-                                        ${result ? (result.includes('-') ? result : new Date(result).toLocaleDateString('nl-NL').substring(0, 5)) : '-'}
+                                    return `<td style="text-align: center; padding: 6px 3px; border: 1px solid #dee2e6; font-size: 1.35rem;">
+                                        ${result ? (result.includes('-') && result.length <= 5 ? result : formatDateForMatrix(result)) : '-'}
                                     </td>`;
                                 }).join('')}
                             </tr>
