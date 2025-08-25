@@ -624,6 +624,39 @@ function addNextWeekMatchesSlide(matches) {
 function addFeaturedMatchesSlide(matches) {
     const slide = document.createElement('div');
     slide.className = 'carousel-item';
+    
+    // Combine all matches and separate into played and upcoming
+    const allMatches = [
+        ...(matches.played || []),
+        ...(matches.upcoming || [])
+    ];
+    
+    // Separate played and upcoming matches using detailed status check
+    const playedMatches = allMatches.filter(match => {
+        const matchStatus = match.status || match.matchStatus || '';
+        return matchStatus === 'Gespeeld' || 
+               matchStatus === 'played' || 
+               matchStatus === 'Afgelopen' ||
+               matchStatus === 'Finished' ||
+               matchStatus === 'Final' ||
+               (matchStatus === '' && match.homeGoals !== undefined && match.awayGoals !== undefined && 
+                !isNaN(parseInt(match.homeGoals)) && !isNaN(parseInt(match.awayGoals)));
+    }).sort((a, b) => new Date(b.date) - new Date(a.date)); // Newest played first
+    
+    const upcomingMatches = allMatches.filter(match => {
+        const matchStatus = match.status || match.matchStatus || '';
+        return !(matchStatus === 'Gespeeld' || 
+                matchStatus === 'played' || 
+                matchStatus === 'Afgelopen' ||
+                matchStatus === 'Finished' ||
+                matchStatus === 'Final' ||
+                (matchStatus === '' && match.homeGoals !== undefined && match.awayGoals !== undefined && 
+                 !isNaN(parseInt(match.homeGoals)) && !isNaN(parseInt(match.awayGoals))));
+    }).sort((a, b) => new Date(a.date) - new Date(b.date)); // Earliest upcoming first
+    
+    // Combine: played first, then upcoming
+    const sortedMatches = [...playedMatches, ...upcomingMatches];
+    
     slide.innerHTML = `
         <div>
             <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">
@@ -631,23 +664,92 @@ function addFeaturedMatchesSlide(matches) {
             </h2>
             <div class="row">
                 <div class="col-md-6">
-                    <h3 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333;">Gespeeld</h3>
-                    ${(matches.played || []).slice(-10).map(match => `
-                        <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 12px; margin-bottom: 8px; border-left: 4px solid #0066cc;">
-                            <div style="font-size: 1.6rem; font-weight: bold; color: #333;">${match.home} vs ${match.away}</div>
-                            <div style="font-size: 2rem; font-weight: bold; color: #0066cc;">${match.homeGoals} - ${match.awayGoals}</div>
-                            <div style="font-size: 1.2rem; color: #666;">${new Date(match.date).toLocaleDateString('nl-NL')}</div>
-                        </div>
-                    `).join('')}
+                    <h3 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333; text-align: center;">THUIS</h3>
+                    ${sortedMatches.filter(match => {
+                        const home = match.home || match.hometeam || '';
+                        return home.includes(featuredTeamName) || featuredTeamName.includes(home);
+                    }).map(match => {
+                        const away = match.away || match.awayteam || 'Team';
+                        const matchStatus = match.status || match.matchStatus || '';
+                        
+                        // Check if match is played based on status field
+                        const isPlayed = matchStatus === 'Gespeeld' || 
+                                       matchStatus === 'played' || 
+                                       matchStatus === 'Afgelopen' ||
+                                       matchStatus === 'Finished' ||
+                                       matchStatus === 'Final' ||
+                                       (matchStatus === '' && match.homeGoals !== undefined && match.awayGoals !== undefined && 
+                                        !isNaN(parseInt(match.homeGoals)) && !isNaN(parseInt(match.awayGoals)));
+                        
+                        console.log(`THUIS wedstrijd: ${featuredTeamName} vs ${away}, Status: "${matchStatus}", isPlayed: ${isPlayed}`);
+                        
+                        if (isPlayed) {
+                            const homeGoals = match.homeGoals || match.homescore || 0;
+                            const awayGoals = match.awayGoals || match.awayscore || 0;
+                            return `
+                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 4px 12px; margin-bottom: 2px; border-left: 4px solid #ffd700;">
+                                <div style="display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; color: #333;">
+                                    <div style="flex: 4; text-align: left;">${featuredTeamName}</div>
+                                    <div style="flex: 1; text-align: center; color: #0066cc;">${homeGoals} - ${awayGoals}</div>
+                                    <div style="flex: 4; text-align: right;">${away}</div>
+                                </div>
+                            </div>`;
+                        } else {
+                            const matchDate = new Date(match.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
+                            return `
+                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 4px 12px; margin-bottom: 2px; border-left: 4px solid #ffd700;">
+                                <div style="display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; color: #333;">
+                                    <div style="flex: 4; text-align: left;">${featuredTeamName}</div>
+                                    <div style="flex: 1; text-align: center; color: #0066cc; font-weight: bold;">${matchDate}</div>
+                                    <div style="flex: 4; text-align: right;">${away}</div>
+                                </div>
+                            </div>`;
+                        }
+                    }).join('')}
                 </div>
                 <div class="col-md-6">
-                    <h3 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333;">Komend</h3>
-                    ${(matches.upcoming || []).slice(0, 10).map(match => `
-                        <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 12px; margin-bottom: 8px; border-left: 4px solid #0066cc;">
-                            <div style="font-size: 1.6rem; font-weight: bold; color: #333;">${match.home} vs ${match.away}</div>
-                            <div style="font-size: 1.2rem; color: #666;">${new Date(match.date).toLocaleDateString('nl-NL')}</div>
-                        </div>
-                    `).join('')}
+                    <h3 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333; text-align: center;">UIT</h3>
+                    ${sortedMatches.filter(match => {
+                        const away = match.away || match.awayteam || '';
+                        return away.includes(featuredTeamName) || featuredTeamName.includes(away);
+                    }).map(match => {
+                        const home = match.home || match.hometeam || 'Team';
+                        const matchStatus = match.status || match.matchStatus || '';
+                        
+                        // Check if match is played based on status field
+                        const isPlayed = matchStatus === 'Gespeeld' || 
+                                       matchStatus === 'played' || 
+                                       matchStatus === 'Afgelopen' ||
+                                       matchStatus === 'Finished' ||
+                                       matchStatus === 'Final' ||
+                                       (matchStatus === '' && match.homeGoals !== undefined && match.awayGoals !== undefined && 
+                                        !isNaN(parseInt(match.homeGoals)) && !isNaN(parseInt(match.awayGoals)));
+                        
+                        console.log(`UIT wedstrijd: ${home} vs ${featuredTeamName}, Status: "${matchStatus}", isPlayed: ${isPlayed}`);
+                        
+                        if (isPlayed) {
+                            const homeGoals = match.homeGoals || match.homescore || 0;
+                            const awayGoals = match.awayGoals || match.awayscore || 0;
+                            return `
+                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 4px 12px; margin-bottom: 2px; border-right: 4px solid #ffd700;">
+                                <div style="display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; color: #333;">
+                                    <div style="flex: 4; text-align: left;">${home}</div>
+                                    <div style="flex: 1; text-align: center; color: #0066cc;">${homeGoals} - ${awayGoals}</div>
+                                    <div style="flex: 4; text-align: right;">${featuredTeamName}</div>
+                                </div>
+                            </div>`;
+                        } else {
+                            const matchDate = new Date(match.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
+                            return `
+                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 4px 12px; margin-bottom: 2px; border-right: 4px solid #ffd700;">
+                                <div style="display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; color: #333;">
+                                    <div style="flex: 4; text-align: left;">${home}</div>
+                                    <div style="flex: 1; text-align: center; color: #0066cc; font-weight: bold;">${matchDate}</div>
+                                    <div style="flex: 4; text-align: right;">${featuredTeamName}</div>
+                                </div>
+                            </div>`;
+                        }
+                    }).join('')}
                 </div>
             </div>
         </div>
