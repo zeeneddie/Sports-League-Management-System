@@ -121,7 +121,7 @@ body {
 /* Main table container for league standings */
 .standings-table {
   font-size: 1.3rem;
-  margin-top: 1cm;
+  margin-top: 2cm;
 }
 
 /* All table headers and cells padding */
@@ -166,7 +166,7 @@ body {
 
 /* Team name cells in standings table */
 .team-name-cell {
-  font-size: 1.95rem; /* 1.5x van 1.3rem = 1.95rem */
+  font-size: 2.15rem; /* +0.2rem van 1.95rem = 2.15rem (ongeveer 2px groter) */
   font-weight: bold;
   color: #333;
 }
@@ -220,7 +220,7 @@ body {
 }
 
 .featured-team-row .team-name-cell {
-  font-size: calc(1.95rem + 2px) !important;
+  font-size: calc(2.15rem + 2px) !important;
   font-weight: 900 !important;
   color: #000 !important;
 }

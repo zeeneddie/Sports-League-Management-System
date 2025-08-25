@@ -356,14 +356,12 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
         console.log(`Force showing ${periodTitle} regardless of match status`);
     }
     
-    // Adding period slide
-    
     const slide = document.createElement('div');
     slide.className = 'carousel-item';
     
-    // Split teams: positions 1-7 on left, 8-14 on right
-    const leftTeams = periodData.filter(team => team.position <= 7);
-    const rightTeams = periodData.filter(team => team.position >= 8);
+    // Split standings into two halves: 1-7 left, 8-14 right (same as main standings)
+    const leftStandings = periodData.slice(0, 7);
+    const rightStandings = periodData.slice(7, 14);
     
     slide.innerHTML = `
         <div>
@@ -371,50 +369,71 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
                 ${periodTitle}
             </h2>
             <div class="row">
+                <!-- Left column: positions 1-7 -->
                 <div class="col-md-6">
-                    <table class="table table-sm standings-table">
+                    <table class="table table-striped standings-table">
+                        <thead>
+                            <tr>
+                                <th class="position-header">#</th>
+                                <th>Team</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">W</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">V</th>
+                                <th class="stats-header">+/-</th>
+                                <th class="position-header">PTS</th>
+                            </tr>
+                        </thead>
                         <tbody>
-                            ${leftTeams.map(team => {
-                                const isFeatured = featuredTeamName && (team.name || team.team || '').toLowerCase().includes(featuredTeamName.toLowerCase());
-                                const formData = ''; // Form data not available for period slides
+                            ${leftStandings.map(team => {
+                                const teamName = team.team || team.name;
+                                const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
                                 return `
-                                    <tr ${isFeatured ? 'class="featured-team-row"' : ''}>
-                                        <td class="position-cell">${team.position}</td>
-                                        <td class="team-name-cell">
-                                            ${team.name || team.team || 'Onbekend'}
-                                            <div class="team-form">${formData}</div>
-                                        </td>
-                                        <td class="stats-cell">${team.matches || team.played || 0}</td>
-                                        <td class="stats-cell">${team.wins || 0}</td>
-                                        <td class="stats-cell">${team.ties || team.draws || 0}</td>
-                                        <td class="stats-cell">${team.losses || 0}</td>
-                                        <td class="points-cell">${team.points || 0}</td>
-                                    </tr>
-                                `;
+                                <tr${isFeatured ? ' class="featured-team-row"' : ''}>
+                                    <td class="position-cell">${team.position}</td>
+                                    <td class="team-name-cell">${teamName}</td>
+                                    <td class="stats-cell">${team.played || team.matches || 0}</td>
+                                    <td class="stats-cell">${team.wins || 0}</td>
+                                    <td class="stats-cell">${team.draws || team.ties || 0}</td>
+                                    <td class="stats-cell">${team.losses || 0}</td>
+                                    <td class="stats-cell">${(team.goals_for || team.goalsFor || 0) - (team.goals_against || team.goalsAgainst || 0)}</td>
+                                    <td class="points-cell">${team.points}</td>
+                                </tr>`;
                             }).join('')}
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Right column: positions 8-14 -->
                 <div class="col-md-6">
-                    <table class="table table-sm standings-table">
+                    <table class="table table-striped standings-table">
+                        <thead>
+                            <tr>
+                                <th class="position-header">#</th>
+                                <th>Team</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">W</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">V</th>
+                                <th class="stats-header">+/-</th>
+                                <th class="position-header">PTS</th>
+                            </tr>
+                        </thead>
                         <tbody>
-                            ${rightTeams.map(team => {
-                                const isFeatured = featuredTeamName && (team.name || team.team || '').toLowerCase().includes(featuredTeamName.toLowerCase());
-                                const formData = ''; // Form data not available for period slides
+                            ${rightStandings.map(team => {
+                                const teamName = team.team || team.name;
+                                const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
                                 return `
-                                    <tr ${isFeatured ? 'class="featured-team-row"' : ''}>
-                                        <td class="position-cell">${team.position}</td>
-                                        <td class="team-name-cell">
-                                            ${team.name || team.team || 'Onbekend'}
-                                            <div class="team-form">${formData}</div>
-                                        </td>
-                                        <td class="stats-cell">${team.matches || team.played || 0}</td>
-                                        <td class="stats-cell">${team.wins || 0}</td>
-                                        <td class="stats-cell">${team.ties || team.draws || 0}</td>
-                                        <td class="stats-cell">${team.losses || 0}</td>
-                                        <td class="points-cell">${team.points || 0}</td>
-                                    </tr>
-                                `;
+                                <tr${isFeatured ? ' class="featured-team-row"' : ''}>
+                                    <td class="position-cell">${team.position}</td>
+                                    <td class="team-name-cell">${teamName}</td>
+                                    <td class="stats-cell">${team.played || team.matches || 0}</td>
+                                    <td class="stats-cell">${team.wins || 0}</td>
+                                    <td class="stats-cell">${team.draws || team.ties || 0}</td>
+                                    <td class="stats-cell">${team.losses || 0}</td>
+                                    <td class="stats-cell">${(team.goals_for || team.goalsFor || 0) - (team.goals_against || team.goalsAgainst || 0)}</td>
+                                    <td class="points-cell">${team.points}</td>
+                                </tr>`;
                             }).join('')}
                         </tbody>
                     </table>
@@ -625,14 +644,22 @@ function addNextWeekMatchesSlide(matches) {
                                 const isFeaturedMatch = isFeaturedTeamMatch(match);
                                 const home = match.home || match.hometeam || 'Team A';
                                 const away = match.away || match.awayteam || 'Team B';
-                                const matchDate = new Date(match.date).toLocaleDateString('nl-NL');
+                                
+                                // Format date as DD-MM and extract time
+                                const matchDateTime = new Date(match.date);
+                                const matchDate = matchDateTime.toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
+                                const matchTime = matchDateTime.toLocaleTimeString('nl-NL', {hour: '2-digit', minute: '2-digit'});
+                                
                                 return `
                                 <div class="col-6 offset-3">
                                     <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); ${isFeaturedMatch ? 'background-color: rgba(255, 215, 0, 0.2) !important; border: 2px solid #ffd700 !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;' : ''}">
-                                        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 15px;">
+                                        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 15px;">
                                             <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${home}</div>
-                                            <div style="text-align: center; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#0066cc'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${matchDate}</div>
-                                            <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${away}</div>
+                                            <div style="text-align: center;">
+                                                <div style="font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#0066cc'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}; line-height: 1;">${matchDate}</div>
+                                                <div style="font-size: 1.4rem; font-weight: 600; color: ${isFeaturedMatch ? '#333' : '#666'}; line-height: 1;">${matchTime}</div>
+                                            </div>
+                                            <div style="text-align: right; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${away}</div>
                                         </div>
                                     </div>
                                 </div>`;
