@@ -15,6 +15,13 @@ class Config:
     # Featured team configuration - depends on test/production mode
     FEATURED_TEAM = 'VV Gorecht' if USE_TEST_DATA else 'AVV Columbia'
     FEATURED_TEAM_KEY = 'gorecht' if USE_TEST_DATA else 'columbia'
+    
+    # SSL Configuration
+    USE_SSL = os.getenv('USE_SSL', 'false').lower() == 'true'
+    SSL_CERT_PATH = os.getenv('SSL_CERT_PATH', 'ssl/cert.pem')
+    SSL_KEY_PATH = os.getenv('SSL_KEY_PATH', 'ssl/key.pem')
+    SSL_PORT = int(os.getenv('SSL_PORT', '5443'))
+    HTTP_PORT = int(os.getenv('HTTP_PORT', '5000'))
 
 class ScheduleConfig:
     """Schedule configuration for data fetching"""

@@ -12,12 +12,13 @@ let carouselInitialized = false;
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
-    loadData().then(() => {
+    loadData().then((data) => {
+        console.log('🎯 Data loaded successfully, calling updateMatchStatistics with:', data);
         initializeCarousel();
-        updateCompetitionStatus('Dashboard geladen - Carousel actief');
+        updateMatchStatistics(data);
     }).catch(error => {
         console.error('Data loading failed:', error);
-        updateCompetitionStatus('Dashboard geladen - Beperkte functionaliteit');
+        updateMatchStatistics(null);
     });
 });
 
@@ -81,10 +82,69 @@ function updateTeamName() {
     }
 }
 
-function updateCompetitionStatus(message) {
-    const statusElement = document.getElementById('competition-status');
-    if (statusElement) {
-        statusElement.textContent = message;
+function updateMatchStatistics(data) {
+    if (!data) {
+        // If no data, show loading state
+        updateCompetitionMatchesStats(0, 0);
+        updateColumbiaMatchesStats(0, 0);
+        return;
+    }
+    
+    // Calculate total competition matches
+    const allMatches = data.all_matches || [];
+    const totalMatches = allMatches.length;
+    
+    // Calculate played matches (matches with status 'Gespeeld' or valid scores)
+    const playedMatches = allMatches.filter(match => {
+        const status = match.status || match.matchStatus || '';
+        const isPlayedStatus = status === 'played' || status === 'Gespeeld';
+        
+        if (status && status !== '') {
+            return isPlayedStatus;
+        }
+        
+        // Fallback: check if there are valid scores
+        const homeScore = getFirstValidValue(match.homeGoals, match.homescore, match.home_goals, match.home_score);
+        const awayScore = getFirstValidValue(match.awayGoals, match.awayscore, match.away_goals, match.away_score);
+        return !isNaN(parseInt(homeScore)) && !isNaN(parseInt(awayScore));
+    }).length;
+    
+    // Calculate Columbia matches
+    const columbiaMatches = data.featured_team_matches || {played: [], upcoming: []};
+    const columbiaPlayed = (columbiaMatches.played || []).length;
+    const columbiaUpcoming = (columbiaMatches.upcoming || []).length;
+    
+    console.log(`📊 Match Statistics:`);
+    console.log(`   Total matches in competition: ${totalMatches}`);
+    console.log(`   Played matches: ${playedMatches}`);
+    console.log(`   Columbia played: ${columbiaPlayed}`);
+    console.log(`   Columbia upcoming: ${columbiaUpcoming}`);
+    
+    // Update the display
+    updateCompetitionMatchesStats(playedMatches, totalMatches);
+    updateColumbiaMatchesStats(columbiaPlayed, columbiaUpcoming);
+}
+
+function updateCompetitionMatchesStats(played, total) {
+    const element = document.getElementById('competition-matches-stats');
+    const remaining = total - played;
+    console.log('📊 Updating competition matches stats:', { played, total, remaining, element });
+    if (element) {
+        element.textContent = `Wedstrijden in competitie: nog te spelen ${remaining} / gespeeld ${played}`;
+        console.log('✅ Updated competition matches stats successfully');
+    } else {
+        console.error('❌ Element competition-matches-stats not found');
+    }
+}
+
+function updateColumbiaMatchesStats(played, upcoming) {
+    const element = document.getElementById('columbia-matches-stats');
+    console.log('⚽ Updating Columbia matches stats:', { played, upcoming, element });
+    if (element) {
+        element.textContent = `Wedstrijden Columbia: nog te spelen ${upcoming} / gespeeld ${played}`;
+        console.log('✅ Updated Columbia matches stats successfully');
+    } else {
+        console.error('❌ Element columbia-matches-stats not found');
     }
 }
 
@@ -104,6 +164,35 @@ function checkTestMode(data) {
 // Helper function to get first valid (non-null, non-undefined) value
 function getFirstValidValue(...values) {
     return values.find(val => val !== undefined && val !== null);
+}
+
+// Helper function to format numbers with space padding (under 10 = single digit with space, 10+ = normal)
+function formatTwoDigits(number) {
+    const num = Number(number);
+    if (num < 10) {
+        return ` ${num}`; // Space + single digit for numbers under 10
+    } else {
+        return num.toString(); // Normal display for 10 and above
+    }
+}
+
+// Helper function to format goal difference with proper spacing for negative values
+function formatGoalDifference(goalsFor, goalsAgainst) {
+    const difference = (goalsFor || 0) - (goalsAgainst || 0);
+    if (difference >= 0) {
+        if (difference < 10) {
+            return `+ ${difference}`; // + space + single digit
+        } else {
+            return `+${difference}`; // + double digit
+        }
+    } else {
+        const absDiff = Math.abs(difference);
+        if (absDiff < 10) {
+            return `- ${absDiff}`; // - space + single digit
+        } else {
+            return `-${absDiff}`; // - double digit
+        }
+    }
 }
 
 // Format date for team matrix display (convert YYYY-MM-DD to DD-MM)
@@ -272,7 +361,7 @@ function addStandingsSlide(standings, allMatches = []) {
                             <th class="stats-header">G</th>
                             <th class="stats-header">V</th>
                             <th class="stats-header">+/-</th>
-                            <th class="position-header">PTS</th>
+                            <th class="position-header">P</th>
                             <th>Vorm</th>
                         </tr>
                     </thead>
@@ -284,11 +373,11 @@ function addStandingsSlide(standings, allMatches = []) {
                             <tr${isFeatured ? ' class="featured-team-row"' : ''}>
                                 <td class="position-cell">${team.position}</td>
                                 <td class="team-name-cell">${teamName}</td>
-                                <td class="stats-cell">${team.played || team.matches || 0}</td>
-                                <td class="stats-cell">${team.wins || 0}</td>
-                                <td class="stats-cell">${team.draws || team.ties || 0}</td>
-                                <td class="stats-cell">${team.losses || 0}</td>
-                                <td class="stats-cell">${(team.goals_for || team.goalsFor || 0) - (team.goals_against || team.goalsAgainst || 0)}</td>
+                                <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
+                                <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
+                                <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
+                                <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
+                                <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
                                 <td class="points-cell">${team.points}</td>
                                 <td>${calculateTeamForm(teamName, allMatches)}</td>
                             </tr>`;
@@ -309,7 +398,7 @@ function addStandingsSlide(standings, allMatches = []) {
                             <th class="stats-header">G</th>
                             <th class="stats-header">V</th>
                             <th class="stats-header">+/-</th>
-                            <th class="position-header">PTS</th>
+                            <th class="position-header">P</th>
                             <th>Vorm</th>
                         </tr>
                     </thead>
@@ -321,11 +410,11 @@ function addStandingsSlide(standings, allMatches = []) {
                             <tr${isFeatured ? ' class="featured-team-row"' : ''}>
                                 <td class="position-cell">${team.position}</td>
                                 <td class="team-name-cell">${teamName}</td>
-                                <td class="stats-cell">${team.played || team.matches || 0}</td>
-                                <td class="stats-cell">${team.wins || 0}</td>
-                                <td class="stats-cell">${team.draws || team.ties || 0}</td>
-                                <td class="stats-cell">${team.losses || 0}</td>
-                                <td class="stats-cell">${(team.goals_for || team.goalsFor || 0) - (team.goals_against || team.goalsAgainst || 0)}</td>
+                                <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
+                                <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
+                                <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
+                                <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
+                                <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
                                 <td class="points-cell">${team.points}</td>
                                 <td>${calculateTeamForm(teamName, allMatches)}</td>
                             </tr>`;
@@ -381,7 +470,7 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
                                 <th class="stats-header">G</th>
                                 <th class="stats-header">V</th>
                                 <th class="stats-header">+/-</th>
-                                <th class="position-header">PTS</th>
+                                <th class="position-header">P</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -392,11 +481,11 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
                                 <tr${isFeatured ? ' class="featured-team-row"' : ''}>
                                     <td class="position-cell">${team.position}</td>
                                     <td class="team-name-cell">${teamName}</td>
-                                    <td class="stats-cell">${team.played || team.matches || 0}</td>
-                                    <td class="stats-cell">${team.wins || 0}</td>
-                                    <td class="stats-cell">${team.draws || team.ties || 0}</td>
-                                    <td class="stats-cell">${team.losses || 0}</td>
-                                    <td class="stats-cell">${(team.goals_for || team.goalsFor || 0) - (team.goals_against || team.goalsAgainst || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
+                                    <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
                                     <td class="points-cell">${team.points}</td>
                                 </tr>`;
                             }).join('')}
@@ -416,7 +505,7 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
                                 <th class="stats-header">G</th>
                                 <th class="stats-header">V</th>
                                 <th class="stats-header">+/-</th>
-                                <th class="position-header">PTS</th>
+                                <th class="position-header">P</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -427,11 +516,11 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
                                 <tr${isFeatured ? ' class="featured-team-row"' : ''}>
                                     <td class="position-cell">${team.position}</td>
                                     <td class="team-name-cell">${teamName}</td>
-                                    <td class="stats-cell">${team.played || team.matches || 0}</td>
-                                    <td class="stats-cell">${team.wins || 0}</td>
-                                    <td class="stats-cell">${team.draws || team.ties || 0}</td>
-                                    <td class="stats-cell">${team.losses || 0}</td>
-                                    <td class="stats-cell">${(team.goals_for || team.goalsFor || 0) - (team.goals_against || team.goalsAgainst || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
+                                    <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
                                     <td class="points-cell">${team.points}</td>
                                 </tr>`;
                             }).join('')}
@@ -716,13 +805,13 @@ function addFeaturedMatchesSlide(matches) {
     const sortedMatches = [...playedMatches, ...upcomingMatches];
     
     slide.innerHTML = `
-        <div>
-            <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">
+        <div style="height: calc(100vh - 120px); overflow-y: auto; overflow-x: hidden;">
+            <h2 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: #333; text-align: center;">
                 ${featuredTeamName} Wedstrijden
             </h2>
             <div class="row">
                 <div class="col-md-6">
-                    <h3 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333; text-align: center;">THUIS</h3>
+                    <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; color: #333; text-align: center;">THUIS</h3>
                     ${sortedMatches.filter(match => {
                         const home = match.home || match.hometeam || '';
                         return home.includes(featuredTeamName) || featuredTeamName.includes(home);
@@ -745,8 +834,8 @@ function addFeaturedMatchesSlide(matches) {
                             const homeGoals = match.homeGoals || match.homescore || 0;
                             const awayGoals = match.awayGoals || match.awayscore || 0;
                             return `
-                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 4px 12px; margin-bottom: 2px; border-left: 4px solid #ffd700;">
-                                <div style="display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; color: #333;">
+                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 2px 8px; margin-bottom: 1px; border-left: 3px solid #ffd700;">
+                                <div style="display: flex; align-items: center; font-size: 1.2rem; font-weight: bold; color: #333;">
                                     <div style="flex: 4; text-align: left;">${featuredTeamName}</div>
                                     <div style="flex: 1; text-align: center; color: #0066cc;">${homeGoals} - ${awayGoals}</div>
                                     <div style="flex: 4; text-align: right;">${away}</div>
@@ -755,8 +844,8 @@ function addFeaturedMatchesSlide(matches) {
                         } else {
                             const matchDate = new Date(match.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
                             return `
-                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 4px 12px; margin-bottom: 2px; border-left: 4px solid #ffd700;">
-                                <div style="display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; color: #333;">
+                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 2px 8px; margin-bottom: 1px; border-left: 3px solid #ffd700;">
+                                <div style="display: flex; align-items: center; font-size: 1.2rem; font-weight: bold; color: #333;">
                                     <div style="flex: 4; text-align: left;">${featuredTeamName}</div>
                                     <div style="flex: 1; text-align: center; color: #0066cc; font-weight: bold;">${matchDate}</div>
                                     <div style="flex: 4; text-align: right;">${away}</div>
@@ -766,7 +855,7 @@ function addFeaturedMatchesSlide(matches) {
                     }).join('')}
                 </div>
                 <div class="col-md-6">
-                    <h3 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1.5rem; color: #333; text-align: center;">UIT</h3>
+                    <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; color: #333; text-align: center;">UIT</h3>
                     ${sortedMatches.filter(match => {
                         const away = match.away || match.awayteam || '';
                         return away.includes(featuredTeamName) || featuredTeamName.includes(away);
@@ -789,8 +878,8 @@ function addFeaturedMatchesSlide(matches) {
                             const homeGoals = match.homeGoals || match.homescore || 0;
                             const awayGoals = match.awayGoals || match.awayscore || 0;
                             return `
-                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 4px 12px; margin-bottom: 2px; border-right: 4px solid #ffd700;">
-                                <div style="display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; color: #333;">
+                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 2px 8px; margin-bottom: 1px; border-right: 3px solid #ffd700;">
+                                <div style="display: flex; align-items: center; font-size: 1.2rem; font-weight: bold; color: #333;">
                                     <div style="flex: 4; text-align: left;">${home}</div>
                                     <div style="flex: 1; text-align: center; color: #0066cc;">${homeGoals} - ${awayGoals}</div>
                                     <div style="flex: 4; text-align: right;">${featuredTeamName}</div>
@@ -799,8 +888,8 @@ function addFeaturedMatchesSlide(matches) {
                         } else {
                             const matchDate = new Date(match.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
                             return `
-                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 6px; padding: 4px 12px; margin-bottom: 2px; border-right: 4px solid #ffd700;">
-                                <div style="display: flex; align-items: center; font-size: 1.4rem; font-weight: bold; color: #333;">
+                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 2px 8px; margin-bottom: 1px; border-right: 3px solid #ffd700;">
+                                <div style="display: flex; align-items: center; font-size: 1.2rem; font-weight: bold; color: #333;">
                                     <div style="flex: 4; text-align: left;">${home}</div>
                                     <div style="flex: 1; text-align: center; color: #0066cc; font-weight: bold;">${matchDate}</div>
                                     <div style="flex: 4; text-align: right;">${featuredTeamName}</div>
@@ -819,25 +908,25 @@ function addTeamMatrixSlide(matrix) {
     const slide = document.createElement('div');
     slide.className = 'carousel-item';
     slide.innerHTML = `
-        <div>
-            <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">
+        <div style="height: calc(100vh - 100px); overflow-y: auto; padding-top: 1rem;">
+            <h2 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem; color: #333; text-align: center;">
                 Team vs Team Matrix
             </h2>
             <div class="table-responsive">
-                <table style="font-size: 1.025rem; background-color: rgba(255, 255, 255, 0.95);" class="table table-sm table-bordered">
+                <table style="font-size: 0.9rem; background-color: rgba(255, 255, 255, 0.95);" class="table table-sm table-bordered">
                     <thead>
                         <tr>
-                            <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px;"></th>
-                            ${(matrix.teams || []).map(team => `<th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px; font-size: 1.35rem;">${team.substring(0, 8)}</th>`).join('')}
+                            <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 4px 2px;"></th>
+                            ${(matrix.teams || []).map(team => `<th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 4px 2px; font-size: 1rem;">${team.substring(0, 8)}</th>`).join('')}
                         </tr>
                     </thead>
                     <tbody>
                         ${(matrix.teams || []).map(team => `
                             <tr>
-                                <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 8px 4px; font-size: 1.35rem;">${team.substring(0, 8)}</th>
+                                <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 4px 2px; font-size: 1rem;">${team.substring(0, 8)}</th>
                                 ${(matrix.teams || []).map(opponent => {
                                     const result = matrix.matrix && matrix.matrix[team] ? matrix.matrix[team][opponent] : null;
-                                    return `<td style="text-align: center; padding: 6px 3px; border: 1px solid #dee2e6; font-size: 1.35rem;">
+                                    return `<td style="text-align: center; padding: 3px 1px; border: 1px solid #dee2e6; font-size: 1rem;">
                                         ${result ? (result.includes('-') && result.length <= 5 ? result : formatDateForMatrix(result)) : '-'}
                                     </td>`;
                                 }).join('')}
@@ -944,8 +1033,11 @@ document.addEventListener('keydown', function(event) {
 // Refresh data every 30 minutes
 setInterval(() => {
     console.log('Refreshing data...');
-    loadData().catch(error => {
+    loadData().then((data) => {
+        updateMatchStatistics(data);
+    }).catch(error => {
         console.error('Data refresh failed:', error);
+        updateMatchStatistics(null);
     });
 }, 30 * 60 * 1000);
 
