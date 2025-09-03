@@ -36,15 +36,30 @@ scp templates\includes\*.html %SERVER%:%REMOTE_PATH%/templates/includes/
 
 REM Create static directories first
 echo [7/8] Creating static directories and copying CSS and JavaScript...
-ssh %SERVER% "mkdir -p %REMOTE_PATH%/static/css %REMOTE_PATH%/static/js %REMOTE_PATH%/static/images %REMOTE_PATH%/templates/includes"
+ssh %SERVER% "mkdir -p %REMOTE_PATH%/static/css %REMOTE_PATH%/static/js %REMOTE_PATH%/static/images %REMOTE_PATH%/static/images/team_logos %REMOTE_PATH%/templates/includes"
 scp static\css\dashboard.css %SERVER%:%REMOTE_PATH%/static/css/
 scp static\js\dashboard.js %SERVER%:%REMOTE_PATH%/static/js/
-if exist static\js\dashboard_tv.js scp static\js\dashboard_tv.js %SERVER%:%REMOTE_PATH%/static/js/
+REM Exclude dashboard_tv.js to avoid conflicts with mobile fixes
 
 REM Images and favicon
-echo [8/8] Copying images...
+echo [8/8] Copying images and logos...
+REM Ensure directories exist first
+ssh %SERVER% "mkdir -p %REMOTE_PATH%/static/images/team_logos"
+
+REM Copy main images
+echo Copying main images...
 if exist static\images\favicon.png scp static\images\favicon.png %SERVER%:%REMOTE_PATH%/static/images/
-REM scp static\images\*.png %SERVER%:%REMOTE_PATH%/static/images/ 2>nul
+if exist static\images\icon.png scp static\images\icon.png %SERVER%:%REMOTE_PATH%/static/images/
+if exist static\images\default_player.png scp static\images\default_player.png %SERVER%:%REMOTE_PATH%/static/images/
+
+REM Copy logos (these are causing 404 errors)
+echo Copying logo files...
+scp static\images\logo_club1919.png %SERVER%:%REMOTE_PATH%/static/images/
+scp static\images\team_logos\t_184.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/
+
+REM Copy all other team logos if they exist
+echo Copying additional team logos...
+REM if exist static\images\team_logos\*.png scp static\images\team_logos\*.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/ 2>nul
 
 echo.
 echo ========================================
