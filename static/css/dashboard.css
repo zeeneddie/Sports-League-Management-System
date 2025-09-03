@@ -13,12 +13,29 @@ body {
   ) !important;
 }
 
-/* === CAROUSEL CONTAINER === */
+/* === TV SLIDESHOW CONTAINER === */
+/* Container for simple TV slideshow */
+#slideshow-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#slide-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 /* Used by all 6 dashboard screens as main container */
-.carousel-item {
+.slide-item {
   min-height: 100vh;
   padding: 30px 30px 60px 30px; /* Extra bottom padding for countdown footer */
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   background-color: #d4d4d4; /* Much darker grey background (4 shades darker total) */
   background-image: repeating-linear-gradient(
     45deg,
@@ -27,9 +44,42 @@ body {
     #ffffe0 2cm,
     #ffffe0 calc(2cm + 2px)
   );
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.slide-item.active {
+  opacity: 1;
+  z-index: 2;
+}
+
+/* Fallback for carousel-item class (backward compatibility) */
+.carousel-item {
+  min-height: 100vh;
+  padding: 30px 30px 60px 30px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #d4d4d4;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 2cm,
+    #ffffe0 2cm,
+    #ffffe0 calc(2cm + 2px)
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.carousel-item.active {
+  opacity: 1;
+  z-index: 2;
 }
 
 /* Columbia logo as background in top left */
+.slide-item::before,
 .carousel-item::before {
   content: "";
   position: absolute;
@@ -46,6 +96,7 @@ body {
 }
 
 /* Club 1919 logo as background in top right */
+.slide-item::after,
 .carousel-item::after {
   content: "";
   position: absolute;
@@ -136,13 +187,13 @@ body {
 /* Main table container for league standings */
 .standings-table {
   font-size: 1.3rem;
-  margin-top: 2cm;
+  margin-top: 1.5cm; /* Reduced from 2cm to move tables higher */
 }
 
 /* All table headers and cells padding */
 .standings-table th,
 .standings-table td {
-  padding: 12px 8px;
+  padding: 10px 6px; /* Reduced padding to create more horizontal space */
 }
 
 /* Generic table headers */
@@ -181,17 +232,21 @@ body {
 
 /* Team name cells in standings table */
 .team-name-cell {
-  font-size: 2.15rem; /* +0.2rem van 1.95rem = 2.15rem (ongeveer 2px groter) */
+  font-size: 1.9rem; /* Reduced from 2.15rem for more space */
   font-weight: bold;
   color: #333;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Add ... if text is too long */
+  max-width: 280px; /* Increased from 200px to show full names */
 }
 
 /* === TEAM FORM CIRCLES === */
 .team-form {
   display: inline-flex;
-  gap: 3px;
+  gap: 1px; /* Added 1px spacing between circles */
   align-items: center;
-  margin-left: 8px;
+  margin-left: 4px; /* Reduced from 8px to halve spacing */
 }
 
 .form-circle {
@@ -252,22 +307,40 @@ body {
   color: #000 !important;
 }
 
-/* === FOOTER ELEMENTS === */
-.screen-footer {
-  background-color: rgba(0, 0, 0, 0.8) !important;
+/* === TV FOOTER === */
+.tv-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  z-index: 1000;
+}
+
+.tv-footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .screen-number {
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   font-weight: bold;
   color: #ffc107;
 }
 
-.countdown-timer {
-  font-size: 2rem;
-  font-weight: bold;
+.footer-branding {
+  text-align: center;
+  flex: 1;
+}
+
+.footer-branding span {
+  font-size: 1.5rem;
   color: #ffc107;
+  font-weight: 500;
 }
 
 /* === TEST MODE INDICATOR === */

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, send_from_directory
+from flask import Flask, render_template, jsonify, send_from_directory, request, redirect, url_for
 from flask_wtf.csrf import CSRFProtect
 from config import Config
 from scheduler import data_scheduler
@@ -13,6 +13,18 @@ csrf = CSRFProtect(app)
 # Exempt API endpoints from CSRF (they're read-only)
 csrf.exempt('api')
 
+# HTTPS redirect middleware
+@app.before_request
+def force_https():
+    """Redirect HTTP to HTTPS if SSL is enabled"""
+    if Config.USE_SSL and not request.is_secure:
+        # Skip redirect for localhost during development
+        if request.host.startswith('127.0.0.1') or request.host.startswith('localhost'):
+            return None
+        
+        # Redirect to HTTPS
+        return redirect(request.url.replace('http://', 'https://'), code=301)
+
 # Security headers
 @app.after_request
 def set_security_headers(response):
@@ -21,11 +33,13 @@ def set_security_headers(response):
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-XSS-Protection'] = '1; mode=block'
 
-    # HTTPS enforcement (in production)
-    if not app.debug:
+    # HTTPS enforcement (in production and when SSL is enabled)
+    if Config.USE_SSL and not app.debug:
         response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
 
     # Content Security Policy - restrictive but allows Bootstrap CDN and inline scripts for dashboard
+    # Update CSP to allow HTTPS resources when SSL is enabled
+    protocol = 'https' if Config.USE_SSL else 'http'
     csp = (
         "default-src 'self'; "
         "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
@@ -188,4 +202,26 @@ if __name__ == '__main__':
     
     # Only enable debug mode in development
     debug_mode = os.getenv('FLASK_ENV', 'production') == 'development'
-    app.run(debug=debug_mode, host='127.0.0.1')
+    
+    # SSL Configuration
+    if Config.USE_SSL:
+        # Check if SSL certificate files exist
+        if os.path.exists(Config.SSL_CERT_PATH) and os.path.exists(Config.SSL_KEY_PATH):
+            print(f"Starting HTTPS server on https://127.0.0.1:{Config.SSL_PORT}")
+            ssl_context = (Config.SSL_CERT_PATH, Config.SSL_KEY_PATH)
+            app.run(
+                debug=debug_mode, 
+                host='127.0.0.1', 
+                port=Config.SSL_PORT,
+                ssl_context=ssl_context
+            )
+        else:
+            print("SSL certificates not found!")
+            print(f"Expected certificate: {Config.SSL_CERT_PATH}")
+            print(f"Expected key: {Config.SSL_KEY_PATH}")
+            print("Run 'python generate_ssl_cert.py' to generate certificates")
+            print("Falling back to HTTP...")
+            app.run(debug=debug_mode, host='127.0.0.1', port=Config.HTTP_PORT)
+    else:
+        print(f"Starting HTTP server on http://127.0.0.1:{Config.HTTP_PORT}")
+        app.run(debug=debug_mode, host='127.0.0.1', port=Config.HTTP_PORT)
