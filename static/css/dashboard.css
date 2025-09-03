@@ -146,12 +146,14 @@ body {
 }
 
 .competition-title {
-  font-size: 6rem;
+  font-size: 4.5rem;
   font-weight: 900;
   color: #000;
   text-shadow: 4px 4px 8px rgba(255, 255, 255, 0.8);
   margin-bottom: 1rem;
-  letter-spacing: 0.1em;
+  margin-top: 3rem;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .competition-subtitle {
@@ -188,6 +190,19 @@ body {
 .standings-table {
   font-size: 1.3rem;
   margin-top: 1.5cm; /* Reduced from 2cm to move tables higher */
+}
+
+/* Period slides mobile-specific smaller fonts */
+.mobile-mode .standings-table {
+  font-size: 0.8rem !important;
+}
+
+.mobile-mode .standings-table th {
+  font-size: 1.0rem !important;
+}
+
+.mobile-mode .standings-table td {
+  font-size: 0.8rem !important;
 }
 
 /* All table headers and cells padding */
@@ -363,4 +378,279 @@ body {
 @keyframes testBlink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
+}
+
+/* === MOBILE & RESPONSIVE STYLES === */
+/* Mobile device detection */
+.mobile-mode {
+  font-size: 1rem !important; /* Smaller base font for mobile */
+}
+
+.tablet-mode {
+  font-size: 1.2rem !important; /* Medium font for tablets */
+}
+
+.tv-mode {
+  font-size: 1.4rem !important; /* Keep large font for TV/desktop */
+}
+
+/* Mobile-specific header styling */
+.mobile-header {
+  font-size: 1.4rem !important;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333;
+  text-align: center;
+  padding: 0 10px;
+}
+
+/* Mobile matches container */
+.mobile-matches-container {
+  padding: 0 5px;
+  height: calc(100vh - 120px); /* Full viewport minus header space and footer space */
+  max-height: calc(100vh - 120px); /* Same as height for consistency */
+  overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  max-width: 100vw; /* Ensure container doesn't exceed viewport */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile match item styling */
+.mobile-match-item {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 6px;
+  padding: 4px 6px; /* Halved from 8px 12px */
+  margin-bottom: 3px; /* Halved from 6px */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-left: 3px solid #ffd700;
+  max-width: 100%; /* Ensure items don't exceed container */
+  overflow: hidden; /* Hide any overflow content */
+}
+
+.mobile-match-item.played {
+  border-left-color: #28a745; /* Green for played matches */
+}
+
+.mobile-match-item.upcoming {
+  border-left-color: #007bff; /* Blue for upcoming matches */
+}
+
+.mobile-match-date {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  text-align: center;
+  margin-bottom: 2px; /* Halved from 4px */
+}
+
+.mobile-match-teams {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px; /* Reduced gap for more space */
+  width: 100%; /* Ensure full width usage */
+}
+
+.mobile-team {
+  flex: 0 1 35%; /* Fixed percentage instead of flex: 1 */
+  max-width: 120px; /* Same max width as standings table */
+  font-size: 0.9rem; /* Same font size as standings table */
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide overflow text */
+  text-overflow: ellipsis; /* Add ... for long names */
+}
+
+.mobile-team.featured {
+  color: #000 !important;
+  font-weight: 900 !important;
+  background-color: rgba(255, 215, 0, 0.3);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.9rem !important; /* Same font size as standings table featured teams */
+  max-width: 120px !important; /* Same max width as standings table featured teams */
+}
+
+.mobile-score {
+  flex: 0 0 auto; /* Don't grow or shrink */
+  font-size: 1.1rem; /* Slightly smaller */
+  font-weight: bold;
+  color: #0066cc;
+  min-width: 50px; /* Slightly smaller min width */
+  text-align: center;
+}
+
+.mobile-vs {
+  flex: 0 0 auto; /* Don't grow or shrink */
+  font-size: 1.0rem; /* Slightly smaller */
+  font-weight: 600;
+  color: #666;
+  min-width: 30px; /* Smaller min width */
+  text-align: center;
+}
+
+/* Mobile responsive table adjustments */
+@media (max-width: 768px) {
+  /* Intro screen mobile adjustments */
+  .competition-title {
+    font-size: 2.0rem !important;
+    margin-top: 1.5rem !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.02em !important;
+  }
+  
+  .competition-subtitle {
+    font-size: 1.5rem !important;
+  }
+  
+  .welcome-message {
+    font-size: 2rem !important;
+  }
+  
+  .competition-details {
+    font-size: 1.2rem !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
+  }
+  
+  /* Mobile statistics text styling */
+  #competition-matches-stats,
+  #columbia-matches-stats {
+    font-size: 1.1rem !important;
+    line-height: 1.3 !important;
+    text-align: center !important;
+  }
+  
+  /* Table adjustments for mobile */
+  .standings-table {
+    font-size: 0.8rem !important;
+    margin-top: 0.5cm !important;
+  }
+  
+  .standings-table th {
+    font-size: 1.0rem !important; /* Smaller headers */
+    padding: 4px 2px !important;
+  }
+  
+  .standings-table td {
+    font-size: 0.9rem !important;
+    padding: 4px 2px !important;
+  }
+  
+  .position-header {
+    font-size: 1.2rem !important;
+  }
+  
+  .position-cell {
+    font-size: 1.0rem !important;
+  }
+  
+  .stats-header {
+    font-size: 1.2rem !important;
+  }
+  
+  .stats-cell {
+    font-size: 0.9rem !important;
+  }
+  
+  .points-cell {
+    font-size: 1.0rem !important;
+  }
+  
+  .team-name-cell {
+    font-size: 0.9rem !important;
+    max-width: 120px !important;
+  }
+  
+  /* Featured team mobile override - same size as other teams */
+  .featured-team-row .position-cell {
+    font-size: 1.0rem !important;
+  }
+  
+  .featured-team-row .team-name-cell {
+    font-size: 0.9rem !important;
+    max-width: 120px !important;
+  }
+  
+  .featured-team-row .stats-cell {
+    font-size: 0.9rem !important;
+  }
+  
+  .featured-team-row .points-cell {
+    font-size: 1.0rem !important;
+  }
+  
+  /* Form circles smaller on mobile */
+  .form-circle {
+    font-size: 1.0rem !important;
+    width: 16px !important;
+    height: 16px !important;
+    line-height: 12px !important;
+  }
+  
+  /* Footer adjustments */
+  .tv-footer {
+    padding: 4px 8px !important;
+  }
+  
+  .screen-number {
+    font-size: 0.9rem !important;
+  }
+  
+  .footer-branding span {
+    font-size: 0.8rem !important; /* Smaller font to fit on one line */
+  }
+  
+  /* Hide team matrix completely on mobile */
+  .mobile-mode .team-matrix-slide {
+    display: none !important;
+  }
+  
+  /* Slide padding adjustments */
+  .slide-item,
+  .carousel-item {
+    padding: 15px 10px 40px 10px !important;
+  }
+  
+  /* Mobile matches container specific height adjustment */
+  .mobile-matches-container {
+    height: calc(100vh - 95px) !important; /* Optimized for mobile: viewport minus header (50px) minus footer (42px) minus gap (3px) */
+    max-height: calc(100vh - 95px) !important;
+  }
+  
+  /* Logo adjustments for mobile - halved size */
+  .slide-item::before,
+  .carousel-item::before {
+    width: 30px !important;
+    height: 30px !important;
+    top: 5px !important;
+    left: 5px !important;
+  }
+  
+  .slide-item::after,
+  .carousel-item::after {
+    width: 60px !important;
+    height: 60px !important;
+    top: -10px !important;
+    right: 5px !important;
+  }
+}
+
+/* Tablet responsive adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .standings-table {
+    font-size: 1.1rem !important;
+  }
+  
+  .standings-table th {
+    font-size: 2.0rem !important;
+  }
+  
+  .team-name-cell {
+    font-size: 1.6rem !important;
+    max-width: 200px !important;
+  }
 }

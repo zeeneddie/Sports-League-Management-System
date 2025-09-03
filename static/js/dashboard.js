@@ -10,8 +10,83 @@ let totalSlides = 0;
 let featuredTeamName = "";
 let carouselInitialized = false;
 
+// Mobile detection function (dynamic)
+function isMobileDevice() {
+    return window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+function isTabletDevice() {
+    return window.innerWidth > 768 && window.innerWidth <= 1024;
+}
+
+function isTVDevice() {
+    return window.innerWidth > 1024;
+}
+
+// Current device state (will be updated dynamically)
+let isMobile = isMobileDevice();
+let isTablet = isTabletDevice();
+let isTV = isTVDevice();
+
+// Function to shorten team name for mobile display
+function getShortTeamName(fullTeamName, forceShorten = false) {
+    if (!isMobile && !forceShorten) return fullTeamName;
+    
+    // Extract the main team name (remove prefixes like AVV, SV, VV etc.)
+    const parts = fullTeamName.split(' ');
+    if (parts.length > 1) {
+        // Remove common prefixes
+        const prefixes = ['AVV', 'SV', 'VV', 'FC', 'AGOVV', 'VVV'];
+        if (prefixes.includes(parts[0])) {
+            const mainName = parts.slice(1).join(' ');
+            // Further shorten if still too long for mobile
+            if (mainName.length > 8) {
+                // Take first word only if multiple words remain
+                const mainParts = mainName.split(' ');
+                return mainParts[0];
+            }
+            return mainName;
+        }
+    }
+    
+    // If no prefix or single word, truncate if too long
+    if (fullTeamName.length > 8) {
+        return fullTeamName.substring(0, 8);
+    }
+    
+    return fullTeamName;
+}
+
+// Apply device-specific styling
+function applyDeviceStyling() {
+    // Update device detection
+    isMobile = isMobileDevice();
+    isTablet = isTabletDevice();
+    isTV = isTVDevice();
+    
+    const body = document.body;
+    
+    // Remove existing device classes
+    body.classList.remove('mobile-mode', 'tablet-mode', 'tv-mode');
+    
+    // Add appropriate device class
+    if (isMobile) {
+        body.classList.add('mobile-mode');
+        console.log('📱 Mobile mode activated (width: ' + window.innerWidth + 'px)');
+    } else if (isTablet) {
+        body.classList.add('tablet-mode');
+        console.log('📱 Tablet mode activated (width: ' + window.innerWidth + 'px)');
+    } else {
+        body.classList.add('tv-mode');
+        console.log('📺 TV mode activated (width: ' + window.innerWidth + 'px)');
+    }
+}
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
+    // Apply device-specific styling first
+    applyDeviceStyling();
+    
     loadData().then((data) => {
         console.log('🎯 Data loaded successfully, calling updateMatchStatistics with:', data);
         initializeCarousel();
@@ -41,11 +116,16 @@ async function loadData() {
         checkTestMode(data);
         
         // Clear existing slides except intro
-        const carouselInner = document.getElementById('carousel-inner');
-        const introSlide = carouselInner.querySelector('.intro-screen');
+        const slideContainer = document.getElementById('slide-container');
+        if (!slideContainer) {
+            console.error('❌ slide-container element not found!');
+            return data; // Return data but skip slideshow initialization
+        }
+        
+        const introSlide = slideContainer.querySelector('.intro-screen');
         
         // Keep intro slide, remove others
-        const otherSlides = carouselInner.querySelectorAll('.carousel-item:not(.intro-screen)');
+        const otherSlides = slideContainer.querySelectorAll('.slide-item:not(.intro-screen)');
         otherSlides.forEach(slide => slide.remove());
         
         // Add data slides  
@@ -65,7 +145,10 @@ async function loadData() {
         addLastWeekResultsSlide(data.last_week_results || []);
         addNextWeekMatchesSlide(data.next_week_matches || []);
         addFeaturedMatchesSlide(data.featured_team_matches || {played: [], upcoming: []});
-        addTeamMatrixSlide(data.team_matrix || {teams: [], matrix: {}});
+        // Skip team matrix on mobile devices (too complex for small screens)
+        if (!isMobile) {
+            addTeamMatrixSlide(data.team_matrix || {teams: [], matrix: {}});
+        }
         
         console.log('All slides added successfully');
         return data;
@@ -130,7 +213,13 @@ function updateCompetitionMatchesStats(played, total) {
     const remaining = total - played;
     console.log('📊 Updating competition matches stats:', { played, total, remaining, element });
     if (element) {
-        element.textContent = `Wedstrijden in competitie: nog te spelen ${remaining} / gespeeld ${played}`;
+        if (isMobile) {
+            // Mobile: Split over three lines for better readability
+            element.innerHTML = `Wedstrijden in competitie:<br>nog te spelen / gespeeld<br>${remaining} / ${played}`;
+        } else {
+            // Desktop: Single line
+            element.textContent = `Wedstrijden in competitie: nog te spelen ${remaining} / gespeeld ${played}`;
+        }
         console.log('✅ Updated competition matches stats successfully');
     } else {
         console.error('❌ Element competition-matches-stats not found');
@@ -141,7 +230,13 @@ function updateColumbiaMatchesStats(played, upcoming) {
     const element = document.getElementById('columbia-matches-stats');
     console.log('⚽ Updating Columbia matches stats:', { played, upcoming, element });
     if (element) {
-        element.textContent = `Wedstrijden Columbia: nog te spelen ${upcoming} / gespeeld ${played}`;
+        if (isMobile) {
+            // Mobile: Split over three lines for better readability
+            element.innerHTML = `Wedstrijden Columbia:<br>nog te spelen / gespeeld<br>${upcoming} / ${played}`;
+        } else {
+            // Desktop: Single line
+            element.textContent = `Wedstrijden Columbia: nog te spelen ${upcoming} / gespeeld ${played}`;
+        }
         console.log('✅ Updated Columbia matches stats successfully');
     } else {
         console.error('❌ Element columbia-matches-stats not found');
@@ -341,90 +436,137 @@ function calculateTeamForm(teamName, allMatches) {
 // Add slides functions with original styling
 function addStandingsSlide(standings, allMatches = []) {
     const slide = document.createElement('div');
-    slide.className = 'carousel-item';
+    slide.className = 'slide-item';
     
-    // Split standings into two halves: 1-7 left, 8-14 right
-    const leftStandings = standings.slice(0, 7);
-    const rightStandings = standings.slice(7, 14);
+    if (isMobile) {
+        // Mobile: Single column layout without form column
+        slide.innerHTML = `
+            <div class="row">
+                <div class="col-12">
+                    <table class="table table-striped standings-table">
+                        <thead>
+                            <tr>
+                                <th class="position-header">#</th>
+                                <th>Team</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">W</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">V</th>
+                                <th class="stats-header">+/-</th>
+                                <th class="position-header">P</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${standings.map(team => {
+                                const teamName = team.team || team.name;
+                                const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
+                                return `
+                                <tr${isFeatured ? ' class="featured-team-row"' : ''}>
+                                    <td class="position-cell">${team.position}</td>
+                                    <td class="team-name-cell">${getShortTeamName(teamName)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
+                                    <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
+                                    <td class="points-cell">${team.points}</td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    } else {
+        // Desktop/TV: Two column layout with form column
+        const leftStandings = standings.slice(0, 7);
+        const rightStandings = standings.slice(7, 14);
+        
+        slide.innerHTML = `
+            <div class="row">
+                <!-- Left column: positions 1-7 -->
+                <div class="col-md-6">
+                    <table class="table table-striped standings-table">
+                        <thead>
+                            <tr>
+                                <th class="position-header">#</th>
+                                <th>Team</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">W</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">V</th>
+                                <th class="stats-header">+/-</th>
+                                <th class="position-header">P</th>
+                                <th>Vorm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${leftStandings.map(team => {
+                                const teamName = team.team || team.name;
+                                const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
+                                return `
+                                <tr${isFeatured ? ' class="featured-team-row"' : ''}>
+                                    <td class="position-cell">${team.position}</td>
+                                    <td class="team-name-cell">${getShortTeamName(teamName)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
+                                    <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
+                                    <td class="points-cell">${team.points}</td>
+                                    <td>${calculateTeamForm(teamName, allMatches)}</td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Right column: positions 8-14 -->
+                <div class="col-md-6">
+                    <table class="table table-striped standings-table">
+                        <thead>
+                            <tr>
+                                <th class="position-header">#</th>
+                                <th>Team</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">W</th>
+                                <th class="stats-header">G</th>
+                                <th class="stats-header">V</th>
+                                <th class="stats-header">+/-</th>
+                                <th class="position-header">P</th>
+                                <th>Vorm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rightStandings.map(team => {
+                                const teamName = team.team || team.name;
+                                const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
+                                return `
+                                <tr${isFeatured ? ' class="featured-team-row"' : ''}>
+                                    <td class="position-cell">${team.position}</td>
+                                    <td class="team-name-cell">${getShortTeamName(teamName)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
+                                    <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
+                                    <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
+                                    <td class="points-cell">${team.points}</td>
+                                    <td>${calculateTeamForm(teamName, allMatches)}</td>
+                                </tr>`;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
     
-    slide.innerHTML = `
-        <div class="row">
-            <!-- Left column: positions 1-7 -->
-            <div class="col-md-6">
-                <table class="table table-striped standings-table">
-                    <thead>
-                        <tr>
-                            <th class="position-header">#</th>
-                            <th>Team</th>
-                            <th class="stats-header">G</th>
-                            <th class="stats-header">W</th>
-                            <th class="stats-header">G</th>
-                            <th class="stats-header">V</th>
-                            <th class="stats-header">+/-</th>
-                            <th class="position-header">P</th>
-                            <th>Vorm</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${leftStandings.map(team => {
-                            const teamName = team.team || team.name;
-                            const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
-                            return `
-                            <tr${isFeatured ? ' class="featured-team-row"' : ''}>
-                                <td class="position-cell">${team.position}</td>
-                                <td class="team-name-cell">${teamName}</td>
-                                <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
-                                <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
-                                <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
-                                <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
-                                <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
-                                <td class="points-cell">${team.points}</td>
-                                <td>${calculateTeamForm(teamName, allMatches)}</td>
-                            </tr>`;
-                        }).join('')}
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Right column: positions 8-14 -->
-            <div class="col-md-6">
-                <table class="table table-striped standings-table">
-                    <thead>
-                        <tr>
-                            <th class="position-header">#</th>
-                            <th>Team</th>
-                            <th class="stats-header">G</th>
-                            <th class="stats-header">W</th>
-                            <th class="stats-header">G</th>
-                            <th class="stats-header">V</th>
-                            <th class="stats-header">+/-</th>
-                            <th class="position-header">P</th>
-                            <th>Vorm</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${rightStandings.map(team => {
-                            const teamName = team.team || team.name;
-                            const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
-                            return `
-                            <tr${isFeatured ? ' class="featured-team-row"' : ''}>
-                                <td class="position-cell">${team.position}</td>
-                                <td class="team-name-cell">${teamName}</td>
-                                <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
-                                <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
-                                <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
-                                <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
-                                <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
-                                <td class="points-cell">${team.points}</td>
-                                <td>${calculateTeamForm(teamName, allMatches)}</td>
-                            </tr>`;
-                        }).join('')}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    `;
-    document.getElementById('carousel-inner').appendChild(slide);
+    const container = document.getElementById('slide-container');
+    if (container) {
+        container.appendChild(slide);
+    } else {
+        console.error('❌ Cannot add slide: slide-container element not found!');
+    }
 }
 
 function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
@@ -446,96 +588,148 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
     }
     
     const slide = document.createElement('div');
-    slide.className = 'carousel-item';
+    slide.className = 'slide-item';
     
-    // Split standings into two halves: 1-7 left, 8-14 right (same as main standings)
-    const leftStandings = periodData.slice(0, 7);
-    const rightStandings = periodData.slice(7, 14);
-    
-    slide.innerHTML = `
-        <div>
-            <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">
-                ${periodTitle}
-            </h2>
-            <div class="row">
-                <!-- Left column: positions 1-7 -->
-                <div class="col-md-6">
-                    <table class="table table-striped standings-table">
-                        <thead>
-                            <tr>
-                                <th class="position-header">#</th>
-                                <th>Team</th>
-                                <th class="stats-header">G</th>
-                                <th class="stats-header">W</th>
-                                <th class="stats-header">G</th>
-                                <th class="stats-header">V</th>
-                                <th class="stats-header">+/-</th>
-                                <th class="position-header">P</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${leftStandings.map(team => {
-                                const teamName = team.team || team.name;
-                                const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
-                                return `
-                                <tr${isFeatured ? ' class="featured-team-row"' : ''}>
-                                    <td class="position-cell">${team.position}</td>
-                                    <td class="team-name-cell">${teamName}</td>
-                                    <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
-                                    <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
-                                    <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
-                                    <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
-                                    <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
-                                    <td class="points-cell">${team.points}</td>
-                                </tr>`;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Right column: positions 8-14 -->
-                <div class="col-md-6">
-                    <table class="table table-striped standings-table">
-                        <thead>
-                            <tr>
-                                <th class="position-header">#</th>
-                                <th>Team</th>
-                                <th class="stats-header">G</th>
-                                <th class="stats-header">W</th>
-                                <th class="stats-header">G</th>
-                                <th class="stats-header">V</th>
-                                <th class="stats-header">+/-</th>
-                                <th class="position-header">P</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rightStandings.map(team => {
-                                const teamName = team.team || team.name;
-                                const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
-                                return `
-                                <tr${isFeatured ? ' class="featured-team-row"' : ''}>
-                                    <td class="position-cell">${team.position}</td>
-                                    <td class="team-name-cell">${teamName}</td>
-                                    <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
-                                    <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
-                                    <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
-                                    <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
-                                    <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
-                                    <td class="points-cell">${team.points}</td>
-                                </tr>`;
-                            }).join('')}
-                        </tbody>
-                    </table>
+    if (isMobile) {
+        // Mobile: Single column layout without form column
+        slide.innerHTML = `
+            <div>
+                <h2 class="mobile-header" style="font-size: 1.8rem !important;">
+                    ${periodTitle}
+                </h2>
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-striped standings-table">
+                            <thead>
+                                <tr>
+                                    <th class="position-header">#</th>
+                                    <th>Team</th>
+                                    <th class="stats-header">G</th>
+                                    <th class="stats-header">W</th>
+                                    <th class="stats-header">G</th>
+                                    <th class="stats-header">V</th>
+                                    <th class="stats-header">+/-</th>
+                                    <th class="position-header">P</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${periodData.map(team => {
+                                    const teamName = team.team || team.name;
+                                    const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
+                                    return `
+                                    <tr${isFeatured ? ' class="featured-team-row"' : ''}>
+                                        <td class="position-cell">${team.position}</td>
+                                        <td class="team-name-cell">${getShortTeamName(teamName)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
+                                        <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
+                                        <td class="points-cell">${team.points}</td>
+                                    </tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
-    document.getElementById('carousel-inner').appendChild(slide);
+        `;
+    } else {
+        // Desktop/TV: Two column layout (no form column in periods anyway)
+        const leftStandings = periodData.slice(0, 7);
+        const rightStandings = periodData.slice(7, 14);
+        
+        slide.innerHTML = `
+            <div>
+                <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">
+                    ${periodTitle}
+                </h2>
+                <div class="row">
+                    <!-- Left column: positions 1-7 -->
+                    <div class="col-md-6">
+                        <table class="table table-striped standings-table">
+                            <thead>
+                                <tr>
+                                    <th class="position-header">#</th>
+                                    <th>Team</th>
+                                    <th class="stats-header">G</th>
+                                    <th class="stats-header">W</th>
+                                    <th class="stats-header">G</th>
+                                    <th class="stats-header">V</th>
+                                    <th class="stats-header">+/-</th>
+                                    <th class="position-header">P</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${leftStandings.map(team => {
+                                    const teamName = team.team || team.name;
+                                    const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
+                                    return `
+                                    <tr${isFeatured ? ' class="featured-team-row"' : ''}>
+                                        <td class="position-cell">${team.position}</td>
+                                        <td class="team-name-cell">${getShortTeamName(teamName)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
+                                        <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
+                                        <td class="points-cell">${team.points}</td>
+                                    </tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Right column: positions 8-14 -->
+                    <div class="col-md-6">
+                        <table class="table table-striped standings-table">
+                            <thead>
+                                <tr>
+                                    <th class="position-header">#</th>
+                                    <th>Team</th>
+                                    <th class="stats-header">G</th>
+                                    <th class="stats-header">W</th>
+                                    <th class="stats-header">G</th>
+                                    <th class="stats-header">V</th>
+                                    <th class="stats-header">+/-</th>
+                                    <th class="position-header">P</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rightStandings.map(team => {
+                                    const teamName = team.team || team.name;
+                                    const isFeatured = featuredTeamName && (teamName.includes(featuredTeamName) || featuredTeamName.includes(teamName));
+                                    return `
+                                    <tr${isFeatured ? ' class="featured-team-row"' : ''}>
+                                        <td class="position-cell">${team.position}</td>
+                                        <td class="team-name-cell">${getShortTeamName(teamName)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.played || team.matches || 0)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.wins || 0)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.draws || team.ties || 0)}</td>
+                                        <td class="stats-cell">${formatTwoDigits(team.losses || 0)}</td>
+                                        <td class="stats-cell">${formatGoalDifference(team.goals_for || team.goalsFor || 0, team.goals_against || team.goalsAgainst || 0)}</td>
+                                        <td class="points-cell">${team.points}</td>
+                                    </tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    const container = document.getElementById('slide-container');
+    if (container) {
+        container.appendChild(slide);
+    } else {
+        console.error('❌ Cannot add slide: slide-container element not found!');
+    }
 }
 
 function addLastWeekResultsSlide(results) {
     const slide = document.createElement('div');
-    slide.className = 'carousel-item';
+    slide.className = 'slide-item';
     
     // Get only the last 7 played matches
     const last7Results = results
@@ -547,50 +741,103 @@ function addLastWeekResultsSlide(results) {
     
     const hasResults = Object.keys(weeklyResults).length > 0;
     
-    slide.innerHTML = `
-        <div>
-            <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">
-                Recente Wedstrijduitslagen
-            </h2>
-            <div class="row">
-                ${hasResults ? Object.entries(weeklyResults)
-                    .sort(([weekA], [weekB]) => weekB.localeCompare(weekA)) // Most recent week first
-                    .map(([weekLabel, weekResults]) => `
-                    <div class="col-12 mb-4">
-                        <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; text-align: center;">
-                            ${weekLabel}
-                        </h3>
-                        <div class="row">
+    if (isMobile) {
+        // Mobile layout: Compact cards with smaller fonts
+        slide.innerHTML = `
+            <div class="mobile-matches-container">
+                <h2 class="mobile-header">
+                    Recente Uitslagen
+                </h2>
+                <div>
+                    ${hasResults ? Object.entries(weeklyResults)
+                        .sort(([weekA], [weekB]) => weekB.localeCompare(weekA)) // Most recent week first
+                        .map(([weekLabel, weekResults]) => `
+                        <div style="margin-bottom: 15px;">
+                            <h3 style="font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 4px; text-align: center;">
+                                ${weekLabel}
+                            </h3>
                             ${weekResults.map(result => {
                                 const isFeaturedMatch = isFeaturedTeamMatch(result);
                                 const homeGoals = result.homeGoals || result.homescore || 0;
                                 const awayGoals = result.awayGoals || result.awayscore || 0;
                                 const home = result.home || result.hometeam || 'Team A';
                                 const away = result.away || result.awayteam || 'Team B';
+                                const matchDate = new Date(result.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
+                                
                                 return `
-                                <div class="col-6 offset-3">
-                                    <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); ${isFeaturedMatch ? 'background-color: rgba(255, 215, 0, 0.2) !important; border: 2px solid #ffd700 !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;' : ''}">
-                                        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 15px;">
-                                            <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${home}</div>
-                                            <div style="text-align: center; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#0066cc'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${homeGoals} - ${awayGoals}</div>
-                                            <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${away}</div>
-                                        </div>
+                                <div class="mobile-match-item played ${isFeaturedMatch ? 'featured' : ''}" style="${isFeaturedMatch ? 'border-left-color: #ffd700 !important; background-color: rgba(255, 215, 0, 0.2) !important;' : ''}">
+                                    <div class="mobile-match-date">${matchDate}</div>
+                                    <div class="mobile-match-teams">
+                                        <div class="mobile-team ${isFeaturedMatch ? 'featured' : ''}">${getShortTeamName(home)}</div>
+                                        <div class="mobile-score">${homeGoals} - ${awayGoals}</div>
+                                        <div class="mobile-team ${isFeaturedMatch ? 'featured' : ''}">${getShortTeamName(away)}</div>
                                     </div>
                                 </div>`;
                             }).join('')}
                         </div>
-                    </div>
-                `).join('') : `
-                <div class="col-12 text-center">
-                    <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 30px; margin: 20px;">
-                        <h3 style="color: #666; font-size: 1.8rem;">Geen wedstrijduitslagen beschikbaar</h3>
-                        <p style="color: #888; font-size: 1.2rem;">Data wordt geladen of er zijn nog geen wedstrijden gespeeld dit seizoen</p>
-                    </div>
-                </div>`}
+                        `).join('') : `
+                        <div class="col-12 text-center">
+                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 20px; margin: 15px;">
+                                <h3 style="color: #666; font-size: 1.2rem;">Geen wedstrijduitslagen</h3>
+                                <p style="color: #888; font-size: 1.0rem;">Er zijn nog geen wedstrijden gespeeld</p>
+                            </div>
+                        </div>`}
+                </div>
             </div>
-        </div>
-    `;
-    document.getElementById('carousel-inner').appendChild(slide);
+        `;
+    } else {
+        // Desktop layout: Original large format
+        slide.innerHTML = `
+            <div>
+                <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">
+                    Recente Wedstrijduitslagen
+                </h2>
+                <div class="row">
+                    ${hasResults ? Object.entries(weeklyResults)
+                        .sort(([weekA], [weekB]) => weekB.localeCompare(weekA)) // Most recent week first
+                        .map(([weekLabel, weekResults]) => `
+                        <div class="col-12 mb-4">
+                            <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; text-align: center;">
+                                ${weekLabel}
+                            </h3>
+                            <div class="row">
+                                ${weekResults.map(result => {
+                                    const isFeaturedMatch = isFeaturedTeamMatch(result);
+                                    const homeGoals = result.homeGoals || result.homescore || 0;
+                                    const awayGoals = result.awayGoals || result.awayscore || 0;
+                                    const home = result.home || result.hometeam || 'Team A';
+                                    const away = result.away || result.awayteam || 'Team B';
+                                    return `
+                                    <div class="col-6 offset-3">
+                                        <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); ${isFeaturedMatch ? 'background-color: rgba(255, 215, 0, 0.2) !important; border: 2px solid #ffd700 !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;' : ''}">
+                                            <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 15px;">
+                                                <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${home}</div>
+                                                <div style="text-align: center; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#0066cc'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${homeGoals} - ${awayGoals}</div>
+                                                <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${away}</div>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `).join('') : `
+                    <div class="col-12 text-center">
+                        <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 30px; margin: 20px;">
+                            <h3 style="color: #666; font-size: 1.8rem;">Geen wedstrijduitslagen beschikbaar</h3>
+                            <p style="color: #888; font-size: 1.2rem;">Data wordt geladen of er zijn nog geen wedstrijden gespeeld dit seizoen</p>
+                        </div>
+                    </div>`}
+                </div>
+            </div>
+        `;
+    }
+    
+    const container = document.getElementById('slide-container');
+    if (container) {
+        container.appendChild(slide);
+    } else {
+        console.error('❌ Cannot add slide: slide-container element not found!');
+    }
 }
 
 function groupResultsByWeek(results) {
@@ -708,27 +955,28 @@ function groupUpcomingMatchesByWeek(matches) {
 
 function addNextWeekMatchesSlide(matches) {
     const slide = document.createElement('div');
-    slide.className = 'carousel-item';
+    slide.className = 'slide-item';
     
     // Group matches by week (similar to results)
     const weeklyMatches = groupUpcomingMatchesByWeek(matches);
     
     const hasMatches = Object.keys(weeklyMatches).length > 0;
     
-    slide.innerHTML = `
-        <div>
-            <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">
-                Komende Wedstrijden
-            </h2>
-            <div class="row">
-                ${hasMatches ? Object.entries(weeklyMatches)
-                    .sort(([weekA], [weekB]) => weekA.localeCompare(weekB)) // Earliest week first
-                    .map(([weekLabel, weekMatches]) => `
-                    <div class="col-12 mb-4">
-                        <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; text-align: center;">
-                            ${weekLabel}
-                        </h3>
-                        <div class="row">
+    if (isMobile) {
+        // Mobile layout: Compact cards with smaller fonts
+        slide.innerHTML = `
+            <div class="mobile-matches-container">
+                <h2 class="mobile-header">
+                    Wedstrijden
+                </h2>
+                <div>
+                    ${hasMatches ? Object.entries(weeklyMatches)
+                        .sort(([weekA], [weekB]) => weekA.localeCompare(weekB)) // Earliest week first
+                        .map(([weekLabel, weekMatches]) => `
+                        <div style="margin-bottom: 15px;">
+                            <h3 style="font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 4px; text-align: center;">
+                                ${weekLabel}
+                            </h3>
                             ${weekMatches.map(match => {
                                 const isFeaturedMatch = isFeaturedTeamMatch(match);
                                 const home = match.home || match.hometeam || 'Team A';
@@ -740,37 +988,90 @@ function addNextWeekMatchesSlide(matches) {
                                 const matchTime = matchDateTime.toLocaleTimeString('nl-NL', {hour: '2-digit', minute: '2-digit'});
                                 
                                 return `
-                                <div class="col-6 offset-3">
-                                    <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); ${isFeaturedMatch ? 'background-color: rgba(255, 215, 0, 0.2) !important; border: 2px solid #ffd700 !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;' : ''}">
-                                        <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 15px;">
-                                            <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${home}</div>
-                                            <div style="text-align: center;">
-                                                <div style="font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#0066cc'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}; line-height: 1;">${matchDate}</div>
-                                                <div style="font-size: 1.4rem; font-weight: 600; color: ${isFeaturedMatch ? '#333' : '#666'}; line-height: 1;">${matchTime}</div>
-                                            </div>
-                                            <div style="text-align: right; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${away}</div>
-                                        </div>
+                                <div class="mobile-match-item upcoming ${isFeaturedMatch ? 'featured' : ''}" style="${isFeaturedMatch ? 'border-left-color: #ffd700 !important; background-color: rgba(255, 215, 0, 0.2) !important;' : ''}">
+                                    <div class="mobile-match-teams">
+                                        <div class="mobile-team ${isFeaturedMatch ? 'featured' : ''}">${getShortTeamName(home)}</div>
+                                        <div class="mobile-match-date" style="flex: 0 0 auto; font-size: 0.8rem; margin-bottom: 0; line-height: 1.2;">${matchDate}<br>${matchTime}</div>
+                                        <div class="mobile-team ${isFeaturedMatch ? 'featured' : ''}">${getShortTeamName(away)}</div>
                                     </div>
                                 </div>`;
                             }).join('')}
                         </div>
-                    </div>
-                `).join('') : `
-                <div class="col-12 text-center">
-                    <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 30px; margin: 20px;">
-                        <h3 style="color: #666; font-size: 1.8rem;">Geen komende wedstrijden beschikbaar</h3>
-                        <p style="color: #888; font-size: 1.2rem;">Programma wordt nog bekendgemaakt</p>
-                    </div>
-                </div>`}
+                        `).join('') : `
+                        <div class="col-12 text-center">
+                            <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 20px; margin: 15px;">
+                                <h3 style="color: #666; font-size: 1.2rem;">Geen komende wedstrijden</h3>
+                                <p style="color: #888; font-size: 1.0rem;">Programma wordt nog bekendgemaakt</p>
+                            </div>
+                        </div>`}
+                </div>
             </div>
-        </div>
-    `;
-    document.getElementById('carousel-inner').appendChild(slide);
+        `;
+    } else {
+        // Desktop layout: Original large format
+        slide.innerHTML = `
+            <div>
+                <h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">
+                    Komende Wedstrijden
+                </h2>
+                <div class="row">
+                    ${hasMatches ? Object.entries(weeklyMatches)
+                        .sort(([weekA], [weekB]) => weekA.localeCompare(weekB)) // Earliest week first
+                        .map(([weekLabel, weekMatches]) => `
+                        <div class="col-12 mb-4">
+                            <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; text-align: center;">
+                                ${weekLabel}
+                            </h3>
+                            <div class="row">
+                                ${weekMatches.map(match => {
+                                    const isFeaturedMatch = isFeaturedTeamMatch(match);
+                                    const home = match.home || match.hometeam || 'Team A';
+                                    const away = match.away || match.awayteam || 'Team B';
+                                    
+                                    // Format date as DD-MM and extract time
+                                    const matchDateTime = new Date(match.date);
+                                    const matchDate = matchDateTime.toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
+                                    const matchTime = matchDateTime.toLocaleTimeString('nl-NL', {hour: '2-digit', minute: '2-digit'});
+                                    
+                                    return `
+                                    <div class="col-6 offset-3">
+                                        <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); ${isFeaturedMatch ? 'background-color: rgba(255, 215, 0, 0.2) !important; border: 2px solid #ffd700 !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;' : ''}">
+                                            <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 15px;">
+                                                <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${home}</div>
+                                                <div style="text-align: center;">
+                                                    <div style="font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#0066cc'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}; line-height: 1;">${matchDate}</div>
+                                                    <div style="font-size: 1.4rem; font-weight: 600; color: ${isFeaturedMatch ? '#333' : '#666'}; line-height: 1;">${matchTime}</div>
+                                                </div>
+                                                <div style="text-align: right; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${away}</div>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `).join('') : `
+                    <div class="col-12 text-center">
+                        <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 30px; margin: 20px;">
+                            <h3 style="color: #666; font-size: 1.8rem;">Geen komende wedstrijden beschikbaar</h3>
+                            <p style="color: #888; font-size: 1.2rem;">Programma wordt nog bekendgemaakt</p>
+                        </div>
+                    </div>`}
+                </div>
+            </div>
+        `;
+    }
+    
+    const container = document.getElementById('slide-container');
+    if (container) {
+        container.appendChild(slide);
+    } else {
+        console.error('❌ Cannot add slide: slide-container element not found!');
+    }
 }
 
 function addFeaturedMatchesSlide(matches) {
     const slide = document.createElement('div');
-    slide.className = 'carousel-item';
+    slide.className = 'slide-item';
     
     // Combine all matches and separate into played and upcoming
     const allMatches = [
@@ -804,13 +1105,81 @@ function addFeaturedMatchesSlide(matches) {
     // Combine: played first, then upcoming
     const sortedMatches = [...playedMatches, ...upcomingMatches];
     
-    slide.innerHTML = `
-        <div style="height: calc(100vh - 120px); overflow-y: auto; overflow-x: hidden;">
-            <h2 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: #333; text-align: center;">
-                ${featuredTeamName} Wedstrijden
-            </h2>
-            <div class="row">
-                <div class="col-md-6">
+    if (isMobile) {
+        // Mobile layout: Single column with compact match items
+        slide.innerHTML = `
+            <div class="mobile-matches-container">
+                <h2 class="mobile-header">
+                    ${getShortTeamName(featuredTeamName)}
+                </h2>
+                <div>
+                    ${sortedMatches.map(match => {
+                        const home = match.home || match.hometeam || '';
+                        const away = match.away || match.awayteam || '';
+                        const isHomeMatch = home.includes(featuredTeamName) || featuredTeamName.includes(home);
+                        const opponent = isHomeMatch ? away : home;
+                        const matchStatus = match.status || match.matchStatus || '';
+                        
+                        // Check if match is played
+                        const isPlayed = matchStatus === 'Gespeeld' || 
+                                       matchStatus === 'played' || 
+                                       matchStatus === 'Afgelopen' ||
+                                       matchStatus === 'Finished' ||
+                                       matchStatus === 'Final' ||
+                                       (matchStatus === '' && match.homeGoals !== undefined && match.awayGoals !== undefined && 
+                                        !isNaN(parseInt(match.homeGoals)) && !isNaN(parseInt(match.awayGoals)));
+                        
+                        if (isPlayed) {
+                            const homeGoals = match.homeGoals || match.homescore || 0;
+                            const awayGoals = match.awayGoals || match.awayscore || 0;
+                            const ourScore = isHomeMatch ? homeGoals : awayGoals;
+                            const opponentScore = isHomeMatch ? awayGoals : homeGoals;
+                            
+                            return `
+                            <div class="mobile-match-item played">
+                                <div class="mobile-match-date">${new Date(match.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'})}</div>
+                                <div class="mobile-match-teams">
+                                    ${isHomeMatch ? 
+                                        `<div class="mobile-team featured">${getShortTeamName(featuredTeamName)}</div>
+                                         <div class="mobile-score">${ourScore} - ${opponentScore}</div>
+                                         <div class="mobile-team">${getShortTeamName(opponent)}</div>` :
+                                        `<div class="mobile-team">${getShortTeamName(opponent)}</div>
+                                         <div class="mobile-score">${opponentScore} - ${ourScore}</div>
+                                         <div class="mobile-team featured">${getShortTeamName(featuredTeamName)}</div>`
+                                    }
+                                </div>
+                            </div>`;
+                        } else {
+                            const matchDate = new Date(match.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
+                            const matchTime = new Date(match.date).toLocaleTimeString('nl-NL', {hour: '2-digit', minute: '2-digit'});
+                            
+                            return `
+                            <div class="mobile-match-item upcoming">
+                                <div class="mobile-match-teams">
+                                    ${isHomeMatch ? 
+                                        `<div class="mobile-team featured">${getShortTeamName(featuredTeamName)}</div>
+                                         <div class="mobile-match-date" style="flex: 0 0 auto; font-size: 0.8rem; margin-bottom: 0; line-height: 1.2;">${matchDate}<span style="margin-left: 3px;">${matchTime}</span></div>
+                                         <div class="mobile-team">${getShortTeamName(opponent)}</div>` :
+                                        `<div class="mobile-team">${getShortTeamName(opponent)}</div>
+                                         <div class="mobile-match-date" style="flex: 0 0 auto; font-size: 0.8rem; margin-bottom: 0; line-height: 1.2;">${matchDate}<span style="margin-left: 3px;">${matchTime}</span></div>
+                                         <div class="mobile-team featured">${getShortTeamName(featuredTeamName)}</div>`
+                                    }
+                                </div>
+                            </div>`;
+                        }
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    } else {
+        // Desktop layout: Two columns (existing code)
+        slide.innerHTML = `
+            <div style="height: calc(100vh - 120px); overflow-y: auto; overflow-x: hidden;">
+                <h2 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: #333; text-align: center;">
+                    ${featuredTeamName} Wedstrijden
+                </h2>
+                <div class="row">
+                    <div class="col-md-6">
                     <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; color: #333; text-align: center;">THUIS</h3>
                     ${sortedMatches.filter(match => {
                         const home = match.home || match.hometeam || '';
@@ -900,13 +1269,20 @@ function addFeaturedMatchesSlide(matches) {
                 </div>
             </div>
         </div>
-    `;
-    document.getElementById('carousel-inner').appendChild(slide);
+        `;
+    }
+    
+    const container = document.getElementById('slide-container');
+    if (container) {
+        container.appendChild(slide);
+    } else {
+        console.error('❌ Cannot add slide: slide-container element not found!');
+    }
 }
 
 function addTeamMatrixSlide(matrix) {
     const slide = document.createElement('div');
-    slide.className = 'carousel-item';
+    slide.className = 'slide-item';
     slide.innerHTML = `
         <div style="height: calc(100vh - 100px); overflow-y: auto; padding-top: 1rem;">
             <h2 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem; color: #333; text-align: center;">
@@ -917,13 +1293,13 @@ function addTeamMatrixSlide(matrix) {
                     <thead>
                         <tr>
                             <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 4px 2px;"></th>
-                            ${(matrix.teams || []).map(team => `<th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 4px 2px; font-size: 1rem;">${team.substring(0, 8)}</th>`).join('')}
+                            ${(matrix.teams || []).map(team => `<th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 4px 2px; font-size: 1rem;">${getShortTeamName(team, true)}</th>`).join('')}
                         </tr>
                     </thead>
                     <tbody>
                         ${(matrix.teams || []).map(team => `
                             <tr>
-                                <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 4px 2px; font-size: 1rem;">${team.substring(0, 8)}</th>
+                                <th style="background-color: #f8f9fa; font-weight: bold; text-align: center; padding: 4px 2px; font-size: 1rem;">${getShortTeamName(team, true)}</th>
                                 ${(matrix.teams || []).map(opponent => {
                                     const result = matrix.matrix && matrix.matrix[team] ? matrix.matrix[team][opponent] : null;
                                     return `<td style="text-align: center; padding: 3px 1px; border: 1px solid #dee2e6; font-size: 1rem;">
@@ -937,35 +1313,77 @@ function addTeamMatrixSlide(matrix) {
             </div>
         </div>
     `;
-    document.getElementById('carousel-inner').appendChild(slide);
+    const container = document.getElementById('slide-container');
+    if (container) {
+        container.appendChild(slide);
+    } else {
+        console.error('❌ Cannot add slide: slide-container element not found!');
+    }
 }
 
-// Initialize carousel
+// Initialize slideshow
 function initializeCarousel() {
-    const carouselElement = document.getElementById('carousel');
-    const slides = carouselElement.querySelectorAll('.carousel-item');
+    const slideContainer = document.getElementById('slide-container');
+    if (!slideContainer) {
+        console.error('❌ Cannot initialize carousel: slide-container element not found!');
+        return;
+    }
+    
+    const slides = slideContainer.querySelectorAll('.slide-item');
     totalSlides = slides.length;
     
-    console.log('Initializing carousel with', totalSlides, 'slides');
+    console.log('Initializing slideshow with', totalSlides, 'slides');
     
-    // Only initialize carousel instance once
-    if (!carouselInitialized) {
-        carouselInstance = new bootstrap.Carousel(carouselElement, {
-            interval: false,  // Disable auto-advance - controlled by countdown timer
-            wrap: true
-        });
-        
-        // Add event listener for slide changes (only once)
-        carouselElement.addEventListener('slid.bs.carousel', function() {
-            updateScreenNumber();
-            startCountdown();
-        });
-        
-        carouselInitialized = true;
-        console.log('Carousel initialized successfully');
-    } else {
-        console.log('Carousel already initialized, updating slide count only');
+    // Set first slide as active
+    if (slides.length > 0) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        slides[0].classList.add('active');
     }
+    
+    carouselInitialized = true;
+    currentSlideIndex = 0;
+    console.log('Slideshow initialized successfully');
+    
+    updateScreenNumber();
+    startCountdown();
+}
+
+// Add simple slideshow navigation
+let currentSlideIndex = 0;
+
+function nextSlide() {
+    const slideContainer = document.getElementById('slide-container');
+    const slides = slideContainer.querySelectorAll('.slide-item');
+    
+    if (slides.length === 0) return;
+    
+    // Remove active class from current slide
+    slides[currentSlideIndex].classList.remove('active');
+    
+    // Move to next slide (wrap around)
+    currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+    
+    // Add active class to new slide
+    slides[currentSlideIndex].classList.add('active');
+    
+    updateScreenNumber();
+    startCountdown();
+}
+
+function previousSlide() {
+    const slideContainer = document.getElementById('slide-container');
+    const slides = slideContainer.querySelectorAll('.slide-item');
+    
+    if (slides.length === 0) return;
+    
+    // Remove active class from current slide
+    slides[currentSlideIndex].classList.remove('active');
+    
+    // Move to previous slide (wrap around)
+    currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+    
+    // Add active class to new slide
+    slides[currentSlideIndex].classList.add('active');
     
     updateScreenNumber();
     startCountdown();
@@ -989,7 +1407,7 @@ function startCountdown() {
         if (currentCountdown <= 0) {
             clearInterval(countdownInterval);
             countdownInterval = null;
-            carouselInstance.next();
+            nextSlide();
         }
     }, 1000);
 }
@@ -1004,18 +1422,9 @@ function updateCountdownDisplay() {
 }
 
 function updateScreenNumber() {
-    const slides = document.querySelectorAll('.carousel-item');
-    let currentIndex = 0;
-    
-    slides.forEach((slide, index) => {
-        if (slide.classList.contains('active')) {
-            currentIndex = index;
-        }
-    });
-    
     const element = document.getElementById('screen-number-display');
     if (element) {
-        element.textContent = `${currentIndex + 1}/${totalSlides}`;
+        element.textContent = `${currentSlideIndex + 1}/${totalSlides}`;
     }
 }
 
@@ -1023,10 +1432,31 @@ function updateScreenNumber() {
 document.addEventListener('keydown', function(event) {
     if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        carouselInstance?.prev();
+        previousSlide();
     } else if (event.key === 'ArrowRight') {
         event.preventDefault();
-        carouselInstance?.next();
+        nextSlide();
+    }
+});
+
+// Handle window resize to update device detection
+window.addEventListener('resize', function() {
+    const oldIsMobile = isMobile;
+    
+    // Update device detection
+    applyDeviceStyling();
+    
+    // If device type changed, refresh statistics
+    if (oldIsMobile !== isMobile) {
+        console.log('📱 Device type changed, refreshing statistics...');
+        
+        // Refresh statistics with current data
+        loadData().then((data) => {
+            updateMatchStatistics(data);
+        }).catch(error => {
+            console.error('Data refresh failed:', error);
+            updateMatchStatistics(null);
+        });
     }
 });
 
