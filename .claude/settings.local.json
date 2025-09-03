@@ -41,9 +41,19 @@
       "Read(/G:\\g\\Src\\Python/**)",
       "Bash(echo $SCREEN_DURATION_SECONDS)",
       "Bash(git config:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Read(c:\\Users\\eddie\\Downloads/**)",
+      "Read(c:\\Users\\eddie\\Downloads/**)",
+      "Read(c:\\Users\\eddie\\Downloads/**)",
+      "Read(c:\\Users\\eddie\\Downloads/**)",
+      "Read(c:\\Users\\eddie\\Downloads/**)",
+      "Bash(where dos2unix)",
+      "Bash(dos2unix:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "G:\\g\\Src\\Python"
+    ]
   }
 }

@@ -39,6 +39,19 @@ gunicorn app:app
 pip install schedule==1.2.0
 ```
 
+### SSL/HTTPS Setup
+```bash
+# Generate SSL certificate (Windows)
+setup_ssl.bat
+
+# Generate SSL certificate (Cross-platform)
+python generate_ssl_cert.py
+
+# After SSL setup, the application will run on:
+# HTTPS: https://localhost:5443 (when USE_SSL=true)
+# HTTP:  http://localhost:5000  (when USE_SSL=false)
+```
+
 ### Code Quality
 ```bash
 # Linting with ruff
@@ -93,6 +106,13 @@ psql $DATABASE_URL
 Required environment variables in `.env`:
 ```
 SECRET_KEY=your_secret_key
+
+# SSL Configuration (optional)
+USE_SSL=true                    # Enable HTTPS
+SSL_CERT_PATH=ssl/cert.pem     # Path to SSL certificate
+SSL_KEY_PATH=ssl/key.pem       # Path to SSL private key
+SSL_PORT=5443                  # HTTPS port (default: 5443)
+HTTP_PORT=5000                 # HTTP port (default: 5000)
 ```
 
 Note: Database and authentication features have been removed in this simplified version.
