@@ -59,7 +59,7 @@ scp static\images\team_logos\t_184.png %SERVER%:%REMOTE_PATH%/static/images/team
 
 REM Copy all other team logos if they exist
 echo Copying additional team logos...
-REM if exist static\images\team_logos\*.png scp static\images\team_logos\*.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/ 2>nul
+if exist static\images\team_logos\*.png scp static\images\team_logos\*.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/ 2>nul
 
 echo.
 echo ========================================

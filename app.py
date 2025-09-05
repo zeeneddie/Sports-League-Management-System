@@ -79,7 +79,6 @@ API_DATA_MAPPINGS = {
     'last-week-results': {'key': 'last_week_results', 'wrapper': 'results'},
     'next-week-matches': {'key': 'next_week_matches', 'wrapper': 'matches'},
     'weekly-results': {'key': 'weekly_results', 'wrapper': 'weekly_results'},
-    'team-matrix': {'key': 'team_matrix', 'wrapper': 'team_matrix'},
     'all-matches': {'key': 'all_matches', 'wrapper': 'matches'},
 }
 
@@ -96,7 +95,7 @@ def _format_api_response(data, data_key, wrapper_key):
         return jsonify(data)
     
     response = {
-        wrapper_key: data.get(data_key, [] if wrapper_key != 'weekly_results' and wrapper_key != 'team_matrix' else {}),
+        wrapper_key: data.get(data_key, [] if wrapper_key != 'weekly_results' else {}),
         'last_updated': data.get('last_updated')
     }
     return jsonify(response)
@@ -171,13 +170,6 @@ def get_weekly_results():
         return error
     return _format_api_response(data, 'weekly_results', 'weekly_results')
 
-@app.route('/api/team-matrix')
-def get_team_matrix():
-    """Get team vs team matrix"""
-    data, error = _get_cached_data_with_error_handling()
-    if error:
-        return error
-    return _format_api_response(data, 'team_matrix', 'team_matrix')
 
 @app.route('/api/all-matches')
 def get_all_matches():
