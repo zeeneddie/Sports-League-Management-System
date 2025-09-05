@@ -6,12 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a simplified Sports League Management System (SPMS) built with Flask. The system displays league data in a carousel dashboard format. It integrates with real-time data from the hollandsevelden.nl API and automatically fetches data daily and on Saturday afternoons (16:00-19:00) every 30 minutes.
 
 **Key Features:**
-- Carousel dashboard with 6 screens
+- Carousel dashboard with 5 screens
 - Main league standings
 - Period standings (where matches have been played)
 - Last week results and next week matches
 - Columbia team specific matches (played and upcoming)
-- Team vs team matrix showing results/dates
 
 ## Development Commands
 
@@ -89,7 +88,6 @@ psql $DATABASE_URL
 - **`/api/last-week-results`** - Get results from last 7 days
 - **`/api/next-week-matches`** - Get matches for next 7 days
 - **`/api/columbia-matches`** - Get all Columbia team matches
-- **`/api/team-matrix`** - Get team vs team results/schedule matrix
 
 ### Data Integration & Scheduling
 - **`hollandsevelden.py`** - External API integration for Dutch league data
@@ -121,7 +119,7 @@ Note: Database and authentication features have been removed in this simplified 
 - **Templates**: Single dashboard template (`templates/dashboard.html`)
 - **UI Framework**: Bootstrap 5 with carousel component
 - **JavaScript**: Vanilla JS with fetch API for loading data
-- **Responsive Design**: Auto-refreshing carousel with 6 screens
+- **Responsive Design**: Auto-refreshing carousel with 5 screens
 
 ## Dashboard Screens
 1. **Main Standings** - Current league table
@@ -129,7 +127,6 @@ Note: Database and authentication features have been removed in this simplified 
 3. **Last Week Results** - Match results from past 7 days
 4. **Next Week Matches** - Upcoming matches in next 7 days
 5. **Columbia Matches** - All Columbia team matches (played and upcoming)
-6. **Team Matrix** - Grid showing all teams vs teams with results/dates
 
 ## Data Files
 - **`league_data.json`** - Cached API data (auto-generated)

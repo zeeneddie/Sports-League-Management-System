@@ -256,6 +256,36 @@ body {
   max-width: 280px; /* Increased from 200px to show full names */
 }
 
+/* Team logo styling */
+.team-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-right: 8px;
+  vertical-align: middle;
+  border-radius: 2px;
+}
+
+/* Larger team logo styling for matches (1.3x bigger) */
+.team-logo-large {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-right: 10px;
+  vertical-align: middle;
+  border-radius: 3px;
+}
+
+/* Larger team logo styling positioned after team name */
+.team-logo-large-after {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-left: 10px;
+  vertical-align: middle;
+  border-radius: 3px;
+}
+
 /* === TEAM FORM CIRCLES === */
 .team-form {
   display: inline-flex;
@@ -356,6 +386,15 @@ body {
   font-size: 1.5rem;
   color: #ffc107;
   font-weight: 500;
+}
+
+/* Desktop footer display */
+.desktop-footer {
+  display: inline;
+}
+
+.mobile-footer {
+  display: none;
 }
 
 /* === TEST MODE INDICATOR === */
@@ -604,10 +643,15 @@ body {
     font-size: 0.8rem !important; /* Smaller font to fit on one line */
   }
   
-  /* Hide team matrix completely on mobile */
-  .mobile-mode .team-matrix-slide {
+  /* Show only mobile footer on mobile devices */
+  .desktop-footer {
     display: none !important;
   }
+  
+  .mobile-footer {
+    display: inline !important;
+  }
+  
   
   /* Slide padding adjustments */
   .slide-item,
@@ -636,6 +680,27 @@ body {
     height: 60px !important;
     top: -10px !important;
     right: 5px !important;
+  }
+  
+  /* Team logo mobile sizing */
+  .team-logo {
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 4px !important;
+  }
+  
+  /* Larger team logo mobile sizing (1.3x of 16px = 21px) */
+  .team-logo-large {
+    width: 21px !important;
+    height: 21px !important;
+    margin-right: 5px !important;
+  }
+  
+  /* Larger team logo mobile sizing positioned after name */
+  .team-logo-large-after {
+    width: 21px !important;
+    height: 21px !important;
+    margin-left: 5px !important;
   }
 }
 
