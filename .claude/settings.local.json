@@ -48,7 +48,8 @@
       "Read(c:\\Users\\eddie\\Downloads/**)",
       "Read(c:\\Users\\eddie\\Downloads/**)",
       "Bash(where dos2unix)",
-      "Bash(dos2unix:*)"
+      "Bash(dos2unix:*)",
+      "Bash(scp:*)"
     ],
     "deny": [],
     "ask": [],
