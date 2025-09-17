@@ -11,17 +11,33 @@ let featuredTeamName = "";
 let carouselInitialized = false;
 let teamShirtData = {}; // Store team shirt data from API
 
-// Mobile detection function (dynamic)
+// Mobile detection function (dynamic) - improved for wide mobile screens
 function isMobileDevice() {
-    return window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // Check for mobile user agents first (most reliable)
+    const isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // For portrait orientation on narrow screens, definitely mobile
+    if (window.innerWidth <= 768) return true;
+
+    // For portrait orientation on wider screens (like Motorola Edge Ultra), check user agent
+    if (window.matchMedia("(orientation: portrait)").matches && isMobileUA) return true;
+
+    // For very wide screens in landscape but still mobile user agent
+    if (isMobileUA && window.innerWidth <= 1200) return true;
+
+    return false;
 }
 
 function isTabletDevice() {
-    return window.innerWidth > 768 && window.innerWidth <= 1024;
+    // Tablets are typically 768-1024px and NOT mobile user agents, or iPads
+    const isTabletUA = /iPad/i.test(navigator.userAgent);
+    return (window.innerWidth > 768 && window.innerWidth <= 1024 && !isMobileDevice()) || isTabletUA;
 }
 
 function isTVDevice() {
-    return window.innerWidth > 1024;
+    // TV browsers are typically wide screens without mobile user agents
+    const isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return window.innerWidth > 1024 && !isMobileUA;
 }
 
 // Current device state (will be updated dynamically)

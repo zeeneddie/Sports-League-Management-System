@@ -813,7 +813,7 @@ body {
 }
 
 /* Mobile responsive table adjustments */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-width: 1200px) and (orientation: portrait) {
   /* Intro screen mobile adjustments */
   .competition-title {
     font-size: 2.0rem !important;
