@@ -9,6 +9,7 @@ let currentCountdown = SCREEN_DURATION_SECONDS;
 let totalSlides = 0;
 let featuredTeamName = "";
 let carouselInitialized = false;
+let teamShirtData = {}; // Store team shirt data from API
 
 // Mobile detection function (dynamic)
 function isMobileDevice() {
@@ -28,74 +29,43 @@ let isMobile = isMobileDevice();
 let isTablet = isTabletDevice();
 let isTV = isTVDevice();
 
+// Function to build team shirt data from API
+function buildTeamShirtData(data) {
+    teamShirtData = {};
+    if (data && data.league_table) {
+        data.league_table.forEach(team => {
+            if (team.team && team.shirt) {
+                teamShirtData[team.team] = team.shirt;
+            }
+        });
+    }
+}
+
+// Generic function to get team logo using API shirt data
+function getTeamLogoGeneric(teamName, cssClass = 'team-logo') {
+    if (!teamName) return '';
+
+    // Look up shirt data for this team
+    const shirtId = teamShirtData[teamName];
+
+    if (shirtId) {
+        // Remove .png extension if present and construct local path
+        const logoId = shirtId.replace('.png', '');
+        const logoUrl = `/static/images/team_logos/${logoId}.png`;
+        return `<img src="${logoUrl}" class="${cssClass}" alt="${teamName}" onerror="this.style.display='none'">`;
+    }
+
+    return ''; // No logo found
+}
+
 // Function to get team logo based on team name
 function getTeamLogo(teamName) {
-    if (!teamName) return '';
-    
-    // Team name to logo ID mapping (based on hollandsevelden.nl data)
-    const teamLogoMap = {
-        'Columbia': 't_184',
-        'AVV Columbia': 't_184',
-        'AGOVV': 't_183', 
-        'Epe': 't_185',
-        'Zwart-Wi': 't_186',
-        'Hattem': 't_187',
-        'Groen Wi': 't_188',
-        'Heerde': 't_189',
-        'VIOS V': 't_190',
-        "'t Harde": 't_191',
-        'VVOP': 't_192',
-        'Hatto': 't_193',
-        'OWIOS': 't_194',
-        'SP Teuge': 't_195',
-        'SEH': 't_196'
-    };
-    
-    // Find logo for team (exact match or partial match)
-    const logoId = teamLogoMap[teamName] || Object.keys(teamLogoMap).find(key => 
-        teamName.includes(key) || key.includes(teamName)
-    );
-    
-    if (logoId) {
-        return `<img src="/static/images/team_logos/${teamLogoMap[logoId] || logoId}.png" class="team-logo" alt="${teamName}" onerror="this.style.display='none'">`;
-    }
-    
-    return ''; // No logo found
+    return getTeamLogoGeneric(teamName, 'team-logo');
 }
 
 // Function to get larger team logo for matches (1.3x bigger)
 function getTeamLogoLarge(teamName) {
-    if (!teamName) return '';
-    
-    // Team name to logo ID mapping (based on hollandsevelden.nl data)
-    const teamLogoMap = {
-        'Columbia': 't_184',
-        'AVV Columbia': 't_184',
-        'AGOVV': 't_183', 
-        'Epe': 't_185',
-        'Zwart-Wi': 't_186',
-        'Hattem': 't_187',
-        'Groen Wi': 't_188',
-        'Heerde': 't_189',
-        'VIOS V': 't_190',
-        "'t Harde": 't_191',
-        'VVOP': 't_192',
-        'Hatto': 't_193',
-        'OWIOS': 't_194',
-        'SP Teuge': 't_195',
-        'SEH': 't_196'
-    };
-    
-    // Find logo for team (exact match or partial match)
-    const logoId = teamLogoMap[teamName] || Object.keys(teamLogoMap).find(key => 
-        teamName.includes(key) || key.includes(teamName)
-    );
-    
-    if (logoId) {
-        return `<img src="/static/images/team_logos/${teamLogoMap[logoId] || logoId}.png" class="team-logo-large" alt="${teamName}" onerror="this.style.display='none'">`;
-    }
-    
-    return ''; // No logo found
+    return getTeamLogoGeneric(teamName, 'team-logo-large');
 }
 
 // Function to get team name with logo
@@ -121,43 +91,14 @@ function getTeamNameWithLogoLargeAfter(teamName, forceShorten = false) {
 
 // Function to get larger team logo positioned after name
 function getTeamLogoLargeAfter(teamName) {
-    if (!teamName) return '';
-    
-    // Team name to logo ID mapping (based on hollandsevelden.nl data)
-    const teamLogoMap = {
-        'Columbia': 't_184',
-        'AVV Columbia': 't_184',
-        'AGOVV': 't_183', 
-        'Epe': 't_185',
-        'Zwart-Wi': 't_186',
-        'Hattem': 't_187',
-        'Groen Wi': 't_188',
-        'Heerde': 't_189',
-        'VIOS V': 't_190',
-        "'t Harde": 't_191',
-        'VVOP': 't_192',
-        'Hatto': 't_193',
-        'OWIOS': 't_194',
-        'SP Teuge': 't_195',
-        'SEH': 't_196'
-    };
-    
-    // Find logo for team (exact match or partial match)
-    const logoId = teamLogoMap[teamName] || Object.keys(teamLogoMap).find(key => 
-        teamName.includes(key) || key.includes(teamName)
-    );
-    
-    if (logoId) {
-        return `<img src="/static/images/team_logos/${teamLogoMap[logoId] || logoId}.png" class="team-logo-large-after" alt="${teamName}" onerror="this.style.display='none'">`;
-    }
-    
-    return ''; // No logo found
+    return getTeamLogoGeneric(teamName, 'team-logo-large-after');
 }
 
 // Function to shorten team name for mobile display
 function getShortTeamName(fullTeamName, forceShorten = false) {
     if (!isMobile && !forceShorten) return fullTeamName;
-    
+
+
     // Extract the main team name (remove prefixes like AVV, SV, VV etc.)
     const parts = fullTeamName.split(' ');
     if (parts.length > 1) {
@@ -165,21 +106,24 @@ function getShortTeamName(fullTeamName, forceShorten = false) {
         const prefixes = ['AVV', 'SV', 'VV', 'FC', 'AGOVV', 'VVV'];
         if (prefixes.includes(parts[0])) {
             const mainName = parts.slice(1).join(' ');
-            // Further shorten if still too long for mobile
-            if (mainName.length > 8) {
+
+            // Further shorten if still too long for mobile (increased from 8 to 9)
+            if (mainName.length > 9) {
                 // Take first word only if multiple words remain
                 const mainParts = mainName.split(' ');
-                return mainParts[0];
+                const result = mainParts[0];
+                return result;
             }
             return mainName;
         }
     }
-    
-    // If no prefix or single word, truncate if too long
-    if (fullTeamName.length > 8) {
-        return fullTeamName.substring(0, 8);
+
+    // If no prefix or single word, truncate if too long (increased from 8 to 9)
+    if (fullTeamName.length > 9) {
+        const result = fullTeamName.substring(0, 9);
+        return result;
     }
-    
+
     return fullTeamName;
 }
 
@@ -198,13 +142,10 @@ function applyDeviceStyling() {
     // Add appropriate device class
     if (isMobile) {
         body.classList.add('mobile-mode');
-        console.log('📱 Mobile mode activated (width: ' + window.innerWidth + 'px)');
     } else if (isTablet) {
         body.classList.add('tablet-mode');
-        console.log('📱 Tablet mode activated (width: ' + window.innerWidth + 'px)');
     } else {
         body.classList.add('tv-mode');
-        console.log('📺 TV mode activated (width: ' + window.innerWidth + 'px)');
     }
 }
 
@@ -214,11 +155,9 @@ document.addEventListener('DOMContentLoaded', function() {
     applyDeviceStyling();
     
     loadData().then((data) => {
-        console.log('🎯 Data loaded successfully, calling updateMatchStatistics with:', data);
         initializeCarousel();
         updateMatchStatistics(data);
     }).catch(error => {
-        console.error('Data loading failed:', error);
         updateMatchStatistics(null);
     });
 });
@@ -226,25 +165,25 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load data from API
 async function loadData() {
     try {
-        console.log('Loading data from /api/data...');
         const response = await fetch('/api/data');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Data loaded:', data);
-        
+
+        // Build team shirt data from API
+        buildTeamShirtData(data);
+
         // Set featured team info globally
         featuredTeamName = data.featured_team_name || "Featured Team";
         updateTeamName();
-        
+
         // Check and display TEST MODE indicator
         checkTestMode(data);
         
         // Clear existing slides except intro
         const slideContainer = document.getElementById('slide-container');
         if (!slideContainer) {
-            console.error('❌ slide-container element not found!');
             return data; // Return data but skip slideshow initialization
         }
         
@@ -272,10 +211,8 @@ async function loadData() {
         addNextWeekMatchesSlide(data.next_week_matches || []);
         addFeaturedMatchesSlide(data.featured_team_matches || {played: [], upcoming: []});
         
-        console.log('All slides added successfully');
         return data;
     } catch (error) {
-        console.error('Error loading data:', error);
         throw error;
     }
 }
@@ -319,11 +256,6 @@ function updateMatchStatistics(data) {
     const columbiaPlayed = (columbiaMatches.played || []).length;
     const columbiaUpcoming = (columbiaMatches.upcoming || []).length;
     
-    console.log(`📊 Match Statistics:`);
-    console.log(`   Total matches in competition: ${totalMatches}`);
-    console.log(`   Played matches: ${playedMatches}`);
-    console.log(`   Columbia played: ${columbiaPlayed}`);
-    console.log(`   Columbia upcoming: ${columbiaUpcoming}`);
     
     // Update the display
     updateCompetitionMatchesStats(playedMatches, totalMatches);
@@ -333,7 +265,6 @@ function updateMatchStatistics(data) {
 function updateCompetitionMatchesStats(played, total) {
     const element = document.getElementById('competition-matches-stats');
     const remaining = total - played;
-    console.log('📊 Updating competition matches stats:', { played, total, remaining, element });
     if (element) {
         if (isMobile) {
             // Mobile: Split over three lines for better readability
@@ -342,15 +273,12 @@ function updateCompetitionMatchesStats(played, total) {
             // Desktop: Single line
             element.textContent = `Wedstrijden in competitie: nog te spelen ${remaining} / gespeeld ${played}`;
         }
-        console.log('✅ Updated competition matches stats successfully');
     } else {
-        console.error('❌ Element competition-matches-stats not found');
     }
 }
 
 function updateColumbiaMatchesStats(played, upcoming) {
     const element = document.getElementById('columbia-matches-stats');
-    console.log('⚽ Updating Columbia matches stats:', { played, upcoming, element });
     if (element) {
         if (isMobile) {
             // Mobile: Split over three lines for better readability
@@ -359,9 +287,7 @@ function updateColumbiaMatchesStats(played, upcoming) {
             // Desktop: Single line
             element.textContent = `Wedstrijden Columbia: nog te spelen ${upcoming} / gespeeld ${played}`;
         }
-        console.log('✅ Updated Columbia matches stats successfully');
     } else {
-        console.error('❌ Element columbia-matches-stats not found');
     }
 }
 
@@ -371,10 +297,8 @@ function checkTestMode(data) {
     // Test mode uses 'VV Gorecht' as featured team
     if (data.featured_team_name === 'VV Gorecht') {
         indicator.style.display = 'block';
-        console.log('🧪 TEST MODE geactiveerd - VV Gorecht test data');
     } else {
         indicator.style.display = 'none';
-        console.log('🌐 API MODE geactiveerd - Live Hollandse Velden data');
     }
 }
 
@@ -451,10 +375,6 @@ function calculateTeamForm(teamName, allMatches) {
     const last5PlayedMatches = playedMatches.slice(-5);
     
     // Debug logging for team form
-    console.log(`🎯 TEAM FORM DEBUG voor ${teamName}:`);
-    console.log(`   Totaal wedstrijden gevonden: ${teamMatches.length}`);
-    console.log(`   Gespeelde wedstrijden (status='played'/'Gespeeld' of geldige scores): ${playedMatches.length}`);
-    console.log(`   Laatste 5 gespeelde wedstrijden:`);
     
     let formHtml = '<div class="team-form">';
     
@@ -462,7 +382,6 @@ function calculateTeamForm(teamName, allMatches) {
     for (let i = 0; i < 5; i++) {
         if (i < 5 - last5PlayedMatches.length) {
             // Grey circle for teams with less than 5 played matches (left side)
-            console.log(`   ${i+1}. Geen gespeelde wedstrijd beschikbaar -> GRIJS rondje`);
             formHtml += '<span class="form-circle form-unplayed">●</span>';
         } else {
             const match = last5PlayedMatches[i - (5 - last5PlayedMatches.length)];
@@ -514,14 +433,12 @@ function calculateTeamForm(teamName, allMatches) {
             const homeDisplay = isHome ? `${homeTeam} (THUIS)` : homeTeam;
             const awayDisplay = isAway ? `${awayTeam} (UIT)` : awayTeam;
             
-            console.log(`   ${i+1}. ${homeDisplay} vs ${awayDisplay} | ${match.homeGoals || 0}-${match.awayGoals || 0} | Status: ${matchStatus} | isHome: ${isHome} | isAway: ${isAway} | ${resultText} -> ${colorText} rondje`);
             
             formHtml += `<span class="form-circle form-${result}">●</span>`;
         }
     }
     
     formHtml += '</div>';
-    console.log(`🏁 Team form voor ${teamName} compleet\n`);
     return formHtml;
 }
 
@@ -657,14 +574,12 @@ function addStandingsSlide(standings, allMatches = []) {
     if (container) {
         container.appendChild(slide);
     } else {
-        console.error('❌ Cannot add slide: slide-container element not found!');
     }
 }
 
 function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
     // Check if period has any data
     if (!periodData || !Array.isArray(periodData) || periodData.length === 0) {
-        console.log(`Skipping ${periodTitle} - no data`);
         return;
     }
     
@@ -672,11 +587,9 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
     if (!forceShow) {
         const hasPlayedMatches = periodData.some(team => (team.matches || team.played || 0) > 0);
         if (!hasPlayedMatches) {
-            console.log(`Skipping ${periodTitle} - no matches played`);
             return;
         }
     } else {
-        console.log(`Force showing ${periodTitle} regardless of match status`);
     }
     
     const slide = document.createElement('div');
@@ -815,7 +728,6 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
     if (container) {
         container.appendChild(slide);
     } else {
-        console.error('❌ Cannot add slide: slide-container element not found!');
     }
 }
 
@@ -860,9 +772,9 @@ function addLastWeekResultsSlide(results) {
                                 <div class="mobile-match-item played ${isFeaturedMatch ? 'featured' : ''}" style="${isFeaturedMatch ? 'border-left-color: #ffd700 !important; background-color: rgba(255, 215, 0, 0.2) !important;' : ''}">
                                     <div class="mobile-match-date">${matchDate}</div>
                                     <div class="mobile-match-teams">
-                                        <div class="mobile-team ${isFeaturedMatch ? 'featured' : ''}">${getTeamNameWithLogoLarge(home)}</div>
+                                        <div class="mobile-team home ${isFeaturedMatch ? 'featured' : ''}">${getTeamNameWithLogoLarge(home)}</div>
                                         <div class="mobile-score">${homeGoals} - ${awayGoals}</div>
-                                        <div class="mobile-team ${isFeaturedMatch ? 'featured' : ''}">${getTeamNameWithLogoLarge(away)}</div>
+                                        <div class="mobile-team away ${isFeaturedMatch ? 'featured' : ''}">${getTeamNameWithLogoLarge(away)}</div>
                                     </div>
                                 </div>`;
                             }).join('')}
@@ -928,25 +840,20 @@ function addLastWeekResultsSlide(results) {
     if (container) {
         container.appendChild(slide);
     } else {
-        console.error('❌ Cannot add slide: slide-container element not found!');
     }
 }
 
 function groupResultsByWeek(results) {
     const weeklyResults = {};
     
-    console.log('Grouping results by week, total results:', results.length);
     
     results.forEach((result, index) => {
-        console.log(`Result ${index}:`, result);
         
         if (!result.date) {
-            console.log('No date for result:', result);
             return;
         }
         
         const matchDate = new Date(result.date);
-        console.log('Match date:', matchDate);
         
         const year = matchDate.getFullYear();
         const weekNumber = getWeekNumber(matchDate);
@@ -998,22 +905,18 @@ function getWeekNumber(date) {
 function groupUpcomingMatchesByWeek(matches) {
     const weeklyMatches = {};
     
-    console.log('Grouping upcoming matches by week, total matches:', matches ? matches.length : 0);
     
     if (!matches || matches.length === 0) {
         return weeklyMatches;
     }
     
     matches.forEach((match, index) => {
-        console.log(`Upcoming match ${index}:`, match);
         
         if (!match.date) {
-            console.log('No date for upcoming match:', match);
             return;
         }
         
         const matchDate = new Date(match.date);
-        console.log('Upcoming match date:', matchDate);
         
         const year = matchDate.getFullYear();
         const weekNumber = getWeekNumber(matchDate);
@@ -1041,7 +944,6 @@ function groupUpcomingMatchesByWeek(matches) {
         });
     });
     
-    console.log('Grouped upcoming matches by week:', weeklyMatches);
     return weeklyMatches;
 }
 
@@ -1082,9 +984,9 @@ function addNextWeekMatchesSlide(matches) {
                                 return `
                                 <div class="mobile-match-item upcoming ${isFeaturedMatch ? 'featured' : ''}" style="${isFeaturedMatch ? 'border-left-color: #ffd700 !important; background-color: rgba(255, 215, 0, 0.2) !important;' : ''}">
                                     <div class="mobile-match-teams">
-                                        <div class="mobile-team ${isFeaturedMatch ? 'featured' : ''}">${getTeamNameWithLogoLarge(home)}</div>
+                                        <div class="mobile-team home ${isFeaturedMatch ? 'featured' : ''}">${getTeamNameWithLogoLarge(home)}</div>
                                         <div class="mobile-match-date" style="flex: 0 0 auto; font-size: 0.8rem; margin-bottom: 0; line-height: 1.2;">${matchDate}<br>${matchTime}</div>
-                                        <div class="mobile-team ${isFeaturedMatch ? 'featured' : ''}">${getTeamNameWithLogoLargeAfter(away)}</div>
+                                        <div class="mobile-team away ${isFeaturedMatch ? 'featured' : ''}">${getTeamNameWithLogoLarge(away)}</div>
                                     </div>
                                 </div>`;
                             }).join('')}
@@ -1157,7 +1059,6 @@ function addNextWeekMatchesSlide(matches) {
     if (container) {
         container.appendChild(slide);
     } else {
-        console.error('❌ Cannot add slide: slide-container element not found!');
     }
 }
 
@@ -1231,13 +1132,13 @@ function addFeaturedMatchesSlide(matches) {
                             <div class="mobile-match-item played">
                                 <div class="mobile-match-date">${new Date(match.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'})}</div>
                                 <div class="mobile-match-teams">
-                                    ${isHomeMatch ? 
-                                        `<div class="mobile-team featured">${getTeamNameWithLogoLarge(featuredTeamName)}</div>
+                                    ${isHomeMatch ?
+                                        `<div class="mobile-team home featured">${getTeamNameWithLogoLarge(featuredTeamName)}</div>
                                          <div class="mobile-score">${ourScore} - ${opponentScore}</div>
-                                         <div class="mobile-team">${getTeamNameWithLogoLargeAfter(opponent)}</div>` :
-                                        `<div class="mobile-team">${getTeamNameWithLogoLargeAfter(opponent)}</div>
+                                         <div class="mobile-team away">${getTeamNameWithLogoLarge(opponent)}</div>` :
+                                        `<div class="mobile-team home">${getTeamNameWithLogoLarge(opponent)}</div>
                                          <div class="mobile-score">${opponentScore} - ${ourScore}</div>
-                                         <div class="mobile-team featured">${getTeamNameWithLogoLargeAfter(featuredTeamName)}</div>`
+                                         <div class="mobile-team away featured">${getTeamNameWithLogoLarge(featuredTeamName)}</div>`
                                     }
                                 </div>
                             </div>`;
@@ -1248,13 +1149,13 @@ function addFeaturedMatchesSlide(matches) {
                             return `
                             <div class="mobile-match-item upcoming">
                                 <div class="mobile-match-teams">
-                                    ${isHomeMatch ? 
-                                        `<div class="mobile-team featured">${getTeamNameWithLogoLarge(featuredTeamName)}</div>
+                                    ${isHomeMatch ?
+                                        `<div class="mobile-team home featured">${getTeamNameWithLogoLarge(featuredTeamName)}</div>
                                          <div class="mobile-match-date" style="flex: 0 0 auto; font-size: 0.8rem; margin-bottom: 0; line-height: 1.2;">${matchDate}<span style="margin-left: 3px;">${matchTime}</span></div>
-                                         <div class="mobile-team">${getTeamNameWithLogoLargeAfter(opponent)}</div>` :
-                                        `<div class="mobile-team">${getTeamNameWithLogoLargeAfter(opponent)}</div>
+                                         <div class="mobile-team away">${getTeamNameWithLogoLarge(opponent)}</div>` :
+                                        `<div class="mobile-team home">${getTeamNameWithLogoLarge(opponent)}</div>
                                          <div class="mobile-match-date" style="flex: 0 0 auto; font-size: 0.8rem; margin-bottom: 0; line-height: 1.2;">${matchDate}<span style="margin-left: 3px;">${matchTime}</span></div>
-                                         <div class="mobile-team featured">${getTeamNameWithLogoLargeAfter(featuredTeamName)}</div>`
+                                         <div class="mobile-team away featured">${getTeamNameWithLogoLarge(featuredTeamName)}</div>`
                                     }
                                 </div>
                             </div>`;
@@ -1289,7 +1190,6 @@ function addFeaturedMatchesSlide(matches) {
                                        (matchStatus === '' && match.homeGoals !== undefined && match.awayGoals !== undefined && 
                                         !isNaN(parseInt(match.homeGoals)) && !isNaN(parseInt(match.awayGoals)));
                         
-                        console.log(`THUIS wedstrijd: ${featuredTeamName} vs ${away}, Status: "${matchStatus}", isPlayed: ${isPlayed}`);
                         
                         if (isPlayed) {
                             const homeGoals = match.homeGoals || match.homescore || 0;
@@ -1333,7 +1233,6 @@ function addFeaturedMatchesSlide(matches) {
                                        (matchStatus === '' && match.homeGoals !== undefined && match.awayGoals !== undefined && 
                                         !isNaN(parseInt(match.homeGoals)) && !isNaN(parseInt(match.awayGoals)));
                         
-                        console.log(`UIT wedstrijd: ${home} vs ${featuredTeamName}, Status: "${matchStatus}", isPlayed: ${isPlayed}`);
                         
                         if (isPlayed) {
                             const homeGoals = match.homeGoals || match.homescore || 0;
@@ -1368,7 +1267,6 @@ function addFeaturedMatchesSlide(matches) {
     if (container) {
         container.appendChild(slide);
     } else {
-        console.error('❌ Cannot add slide: slide-container element not found!');
     }
 }
 
@@ -1377,14 +1275,12 @@ function addFeaturedMatchesSlide(matches) {
 function initializeCarousel() {
     const slideContainer = document.getElementById('slide-container');
     if (!slideContainer) {
-        console.error('❌ Cannot initialize carousel: slide-container element not found!');
         return;
     }
     
     const slides = slideContainer.querySelectorAll('.slide-item');
     totalSlides = slides.length;
     
-    console.log('Initializing slideshow with', totalSlides, 'slides');
     
     // Set first slide as active
     if (slides.length > 0) {
@@ -1394,30 +1290,43 @@ function initializeCarousel() {
     
     carouselInitialized = true;
     currentSlideIndex = 0;
-    console.log('Slideshow initialized successfully');
-    
+
     updateScreenNumber();
     startCountdown();
+
+    // Initialize first CLUB1919 animation on page load
+    if (!isMobile) {
+        setTimeout(updateClub1919Animation, 1000);
+    } else {
+    }
 }
 
 // Add simple slideshow navigation
 let currentSlideIndex = 0;
+let club1919AnimationIndex = 0; // Track which animation to show next
+let fullCycleCount = 0; // Track number of complete cycles
 
 function nextSlide() {
     const slideContainer = document.getElementById('slide-container');
     const slides = slideContainer.querySelectorAll('.slide-item');
-    
+
     if (slides.length === 0) return;
-    
+
     // Remove active class from current slide
     slides[currentSlideIndex].classList.remove('active');
-    
+
     // Move to next slide (wrap around)
     currentSlideIndex = (currentSlideIndex + 1) % slides.length;
-    
+
+    // Check if we completed a full cycle (back to intro screen)
+    if (currentSlideIndex === 0) {
+        fullCycleCount++;
+        updateClub1919Animation();
+    }
+
     // Add active class to new slide
     slides[currentSlideIndex].classList.add('active');
-    
+
     updateScreenNumber();
     startCountdown();
 }
@@ -1467,9 +1376,11 @@ function startCountdown() {
 function updateCountdownDisplay() {
     const element = document.getElementById('countdown-display');
     if (element) {
-        // Add leading zero for numbers under 10
-        const displayValue = currentCountdown < 10 ? `0${currentCountdown}` : currentCountdown;
-        element.textContent = displayValue;
+        // Format as xx/xx (current/total)
+        const currentFormatted = currentCountdown < 10 ? `0${currentCountdown}` : currentCountdown;
+        const totalFormatted = SCREEN_DURATION_SECONDS < 10 ? `0${SCREEN_DURATION_SECONDS}` : SCREEN_DURATION_SECONDS;
+        element.textContent = `${currentFormatted}/${totalFormatted}`;
+    } else {
     }
 }
 
@@ -1500,28 +1411,65 @@ window.addEventListener('resize', function() {
     
     // If device type changed, refresh statistics
     if (oldIsMobile !== isMobile) {
-        console.log('📱 Device type changed, refreshing statistics...');
         
         // Refresh statistics with current data
         loadData().then((data) => {
             updateMatchStatistics(data);
         }).catch(error => {
-            console.error('Data refresh failed:', error);
-            updateMatchStatistics(null);
+                updateMatchStatistics(null);
         });
     }
 });
 
 // Refresh data every 30 minutes
 setInterval(() => {
-    console.log('Refreshing data...');
     loadData().then((data) => {
         updateMatchStatistics(data);
     }).catch(error => {
-        console.error('Data refresh failed:', error);
         updateMatchStatistics(null);
     });
 }, 30 * 60 * 1000);
+
+// CLUB1919 Animation System
+function updateClub1919Animation() {
+
+    // Only run on TV/desktop (not mobile)
+    if (isMobile) {
+        return;
+    }
+
+    const animationContainer = document.getElementById('club1919-animation');
+    const club1919Text = document.getElementById('club1919-text');
+
+
+    if (!animationContainer || !club1919Text) {
+        return;
+    }
+
+    // Define animation classes
+    const animations = ['typewriter', 'slide-glow', 'cinema', 'dynamic', 'spotlight'];
+
+    // Remove all previous animation classes
+    animations.forEach(anim => animationContainer.classList.remove(anim));
+
+    // Get current animation based on cycle count
+    const currentAnimation = animations[club1919AnimationIndex];
+
+    // Special handling for dynamic animation (falling letters)
+    if (currentAnimation === 'dynamic') {
+        // Split CLUB1919 into individual letter spans
+        club1919Text.innerHTML = '<span>C</span><span>L</span><span>U</span><span>B</span><span>1</span><span>9</span><span>1</span><span>9</span>';
+    } else {
+        // Reset to normal text
+        club1919Text.innerHTML = 'CLUB1919';
+    }
+
+    // Apply the animation class
+    animationContainer.classList.add(currentAnimation);
+
+    // Move to next animation (cycle through all 5)
+    club1919AnimationIndex = (club1919AnimationIndex + 1) % 5;
+}
 
 // Function to set configuration from template
 function setConfiguration(screenDuration) {

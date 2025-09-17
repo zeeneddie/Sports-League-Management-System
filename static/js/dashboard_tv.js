@@ -12,7 +12,6 @@ var allSlides = [];
 
 // Initialize dashboard when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('📺 TV Dashboard initializing...');
     
     // Set longer timeout for TV browsers  
     setTimeout(function() {
@@ -22,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Load data from API with TV browser optimizations
 function loadData() {
-    console.log('📡 Loading data from /api/data...');
     
     // Create XMLHttpRequest for better TV browser support
     var xhr = new XMLHttpRequest();
@@ -33,26 +31,21 @@ function loadData() {
             if (xhr.status === 200) {
                 try {
                     var data = JSON.parse(xhr.responseText);
-                    console.log('✅ Data loaded successfully');
                     processData(data);
                 } catch (e) {
-                    console.error('❌ JSON parse error:', e);
                     startSlideshow(); // Start with just intro screen
                 }
             } else {
-                console.error('❌ HTTP error:', xhr.status);
                 startSlideshow(); // Start with just intro screen
             }
         }
     };
     
     xhr.ontimeout = function() {
-        console.error('⏱️ Request timeout');
         startSlideshow(); // Start with just intro screen
     };
     
     xhr.onerror = function() {
-        console.error('🚫 Network error');
         startSlideshow(); // Start with just intro screen
     };
     
@@ -96,12 +89,10 @@ function processData(data) {
         addFeaturedMatchesSlide(data.featured_team_matches || {played: [], upcoming: []});
         addTeamMatrixSlide(data.team_matrix || {teams: [], matrix: {}});
         
-        console.log('🎯 All slides added successfully');
         updateMatchStatistics(data);
         startSlideshow();
         
     } catch (error) {
-        console.error('💥 Error processing data:', error);
         startSlideshow(); // Start with just intro screen
     }
 }
@@ -113,7 +104,6 @@ function startSlideshow() {
     totalSlides = allSlides.length;
     currentSlideIndex = 0;
     
-    console.log('🎬 Starting slideshow with ' + totalSlides + ' slides');
     
     // Ensure first slide is active
     showSlide(0);
@@ -139,7 +129,6 @@ function showSlide(index) {
         currentSlideIndex = index;
     }
     
-    console.log('📺 Showing slide ' + (index + 1) + ' of ' + totalSlides);
 }
 
 // Go to next slide
@@ -284,10 +273,8 @@ function checkTestMode(data) {
     if (indicator) {
         if (data.featured_team_name === 'VV Gorecht') {
             indicator.style.display = 'block';
-            console.log('🧪 TEST MODE activated - VV Gorecht test data');
         } else {
             indicator.style.display = 'none';
-            console.log('🌐 API MODE activated - Live Hollandse Velden data');
         }
     }
 }
@@ -913,8 +900,6 @@ function setConfiguration(screenDuration) {
 
 // Refresh data every 30 minutes
 setInterval(function() {
-    console.log('🔄 Refreshing data...');
     loadData();
 }, 30 * 60 * 1000);
 
-console.log('📺 TV Dashboard JavaScript loaded');
