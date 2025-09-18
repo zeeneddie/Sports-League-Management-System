@@ -1,20 +1,37 @@
 // Dashboard JavaScript - SPMS Liga Dashboard
 // Configuration will be set by the template
-let SCREEN_DURATION_SECONDS = 10; // Default, will be overwritten
+var SCREEN_DURATION_SECONDS = 10; // Default, will be overwritten
 
 // Global variables
-let carouselInstance = null;
-let countdownInterval = null;
-let currentCountdown = SCREEN_DURATION_SECONDS;
-let totalSlides = 0;
-let featuredTeamName = "";
-let carouselInitialized = false;
-let teamShirtData = {}; // Store team shirt data from API
+var carouselInstance = null;
+var countdownInterval = null;
+var currentCountdown = SCREEN_DURATION_SECONDS;
+var totalSlides = 0;
+var featuredTeamName = "";
+var carouselInitialized = false;
+var teamShirtData = {}; // Store team shirt data from API
+var logoMode = 'team'; // 'team' or 'club' - alternates each cycle
+var clubLogoMapping = {
+    'AGOVV': 'agovv.webp',
+    'AVV Columbia': 'columbia.webp',
+    'SV Epe': 'epe.webp',
+    'Groen Wit \'62': 'groenwit.webp',
+    'SV \'t Harde': 'tharde.webp',
+    'VV Hattem': 'hattem.webp',
+    'SV Hatto Heim': 'hatoheim.webp',
+    'VV Heerde': 'heerde.webp',
+    'OWIOS': 'owios.webp',
+    'VV SEH': 'seh.webp',
+    'SP Teuge': 'teuge.webp',
+    'VIOS V': 'vios.webp',
+    'VVOP': 'vvop.webp',
+    'Zwart-Wit \'63': 'zwartwit.webp'
+};
 
 // Mobile detection function (dynamic) - improved for wide mobile screens
 function isMobileDevice() {
     // Check for mobile user agents first (most reliable)
-    const isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    var isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     // For portrait orientation on narrow screens, definitely mobile
     if (window.innerWidth <= 768) return true;
@@ -30,45 +47,56 @@ function isMobileDevice() {
 
 function isTabletDevice() {
     // Tablets are typically 768-1024px and NOT mobile user agents, or iPads
-    const isTabletUA = /iPad/i.test(navigator.userAgent);
+    var isTabletUA = /iPad/i.test(navigator.userAgent);
     return (window.innerWidth > 768 && window.innerWidth <= 1024 && !isMobileDevice()) || isTabletUA;
 }
 
 function isTVDevice() {
     // TV browsers are typically wide screens without mobile user agents
-    const isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    var isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     return window.innerWidth > 1024 && !isMobileUA;
 }
 
 // Current device state (will be updated dynamically)
-let isMobile = isMobileDevice();
-let isTablet = isTabletDevice();
-let isTV = isTVDevice();
+var isMobile = isMobileDevice();
+var isTablet = isTabletDevice();
+var isTV = isTVDevice();
 
 // Function to build team shirt data from API
 function buildTeamShirtData(data) {
     teamShirtData = {};
     if (data && data.league_table) {
-        data.league_table.forEach(team => {
+        for (var i = 0; i < data.league_table.length; i++) {
+            var team = data.league_table[i];
             if (team.team && team.shirt) {
                 teamShirtData[team.team] = team.shirt;
             }
-        });
+        }
     }
 }
 
 // Generic function to get team logo using API shirt data
-function getTeamLogoGeneric(teamName, cssClass = 'team-logo') {
+function getTeamLogoGeneric(teamName, cssClass) {
+    if (cssClass === undefined) cssClass = 'team-logo';
     if (!teamName) return '';
 
-    // Look up shirt data for this team
-    const shirtId = teamShirtData[teamName];
+    // Check current logo mode (team or club)
+    if (logoMode === 'club') {
+        // Try to get club logo first
+        var clubLogo = clubLogoMapping[teamName];
+        if (clubLogo) {
+            var logoUrl = '/static/images/club_logos/' + clubLogo;
+            return '<img src="' + logoUrl + '" class="' + cssClass + '" alt="' + teamName + '" onerror="this.style.display=\'none\'">';
+        }
+    }
 
+    // Fall back to team shirt logo
+    var shirtId = teamShirtData[teamName];
     if (shirtId) {
         // Remove .png extension if present and construct local path
-        const logoId = shirtId.replace('.png', '');
-        const logoUrl = `/static/images/team_logos/${logoId}.png`;
-        return `<img src="${logoUrl}" class="${cssClass}" alt="${teamName}" onerror="this.style.display='none'">`;
+        var logoId = shirtId.replace('.png', '');
+        var logoUrl = '/static/images/team_logos/' + logoId + '.png';
+        return '<img src="' + logoUrl + '" class="' + cssClass + '" alt="' + teamName + '" onerror="this.style.display=\'none\'">';
     }
 
     return ''; // No logo found
@@ -85,24 +113,27 @@ function getTeamLogoLarge(teamName) {
 }
 
 // Function to get team name with logo
-function getTeamNameWithLogo(teamName, forceShorten = false) {
-    const logo = getTeamLogo(teamName);
-    const displayName = getShortTeamName(teamName, forceShorten);
-    return logo ? `${logo} ${displayName}` : displayName;
+function getTeamNameWithLogo(teamName, forceShorten) {
+    if (forceShorten === undefined) forceShorten = false;
+    var logo = getTeamLogo(teamName);
+    var displayName = getShortTeamName(teamName, forceShorten);
+    return logo ? logo + ' ' + displayName : displayName;
 }
 
 // Function to get team name with large logo (for matches)
-function getTeamNameWithLogoLarge(teamName, forceShorten = false) {
-    const logo = getTeamLogoLarge(teamName);
-    const displayName = getShortTeamName(teamName, forceShorten);
-    return logo ? `${logo} ${displayName}` : displayName;
+function getTeamNameWithLogoLarge(teamName, forceShorten) {
+    if (forceShorten === undefined) forceShorten = false;
+    var logo = getTeamLogoLarge(teamName);
+    var displayName = getShortTeamName(teamName, forceShorten);
+    return logo ? logo + ' ' + displayName : displayName;
 }
 
 // Function to get team name with large logo after name (for away teams)
-function getTeamNameWithLogoLargeAfter(teamName, forceShorten = false) {
-    const logo = getTeamLogoLargeAfter(teamName);
-    const displayName = getShortTeamName(teamName, forceShorten);
-    return logo ? `${displayName} ${logo}` : displayName;
+function getTeamNameWithLogoLargeAfter(teamName, forceShorten) {
+    if (forceShorten === undefined) forceShorten = false;
+    var logo = getTeamLogoLargeAfter(teamName);
+    var displayName = getShortTeamName(teamName, forceShorten);
+    return logo ? displayName + ' ' + logo : displayName;
 }
 
 // Function to get larger team logo positioned after name
@@ -111,7 +142,8 @@ function getTeamLogoLargeAfter(teamName) {
 }
 
 // Function to shorten team name for mobile display
-function getShortTeamName(fullTeamName, forceShorten = false) {
+function getShortTeamName(fullTeamName, forceShorten) {
+    if (forceShorten === undefined) forceShorten = false;
     if (!isMobile && !forceShorten) return fullTeamName;
 
 
@@ -119,15 +151,15 @@ function getShortTeamName(fullTeamName, forceShorten = false) {
     const parts = fullTeamName.split(' ');
     if (parts.length > 1) {
         // Remove common prefixes
-        const prefixes = ['AVV', 'SV', 'VV', 'FC', 'AGOVV', 'VVV'];
-        if (prefixes.includes(parts[0])) {
-            const mainName = parts.slice(1).join(' ');
+        var prefixes = ['AVV', 'SV', 'VV', 'FC', 'AGOVV', 'VVV'];
+        if (prefixes.indexOf(parts[0]) !== -1) {
+            var mainName = parts.slice(1).join(' ');
 
             // Further shorten if still too long for mobile (increased from 8 to 9)
             if (mainName.length > 9) {
                 // Take first word only if multiple words remain
-                const mainParts = mainName.split(' ');
-                const result = mainParts[0];
+                var mainParts = mainName.split(' ');
+                var result = mainParts[0];
                 return result;
             }
             return mainName;
@@ -136,7 +168,7 @@ function getShortTeamName(fullTeamName, forceShorten = false) {
 
     // If no prefix or single word, truncate if too long (increased from 8 to 9)
     if (fullTeamName.length > 9) {
-        const result = fullTeamName.substring(0, 9);
+        var result = fullTeamName.substring(0, 9);
         return result;
     }
 
@@ -149,8 +181,8 @@ function applyDeviceStyling() {
     isMobile = isMobileDevice();
     isTablet = isTabletDevice();
     isTV = isTVDevice();
-    
-    const body = document.body;
+
+    var body = document.body;
     
     // Remove existing device classes
     body.classList.remove('mobile-mode', 'tablet-mode', 'tv-mode');
@@ -170,22 +202,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Apply device-specific styling first
     applyDeviceStyling();
     
-    loadData().then((data) => {
+    loadData().then(function(data) {
         initializeCarousel();
         updateMatchStatistics(data);
-    }).catch(error => {
+    }).catch(function(error) {
         updateMatchStatistics(null);
     });
 });
 
 // Load data from API
-async function loadData() {
-    try {
-        const response = await fetch('/api/data');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+function loadData() {
+    return fetch('/api/data')
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('HTTP error! status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(function(data) {
 
         // Build team shirt data from API
         buildTeamShirtData(data);
@@ -198,16 +232,18 @@ async function loadData() {
         checkTestMode(data);
         
         // Clear existing slides except intro
-        const slideContainer = document.getElementById('slide-container');
+        var slideContainer = document.getElementById('slide-container');
         if (!slideContainer) {
             return data; // Return data but skip slideshow initialization
         }
-        
-        const introSlide = slideContainer.querySelector('.intro-screen');
+
+        var introSlide = slideContainer.querySelector('.intro-screen');
         
         // Keep intro slide, remove others
-        const otherSlides = slideContainer.querySelectorAll('.slide-item:not(.intro-screen)');
-        otherSlides.forEach(slide => slide.remove());
+        var otherSlides = slideContainer.querySelectorAll('.slide-item:not(.intro-screen)');
+        for (var i = 0; i < otherSlides.length; i++) {
+            otherSlides[i].remove();
+        }
         
         // Add data slides  
         addStandingsSlide(data.league_table || [], data.all_matches || []);
@@ -227,14 +263,12 @@ async function loadData() {
         addNextWeekMatchesSlide(data.next_week_matches || []);
         addFeaturedMatchesSlide(data.featured_team_matches || {played: [], upcoming: []});
         
-        return data;
-    } catch (error) {
-        throw error;
-    }
+            return data;
+        });
 }
 
 function updateTeamName() {
-    const titleElement = document.getElementById('competition-main-title');
+    var titleElement = document.getElementById('competition-main-title');
     if (titleElement && featuredTeamName) {
         titleElement.textContent = featuredTeamName.toUpperCase();
     }
@@ -249,59 +283,63 @@ function updateMatchStatistics(data) {
     }
     
     // Calculate total competition matches
-    const allMatches = data.all_matches || [];
-    const totalMatches = allMatches.length;
+    var allMatches = data.all_matches || [];
+    var totalMatches = allMatches.length;
     
     // Calculate played matches (matches with status 'Gespeeld' or valid scores)
-    const playedMatches = allMatches.filter(match => {
-        const status = match.status || match.matchStatus || '';
-        const isPlayedStatus = status === 'played' || status === 'Gespeeld';
-        
+    var playedMatchesCount = 0;
+    for (var i = 0; i < allMatches.length; i++) {
+        var match = allMatches[i];
+        var status = match.status || match.matchStatus || '';
+        var isPlayedStatus = status === 'played' || status === 'Gespeeld';
+
         if (status && status !== '') {
-            return isPlayedStatus;
+            if (isPlayedStatus) playedMatchesCount++;
+        } else {
+            // Fallback: check if there are valid scores
+            var homeScore = getFirstValidValue(match.homeGoals, match.homescore, match.home_goals, match.home_score);
+            var awayScore = getFirstValidValue(match.awayGoals, match.awayscore, match.away_goals, match.away_score);
+            if (!isNaN(parseInt(homeScore)) && !isNaN(parseInt(awayScore))) {
+                playedMatchesCount++;
+            }
         }
-        
-        // Fallback: check if there are valid scores
-        const homeScore = getFirstValidValue(match.homeGoals, match.homescore, match.home_goals, match.home_score);
-        const awayScore = getFirstValidValue(match.awayGoals, match.awayscore, match.away_goals, match.away_score);
-        return !isNaN(parseInt(homeScore)) && !isNaN(parseInt(awayScore));
-    }).length;
+    }
     
     // Calculate Columbia matches
-    const columbiaMatches = data.featured_team_matches || {played: [], upcoming: []};
-    const columbiaPlayed = (columbiaMatches.played || []).length;
-    const columbiaUpcoming = (columbiaMatches.upcoming || []).length;
-    
-    
+    var columbiaMatches = data.featured_team_matches || {played: [], upcoming: []};
+    var columbiaPlayed = (columbiaMatches.played || []).length;
+    var columbiaUpcoming = (columbiaMatches.upcoming || []).length;
+
+
     // Update the display
-    updateCompetitionMatchesStats(playedMatches, totalMatches);
+    updateCompetitionMatchesStats(playedMatchesCount, totalMatches);
     updateColumbiaMatchesStats(columbiaPlayed, columbiaUpcoming);
 }
 
 function updateCompetitionMatchesStats(played, total) {
-    const element = document.getElementById('competition-matches-stats');
-    const remaining = total - played;
+    var element = document.getElementById('competition-matches-stats');
+    var remaining = total - played;
     if (element) {
         if (isMobile) {
             // Mobile: Split over three lines for better readability
-            element.innerHTML = `Wedstrijden in competitie:<br>nog te spelen / gespeeld<br>${remaining} / ${played}`;
+            element.innerHTML = 'Wedstrijden in competitie:<br>nog te spelen / gespeeld<br>' + remaining + ' / ' + played;
         } else {
             // Desktop: Single line
-            element.textContent = `Wedstrijden in competitie: nog te spelen ${remaining} / gespeeld ${played}`;
+            element.textContent = 'Wedstrijden in competitie: nog te spelen ' + remaining + ' / gespeeld ' + played;
         }
     } else {
     }
 }
 
 function updateColumbiaMatchesStats(played, upcoming) {
-    const element = document.getElementById('columbia-matches-stats');
+    var element = document.getElementById('columbia-matches-stats');
     if (element) {
         if (isMobile) {
             // Mobile: Split over three lines for better readability
-            element.innerHTML = `Wedstrijden Columbia:<br>nog te spelen / gespeeld<br>${upcoming} / ${played}`;
+            element.innerHTML = 'Wedstrijden Columbia:<br>nog te spelen / gespeeld<br>' + upcoming + ' / ' + played;
         } else {
             // Desktop: Single line
-            element.textContent = `Wedstrijden Columbia: nog te spelen ${upcoming} / gespeeld ${played}`;
+            element.textContent = 'Wedstrijden Columbia: nog te spelen ' + upcoming + ' / gespeeld ' + played;
         }
     } else {
     }
@@ -309,7 +347,7 @@ function updateColumbiaMatchesStats(played, upcoming) {
 
 // Check if in test mode and show/hide indicator
 function checkTestMode(data) {
-    const indicator = document.getElementById('testModeIndicator');
+    var indicator = document.getElementById('testModeIndicator');
     // Test mode uses 'VV Gorecht' as featured team
     if (data.featured_team_name === 'VV Gorecht') {
         indicator.style.display = 'block';
@@ -319,15 +357,19 @@ function checkTestMode(data) {
 }
 
 // Helper function to get first valid (non-null, non-undefined) value
-function getFirstValidValue(...values) {
-    return values.find(val => val !== undefined && val !== null);
+function getFirstValidValue() {
+    for (var i = 0; i < arguments.length; i++) {
+        var val = arguments[i];
+        if (val !== undefined && val !== null) return val;
+    }
+    return null;
 }
 
 // Helper function to format numbers with space padding (under 10 = single digit with space, 10+ = normal)
 function formatTwoDigits(number) {
     const num = Number(number);
     if (num < 10) {
-        return ` ${num}`; // Space + single digit for numbers under 10
+        return ' ' + num; // Space + single digit for numbers under 10
     } else {
         return num.toString(); // Normal display for 10 and above
     }
@@ -338,16 +380,16 @@ function formatGoalDifference(goalsFor, goalsAgainst) {
     const difference = (goalsFor || 0) - (goalsAgainst || 0);
     if (difference >= 0) {
         if (difference < 10) {
-            return `+ ${difference}`; // + space + single digit
+            return '+ ' + difference; // + space + single digit
         } else {
-            return `+${difference}`; // + double digit
+            return '+' + difference; // + double digit
         }
     } else {
         const absDiff = Math.abs(difference);
         if (absDiff < 10) {
-            return `- ${absDiff}`; // - space + single digit
+            return '- ' + absDiff; // - space + single digit
         } else {
-            return `-${absDiff}`; // - double digit
+            return '-' + absDiff; // - double digit
         }
     }
 }
@@ -358,72 +400,84 @@ function calculateTeamForm(teamName, allMatches) {
     if (!allMatches || !teamName) return '';
     
     // Get all matches for this team, sorted by date
-    const teamMatches = allMatches
-        .filter(match => {
-            const home = match.home || match.hometeam || '';
-            const away = match.away || match.awayteam || '';
-            return home.includes(teamName) || away.includes(teamName) || 
-                   teamName.includes(home) || teamName.includes(away);
-        })
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    // EERST filteren op ALLEEN gespeelde wedstrijden, DAN laatste 5 nemen
-    const playedMatches = teamMatches.filter(match => {
-        const status = match.status || match.matchStatus || '';
-        
-        // First check status - this is most reliable
-        const isPlayedStatus = status === 'played' || status === 'Gespeeld';
-        
-        // Only use score validation as fallback if no status is available
-        if (status && status !== '') {
-            return isPlayedStatus;
+    var teamMatches = [];
+    for (var i = 0; i < allMatches.length; i++) {
+        var match = allMatches[i];
+        var home = match.home || match.hometeam || '';
+        var away = match.away || match.awayteam || '';
+        if (home.indexOf(teamName) !== -1 || away.indexOf(teamName) !== -1 ||
+           teamName.indexOf(home) !== -1 || teamName.indexOf(away) !== -1) {
+            teamMatches.push(match);
         }
-        
-        // Fallback: check if there are valid scores (only when no status available)
-        const homeScore = getFirstValidValue(match.homeGoals, match.homescore, match.home_goals, match.home_score);
-        const awayScore = getFirstValidValue(match.awayGoals, match.awayscore, match.away_goals, match.away_score);
-        const hasValidScores = !isNaN(parseInt(homeScore)) && !isNaN(parseInt(awayScore));
-        
-        return hasValidScores;
+    }
+    // Sort by date
+    teamMatches.sort(function(a, b) {
+        return new Date(a.date) - new Date(b.date);
     });
     
+    // EERST filteren op ALLEEN gespeelde wedstrijden, DAN laatste 5 nemen
+    var playedMatches = [];
+    for (var i = 0; i < teamMatches.length; i++) {
+        var match = teamMatches[i];
+        var status = match.status || match.matchStatus || '';
+
+        // First check status - this is most reliable
+        var isPlayedStatus = status === 'played' || status === 'Gespeeld';
+
+        // Only use score validation as fallback if no status is available
+        if (status && status !== '') {
+            if (isPlayedStatus) {
+                playedMatches.push(match);
+            }
+        } else {
+            // Fallback: check if there are valid scores (only when no status available)
+            var homeScore = getFirstValidValue(match.homeGoals, match.homescore, match.home_goals, match.home_score);
+            var awayScore = getFirstValidValue(match.awayGoals, match.awayscore, match.away_goals, match.away_score);
+            var hasValidScores = !isNaN(parseInt(homeScore)) && !isNaN(parseInt(awayScore));
+
+            if (hasValidScores) {
+                playedMatches.push(match);
+            }
+        }
+    }
+    
     // Get last 5 PLAYED matches
-    const last5PlayedMatches = playedMatches.slice(-5);
+    var last5PlayedMatches = playedMatches.slice(-5);
     
     // Debug logging for team form
     
-    let formHtml = '<div class="team-form">';
+    var formHtml = '<div class="team-form">';
     
     // Add up to 5 circles, with unfilled ones on the left
-    for (let i = 0; i < 5; i++) {
+    for (var i = 0; i < 5; i++) {
         if (i < 5 - last5PlayedMatches.length) {
             // Grey circle for teams with less than 5 played matches (left side)
             formHtml += '<span class="form-circle form-unplayed">●</span>';
         } else {
-            const match = last5PlayedMatches[i - (5 - last5PlayedMatches.length)];
+            var match = last5PlayedMatches[i - (5 - last5PlayedMatches.length)];
             // Check if team is playing home or away (improved matching)
-            const homeTeam = match.home || match.hometeam || match.home_team || '';
-            const awayTeam = match.away || match.awayteam || match.away_team || '';
-            
-            const isHome = homeTeam.toLowerCase().includes(teamName.toLowerCase()) || 
-                          teamName.toLowerCase().includes(homeTeam.toLowerCase());
-            const isAway = awayTeam.toLowerCase().includes(teamName.toLowerCase()) || 
-                          teamName.toLowerCase().includes(awayTeam.toLowerCase());
-            
-            let result = 'unplayed'; // Default to unplayed (grey)
-            let resultText = 'ONBEKEND';
-            let colorText = 'GRIJS';
+            var homeTeam = match.home || match.hometeam || match.home_team || '';
+            var awayTeam = match.away || match.awayteam || match.away_team || '';
+
+            var isHome = homeTeam.toLowerCase().indexOf(teamName.toLowerCase()) !== -1 ||
+                        teamName.toLowerCase().indexOf(homeTeam.toLowerCase()) !== -1;
+            var isAway = awayTeam.toLowerCase().indexOf(teamName.toLowerCase()) !== -1 ||
+                        teamName.toLowerCase().indexOf(awayTeam.toLowerCase()) !== -1;
+
+            var result = 'unplayed'; // Default to unplayed (grey)
+            var resultText = 'ONBEKEND';
+            var colorText = 'GRIJS';
             
             // All matches in this array are already filtered to played status or valid scores
-            const matchStatus = match.status || match.matchStatus || '';
+            var matchStatus = match.status || match.matchStatus || '';
             
             if (isHome || isAway) {
                 // Check all possible score field variations using helper function
-                const homeScore = getFirstValidValue(match.homeGoals, match.homescore, match.home_goals, match.home_score);
-                const awayScore = getFirstValidValue(match.awayGoals, match.awayscore, match.away_goals, match.away_score);
-                
-                const homeGoals = parseInt(homeScore);
-                const awayGoals = parseInt(awayScore);
+                var homeScore = getFirstValidValue(match.homeGoals, match.homescore, match.home_goals, match.home_score);
+                var awayScore = getFirstValidValue(match.awayGoals, match.awayscore, match.away_goals, match.away_score);
+
+                var homeGoals = parseInt(homeScore);
+                var awayGoals = parseInt(awayScore);
                 
                 if (!isNaN(homeGoals) && !isNaN(awayGoals)) {
                     if (homeGoals === awayGoals) {
@@ -446,11 +500,11 @@ function calculateTeamForm(teamName, allMatches) {
                 resultText = 'TEAM MATCH FOUT';
             }
             
-            const homeDisplay = isHome ? `${homeTeam} (THUIS)` : homeTeam;
-            const awayDisplay = isAway ? `${awayTeam} (UIT)` : awayTeam;
+            var homeDisplay = isHome ? homeTeam + ' (THUIS)' : homeTeam;
+            var awayDisplay = isAway ? awayTeam + ' (UIT)' : awayTeam;
             
             
-            formHtml += `<span class="form-circle form-${result}">●</span>`;
+            formHtml += '<span class="form-circle form-' + result + '">●</span>';
         }
     }
     
@@ -1289,23 +1343,27 @@ function addFeaturedMatchesSlide(matches) {
 
 // Initialize slideshow
 function initializeCarousel() {
-    const slideContainer = document.getElementById('slide-container');
+    var slideContainer = document.getElementById('slide-container');
     if (!slideContainer) {
         return;
     }
-    
-    const slides = slideContainer.querySelectorAll('.slide-item');
+
+    var slides = slideContainer.querySelectorAll('.slide-item');
     totalSlides = slides.length;
     
     
     // Set first slide as active
     if (slides.length > 0) {
-        slides.forEach(slide => slide.classList.remove('active'));
+        for (var i = 0; i < slides.length; i++) {
+            slides[i].classList.remove('active');
+        }
         slides[0].classList.add('active');
     }
     
     carouselInitialized = true;
     currentSlideIndex = 0;
+    slidesInCurrentCycle = 0;
+    logoMode = 'team'; // Start with team logos
 
     updateScreenNumber();
     startCountdown();
@@ -1318,13 +1376,14 @@ function initializeCarousel() {
 }
 
 // Add simple slideshow navigation
-let currentSlideIndex = 0;
-let club1919AnimationIndex = 0; // Track which animation to show next
-let fullCycleCount = 0; // Track number of complete cycles
+var currentSlideIndex = 0;
+var club1919AnimationIndex = 0; // Track which animation to show next
+var fullCycleCount = 0; // Track number of complete cycles
+var slidesInCurrentCycle = 0; // Track slides in current cycle for logo alternation
 
 function nextSlide() {
-    const slideContainer = document.getElementById('slide-container');
-    const slides = slideContainer.querySelectorAll('.slide-item');
+    var slideContainer = document.getElementById('slide-container');
+    var slides = slideContainer.querySelectorAll('.slide-item');
 
     if (slides.length === 0) return;
 
@@ -1333,11 +1392,25 @@ function nextSlide() {
 
     // Move to next slide (wrap around)
     currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+    slidesInCurrentCycle++;
 
     // Check if we completed a full cycle (back to intro screen)
     if (currentSlideIndex === 0) {
         fullCycleCount++;
+        slidesInCurrentCycle = 0;
+
+        // Alternate logo mode after each complete cycle
+        logoMode = (logoMode === 'team') ? 'club' : 'team';
+        console.log('Cycle ' + fullCycleCount + ' completed. Switching to ' + logoMode + ' logos.');
+
         updateClub1919Animation();
+
+        // Refresh slides with new logo mode
+        loadData().then(function(data) {
+            updateMatchStatistics(data);
+        }).catch(function(error) {
+            updateMatchStatistics(null);
+        });
     }
 
     // Add active class to new slide
@@ -1348,8 +1421,8 @@ function nextSlide() {
 }
 
 function previousSlide() {
-    const slideContainer = document.getElementById('slide-container');
-    const slides = slideContainer.querySelectorAll('.slide-item');
+    var slideContainer = document.getElementById('slide-container');
+    var slides = slideContainer.querySelectorAll('.slide-item');
     
     if (slides.length === 0) return;
     
@@ -1377,10 +1450,10 @@ function startCountdown() {
     currentCountdown = SCREEN_DURATION_SECONDS;
     updateCountdownDisplay();
     
-    countdownInterval = setInterval(() => {
+    countdownInterval = setInterval(function() {
         currentCountdown--;
         updateCountdownDisplay();
-        
+
         if (currentCountdown <= 0) {
             clearInterval(countdownInterval);
             countdownInterval = null;
@@ -1390,20 +1463,20 @@ function startCountdown() {
 }
 
 function updateCountdownDisplay() {
-    const element = document.getElementById('countdown-display');
+    var element = document.getElementById('countdown-display');
     if (element) {
         // Format as xx/xx (current/total)
-        const currentFormatted = currentCountdown < 10 ? `0${currentCountdown}` : currentCountdown;
-        const totalFormatted = SCREEN_DURATION_SECONDS < 10 ? `0${SCREEN_DURATION_SECONDS}` : SCREEN_DURATION_SECONDS;
-        element.textContent = `${currentFormatted}/${totalFormatted}`;
+        var currentFormatted = currentCountdown < 10 ? '0' + currentCountdown : currentCountdown;
+        var totalFormatted = SCREEN_DURATION_SECONDS < 10 ? '0' + SCREEN_DURATION_SECONDS : SCREEN_DURATION_SECONDS;
+        element.textContent = currentFormatted + '/' + totalFormatted;
     } else {
     }
 }
 
 function updateScreenNumber() {
-    const element = document.getElementById('screen-number-display');
+    var element = document.getElementById('screen-number-display');
     if (element) {
-        element.textContent = `${currentSlideIndex + 1}/${totalSlides}`;
+        element.textContent = (currentSlideIndex + 1) + '/' + totalSlides;
     }
 }
 
@@ -1420,7 +1493,7 @@ document.addEventListener('keydown', function(event) {
 
 // Handle window resize to update device detection
 window.addEventListener('resize', function() {
-    const oldIsMobile = isMobile;
+    var oldIsMobile = isMobile;
     
     // Update device detection
     applyDeviceStyling();
@@ -1429,19 +1502,19 @@ window.addEventListener('resize', function() {
     if (oldIsMobile !== isMobile) {
         
         // Refresh statistics with current data
-        loadData().then((data) => {
+        loadData().then(function(data) {
             updateMatchStatistics(data);
-        }).catch(error => {
-                updateMatchStatistics(null);
+        }).catch(function(error) {
+            updateMatchStatistics(null);
         });
     }
 });
 
 // Refresh data every 30 minutes
-setInterval(() => {
-    loadData().then((data) => {
+setInterval(function() {
+    loadData().then(function(data) {
         updateMatchStatistics(data);
-    }).catch(error => {
+    }).catch(function(error) {
         updateMatchStatistics(null);
     });
 }, 30 * 60 * 1000);
@@ -1454,8 +1527,8 @@ function updateClub1919Animation() {
         return;
     }
 
-    const animationContainer = document.getElementById('club1919-animation');
-    const club1919Text = document.getElementById('club1919-text');
+    var animationContainer = document.getElementById('club1919-animation');
+    var club1919Text = document.getElementById('club1919-text');
 
 
     if (!animationContainer || !club1919Text) {
@@ -1463,13 +1536,15 @@ function updateClub1919Animation() {
     }
 
     // Define animation classes
-    const animations = ['typewriter', 'slide-glow', 'cinema', 'dynamic', 'spotlight'];
+    var animations = ['typewriter', 'slide-glow', 'cinema', 'dynamic', 'spotlight'];
 
     // Remove all previous animation classes
-    animations.forEach(anim => animationContainer.classList.remove(anim));
+    for (var i = 0; i < animations.length; i++) {
+        animationContainer.classList.remove(animations[i]);
+    }
 
     // Get current animation based on cycle count
-    const currentAnimation = animations[club1919AnimationIndex];
+    var currentAnimation = animations[club1919AnimationIndex];
 
     // Special handling for dynamic animation (falling letters)
     if (currentAnimation === 'dynamic') {
