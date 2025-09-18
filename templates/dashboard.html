@@ -6,12 +6,42 @@
       <!-- TV-Simple Slideshow -->
       <div id="slideshow-container">
         <div id="slide-container">
-          {% include 'includes/intro_screen.html' %}
+          <!-- Intro Screen -->
+          <div class="slide-item active intro-screen">
+            <div class="welcome-container">
+              <h1 class="competition-title" id="competition-main-title">
+                AVV COLUMBIA
+              </h1>
+              <h2 class="competition-subtitle">Competitie Dashboard</h2>
+              <div class="competition-details">
+                <p>Zaterdag 3N OOST • Seizoen 2025-2026</p>
+                <br><br>
+                <p id="competition-matches-stats">Wedstrijden in competitie: nog te spelen - / gespeeld -</p>
+                <p id="columbia-matches-stats">Wedstrijden Columbia: nog te spelen - / gespeeld -</p>
+              </div>
+
+              <!-- CLUB1919 Animation - Only on TV/Desktop -->
+              <div class="club1919-animation tv-only" id="club1919-animation">
+                <div class="sponsor-intro">Deze televisie is aangeboden door...</div>
+                <div class="sponsor-name" id="club1919-text">CLUB1919</div>
+              </div>
+            </div>
+          </div>
           <!-- Dynamic slides will be added by JavaScript -->
         </div>
       </div>
       
-      {% include 'includes/footer.html' %}
+      <!-- TV-Simple Footer -->
+      <div class="tv-footer">
+        <div class="tv-footer-content">
+          <div class="screen-number" id="screen-number-display">1/6</div>
+          <div class="footer-branding">
+            <span class="desktop-footer">EZ IT Consultancy ism ROSK - AI powered - Televisie aangeboden door Club1919</span>
+            <span class="mobile-footer">EZ IT Consultancy ism ROSK - AI powered</span>
+          </div>
+          <div class="countdown-timer" id="countdown-display">10/10</div>
+        </div>
+      </div>
       {% include 'includes/test_mode_indicator.html' %}
     </div>
 
