@@ -1,12 +1,23 @@
 @echo off
 echo ========================================
 echo  SPMS Flask App Deployment to Hostinger
-echo  Using SSH key authentication
+echo  Windows-compatible SSH deployment
 echo ========================================
 echo.
 
 SET SERVER=root@srv988862.hstgr.cloud
 SET REMOTE_PATH=/var/www/spms
+
+REM Test SSH key authentication
+echo Testing SSH key authentication...
+ssh -o ConnectTimeout=10 -o BatchMode=yes %SERVER% "echo 'SSH key authentication successful'"
+if %ERRORLEVEL% neq 0 (
+    echo Failed to establish SSH connection. Please check your credentials.
+    pause
+    exit /b 1
+)
+
+echo SSH connection verified. Proceeding with file transfers...
 
 REM Core Python files
 echo [1/8] Copying core Python files...
@@ -36,30 +47,31 @@ scp templates\includes\*.html %SERVER%:%REMOTE_PATH%/templates/includes/
 
 REM Create static directories first
 echo [7/8] Creating static directories and copying CSS and JavaScript...
-ssh %SERVER% "mkdir -p %REMOTE_PATH%/static/css %REMOTE_PATH%/static/js %REMOTE_PATH%/static/images %REMOTE_PATH%/static/images/team_logos %REMOTE_PATH%/templates/includes"
+ssh %SERVER% "mkdir -p %REMOTE_PATH%/static/css %REMOTE_PATH%/static/js %REMOTE_PATH%/static/images %REMOTE_PATH%/static/images/team_logos %REMOTE_PATH%/static/images/club_logos %REMOTE_PATH%/templates/includes"
 scp static\css\dashboard.css %SERVER%:%REMOTE_PATH%/static/css/
 scp static\js\dashboard.js %SERVER%:%REMOTE_PATH%/static/js/
 REM Exclude dashboard_tv.js to avoid conflicts with mobile fixes
 
 REM Images and favicon
 echo [8/8] Copying images and logos...
-REM Ensure directories exist first
-ssh %SERVER% "mkdir -p %REMOTE_PATH%/static/images/team_logos"
-
 REM Copy main images
 echo Copying main images...
 if exist static\images\favicon.png scp static\images\favicon.png %SERVER%:%REMOTE_PATH%/static/images/
 if exist static\images\icon.png scp static\images\icon.png %SERVER%:%REMOTE_PATH%/static/images/
 if exist static\images\default_player.png scp static\images\default_player.png %SERVER%:%REMOTE_PATH%/static/images/
 
-REM Copy logos (these are causing 404 errors)
-echo Copying logo files...
+REM Copy logos
+echo Copying Club1919 logo...
 scp static\images\logo_club1919.png %SERVER%:%REMOTE_PATH%/static/images/
-scp static\images\team_logos\t_184.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/
 
-REM Copy all other team logos if they exist
-echo Copying additional team logos...
+REM Copy team logos
+echo Copying team logos...
+scp static\images\team_logos\t_184.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/
 if exist static\images\team_logos\*.png scp static\images\team_logos\*.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/ 2>nul
+
+REM Copy club logos (NEW!)
+echo Copying club logos...
+if exist static\images\club_logos\*.webp scp static\images\club_logos\*.webp %SERVER%:%REMOTE_PATH%/static/images/club_logos/ 2>nul
 
 echo.
 echo ========================================
@@ -85,5 +97,8 @@ echo.
 echo Your site will be available at:
 echo - HTTP:  http://srv988862.hstgr.cloud
 echo - HTTPS: https://srv988862.hstgr.cloud (after SSL setup)
+echo.
+echo NEW: Club logos have been uploaded to /static/images/club_logos/
+echo     Logo alternation system is now active in dashboard.js
 echo.
 pause
