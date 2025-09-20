@@ -1,0 +1,137 @@
+[
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-20",
+    "home": "Apeldoornse Boyss",
+    "away": "Veluwse Boys",
+    "homeGoals": 2,
+    "awayGoals": 1,
+    "result": "2\t-\t1"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-20",
+    "home": "Veensche Boys",
+    "away": "Apeldoorn CSV",
+    "homeGoals": 3,
+    "awayGoals": 5,
+    "result": "3\t-\t5"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-20",
+    "home": "Harfsen",
+    "away": "Oeken",
+    "homeGoals": 2,
+    "awayGoals": 2,
+    "result": "2\t-\t2"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-20",
+    "home": "Eefde SP",
+    "away": "Brummen SP",
+    "homeGoals": 0,
+    "awayGoals": 2,
+    "result": "0\t-\t2"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-20",
+    "home": "Almen",
+    "away": "ZVV 56",
+    "homeGoals": 0,
+    "awayGoals": 0,
+    "result": "0\t-\t0"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-14",
+    "home": "Voorst",
+    "away": "TKA",
+    "homeGoals": 1,
+    "awayGoals": 4,
+    "result": "1\t-\t4"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-14",
+    "home": "SHE",
+    "away": "Albatross",
+    "homeGoals": 1,
+    "awayGoals": 4,
+    "result": "1\t-\t4"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-14",
+    "home": "WSV",
+    "away": "Voorwaarts T",
+    "homeGoals": 6,
+    "awayGoals": 0,
+    "result": "6\t-\t0"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-14",
+    "home": "CCW 16",
+    "away": "ABS",
+    "homeGoals": 4,
+    "awayGoals": 0,
+    "result": "4\t-\t0"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-14",
+    "home": "Vaassen",
+    "away": "KCVO",
+    "homeGoals": 0,
+    "awayGoals": 7,
+    "result": "0\t-\t7"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-14",
+    "home": "WWNA",
+    "away": "Victoria Boys",
+    "homeGoals": 1,
+    "awayGoals": 0,
+    "result": "1\t-\t0"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-14",
+    "home": "Orderbos",
+    "away": "Loenermark",
+    "homeGoals": 3,
+    "awayGoals": 0,
+    "result": "3\t-\t0"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-13",
+    "home": "Robur et Velocitas",
+    "away": "Westervoort sc",
+    "homeGoals": 2,
+    "awayGoals": 1,
+    "result": "2\t-\t1"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-13",
+    "home": "Brummen SP",
+    "away": "Eefde SP",
+    "homeGoals": 2,
+    "awayGoals": 0,
+    "result": "2\t-\t0"
+  },
+  {
+    "status": "Gespeeld",
+    "date": "2025-09-13",
+    "home": "Apeldoornse Boys",
+    "away": "Oeken",
+    "homeGoals": 0,
+    "awayGoals": 0,
+    "result": "0\t-\t0"
+  }
+]

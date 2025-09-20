@@ -444,10 +444,21 @@ body {
 }
 
 /* === SCHERM 1 & 2: MAIN STANDINGS + PERIOD STANDINGS === */
+/* Header for main standings with current date */
+.standings-header {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* Main table container for league standings */
 .standings-table {
   font-size: 1.3rem;
-  margin-top: 2cm; /* Increased to avoid logo overlap on TV/laptop */
+  margin-top: 0; /* No margin needed since header provides spacing */
 }
 
 /* Period slides mobile-specific smaller fonts */
@@ -731,6 +742,7 @@ body {
   max-width: 100vw; /* Ensure container doesn't exceed viewport */
   display: flex;
   flex-direction: column;
+  margin-top: -19px; /* Move table 0.5cm (19px) up */
 }
 
 /* Mobile match item styling */
@@ -765,30 +777,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px; /* Reduced gap for more space */
+  gap: 2px; /* Further reduced gap to give more space to teams */
   width: 100%; /* Ensure full width usage */
+  padding: 0 2px; /* Reduced padding to give more space to teams */
 }
 
 .mobile-team {
-  flex: 0 1 35%; /* Fixed percentage instead of flex: 1 */
-  max-width: 120px; /* Same max width as standings table */
+  flex: 0 1 48%; /* Increased from 45% to 48% for wider teams */
+  max-width: 180px; /* Increased from 160px to 180px for wider teams */
   display: flex; /* Make team container flex */
   flex-direction: row; /* Logo and name horizontally on same line */
   align-items: center; /* Center content vertically */
   gap: 4px; /* Small gap between logo and name */
-}
-
-/* Home team - left aligned (logo first, then name) */
-.mobile-team.home {
-  justify-content: flex-start; /* Left align */
-  flex-direction: row; /* Logo → Name */
-}
-
-/* Away team - left aligned (logo first, then name, same as home) */
-.mobile-team.away {
-  justify-content: flex-start; /* Left align (same as home) */
-  flex-direction: row; /* Logo → Name (same as home) */
-}
   font-size: 0.9rem; /* Same font size as standings table */
   font-weight: bold;
   color: #333;
@@ -798,6 +798,28 @@ body {
   text-overflow: ellipsis; /* Add ... for long names */
 }
 
+/* Home team - left aligned (logo first, then name) */
+.mobile-team.home {
+  justify-content: flex-start; /* Strong left align */
+  flex-direction: row; /* Logo → Name */
+  margin-right: auto; /* Push away team further right */
+}
+
+/* Away team - left aligned (logo first, then name like home teams) */
+.mobile-team.away {
+  justify-content: flex-start !important; /* Left align like home teams */
+  flex-direction: row !important; /* Logo → Name (same as home teams) */
+  margin-left: 0; /* Remove auto margin */
+  text-align: left !important; /* Left align text like home teams */
+  width: 100% !important; /* Take full width */
+}
+
+/* Force all text in away teams to be left aligned */
+.mobile-team.away,
+.mobile-team.away * {
+  text-align: left !important;
+}
+
 .mobile-team.featured {
   color: #000 !important;
   font-weight: 900 !important;
@@ -805,24 +827,24 @@ body {
   padding: 2px 4px;
   border-radius: 4px;
   font-size: 0.9rem !important; /* Same font size as standings table featured teams */
-  max-width: 120px !important; /* Same max width as standings table featured teams */
+  max-width: 180px !important; /* Updated to match new max width */
 }
 
 .mobile-score {
   flex: 0 0 auto; /* Don't grow or shrink */
-  font-size: 1.1rem; /* Slightly smaller */
+  font-size: 1.0rem; /* Smaller font size */
   font-weight: bold;
   color: #0066cc;
-  min-width: 50px; /* Slightly smaller min width */
+  min-width: 40px; /* Reduced min width to give more space to teams */
   text-align: center;
 }
 
 .mobile-vs {
   flex: 0 0 auto; /* Don't grow or shrink */
-  font-size: 1.0rem; /* Slightly smaller */
+  font-size: 0.9rem; /* Smaller font size */
   font-weight: 600;
   color: #666;
-  min-width: 30px; /* Smaller min width */
+  min-width: 25px; /* Reduced min width to give more space to teams */
   text-align: center;
 }
 
@@ -858,10 +880,17 @@ body {
     text-align: center !important;
   }
   
+  /* Header adjustments for mobile */
+  .standings-header {
+    font-size: 1.4rem !important;
+    margin-top: 0.5cm !important;
+    margin-bottom: 10px !important;
+  }
+
   /* Table adjustments for mobile */
   .standings-table {
     font-size: 0.8rem !important;
-    margin-top: 0.5cm !important; /* Keep compact spacing for mobile */
+    margin-top: 0 !important; /* No margin needed since header provides spacing */
   }
   
   .standings-table th {

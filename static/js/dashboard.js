@@ -75,6 +75,15 @@ function buildTeamShirtData(data) {
     }
 }
 
+// Function to get current date formatted for Dutch
+function getCurrentDateFormatted() {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.getMonth() + 1; // January is 0
+    const year = today.getFullYear();
+    return `${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${year}`;
+}
+
 // Generic function to get team logo using API shirt data
 function getTeamLogoGeneric(teamName, cssClass) {
     if (cssClass === undefined) cssClass = 'team-logo';
@@ -260,6 +269,8 @@ function loadData() {
         }
         
         addLastWeekResultsSlide(data.last_week_results || []);
+        addOverigeApeldoornseClubsSlide();
+        addOverigeApeldoornseClubsKomendeWedstrijdenSlide();
         addNextWeekMatchesSlide(data.next_week_matches || []);
         addFeaturedMatchesSlide(data.featured_team_matches || {played: [], upcoming: []});
         
@@ -291,7 +302,7 @@ function updateMatchStatistics(data) {
     for (var i = 0; i < allMatches.length; i++) {
         var match = allMatches[i];
         var status = match.status || match.matchStatus || '';
-        var isPlayedStatus = status === 'played' || status === 'Gespeeld';
+        var isPlayedStatus = status === 'played' || status === 'Gespeeld' || status === 'Uitgespeeld';
 
         if (status && status !== '') {
             if (isPlayedStatus) playedMatchesCount++;
@@ -422,7 +433,7 @@ function calculateTeamForm(teamName, allMatches) {
         var status = match.status || match.matchStatus || '';
 
         // First check status - this is most reliable
-        var isPlayedStatus = status === 'played' || status === 'Gespeeld';
+        var isPlayedStatus = status === 'played' || status === 'Gespeeld' || status === 'Uitgespeeld';
 
         // Only use score validation as fallback if no status is available
         if (status && status !== '') {
@@ -516,13 +527,17 @@ function calculateTeamForm(teamName, allMatches) {
 function addStandingsSlide(standings, allMatches = []) {
     const slide = document.createElement('div');
     slide.className = 'slide-item';
-    
+
     if (isMobile) {
         // Mobile: Single column layout without form column
         slide.innerHTML = `
-            <div class="row">
-                <div class="col-12">
-                    <table class="table table-striped standings-table">
+            <div>
+                <h2 class="mobile-header" style="font-size: 1.8rem !important;">
+                    Stand
+                </h2>
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-striped standings-table" style="margin-top: -0.5cm !important;">
                         <thead>
                             <tr>
                                 <th class="position-header">#</th>
@@ -554,6 +569,7 @@ function addStandingsSlide(standings, allMatches = []) {
                         </tbody>
                     </table>
                 </div>
+                </div>
             </div>
         `;
     } else {
@@ -562,6 +578,7 @@ function addStandingsSlide(standings, allMatches = []) {
         const rightStandings = standings.slice(7, 14);
         
         slide.innerHTML = `
+            <h1 class="standings-header">Stand per ${getCurrentDateFormatted()}</h1>
             <div class="row">
                 <!-- Left column: positions 1-7 -->
                 <div class="col-md-6">
@@ -643,6 +660,7 @@ function addStandingsSlide(standings, allMatches = []) {
     const container = document.getElementById('slide-container');
     if (container) {
         container.appendChild(slide);
+        updateTotalSlides();
     } else {
     }
 }
@@ -797,6 +815,7 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
     const container = document.getElementById('slide-container');
     if (container) {
         container.appendChild(slide);
+        updateTotalSlides();
     } else {
     }
 }
@@ -807,7 +826,7 @@ function addLastWeekResultsSlide(results) {
     
     // Get only the last 7 played matches
     const last7Results = results
-        .filter(result => result.status === 'Gespeeld' || (result.homeGoals !== undefined && result.awayGoals !== undefined))
+        .filter(result => result.status === 'Gespeeld' || result.status === 'Uitgespeeld' || (result.homeGoals !== undefined && result.awayGoals !== undefined))
         .sort((a, b) => new Date(b.date) - new Date(a.date))
         .slice(0, 7);
     
@@ -840,7 +859,6 @@ function addLastWeekResultsSlide(results) {
                                 
                                 return `
                                 <div class="mobile-match-item played ${isFeaturedMatch ? 'featured' : ''}" style="${isFeaturedMatch ? 'border-left-color: #ffd700 !important; background-color: rgba(255, 215, 0, 0.2) !important;' : ''}">
-                                    <div class="mobile-match-date">${matchDate}</div>
                                     <div class="mobile-match-teams">
                                         <div class="mobile-team home ${isFeaturedMatch ? 'featured' : ''}">${getTeamNameWithLogoLarge(home)}</div>
                                         <div class="mobile-score">${homeGoals} - ${awayGoals}</div>
@@ -882,12 +900,15 @@ function addLastWeekResultsSlide(results) {
                                     const home = result.home || result.hometeam || 'Team A';
                                     const away = result.away || result.awayteam || 'Team B';
                                     return `
-                                    <div class="col-6 offset-3">
+                                    <div class="col-12">
                                         <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); ${isFeaturedMatch ? 'background-color: rgba(255, 215, 0, 0.2) !important; border: 2px solid #ffd700 !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;' : ''}">
-                                            <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 15px;">
+                                            <div style="display: grid; grid-template-columns: 1fr 2fr 1fr 0.5fr 2fr 0.5fr; align-items: center;">
+                                                <div></div>
                                                 <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${getTeamNameWithLogoLarge(home)}</div>
                                                 <div style="text-align: center; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#0066cc'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${homeGoals} - ${awayGoals}</div>
+                                                <div></div>
                                                 <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${getTeamNameWithLogoLarge(away)}</div>
+                                                <div></div>
                                             </div>
                                         </div>
                                     </div>`;
@@ -909,8 +930,394 @@ function addLastWeekResultsSlide(results) {
     const container = document.getElementById('slide-container');
     if (container) {
         container.appendChild(slide);
+        updateTotalSlides();
     } else {
     }
+}
+
+function addOverigeApeldoornseClubsSlide() {
+    var slide = document.createElement('div');
+    slide.className = 'slide-item';
+
+    // Load data from the API endpoint
+    fetch('/api/overige-apeldoornse-clubs')
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('HTTP error! status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            var results = data.results || [];
+
+            // Filter results to show only last 6 days
+            var sixDaysAgo = new Date();
+            sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
+
+            var filteredResults = results.filter(function(result) {
+                if (!result.date) return false;
+                var matchDate = new Date(result.date);
+                return matchDate >= sixDaysAgo;
+            });
+
+            // Group filtered results by week
+            var weeklyResults = groupOverigeResultsByWeek(filteredResults);
+            var hasResults = Object.keys(weeklyResults).length > 0;
+
+            if (isMobile) {
+                // Mobile layout
+                slide.innerHTML =
+                    '<div class="mobile-matches-container">' +
+                        '<h2 class="mobile-header">' +
+                            'Apeldoornse Clubs' +
+                        '</h2>' +
+                        '<div>' +
+                            (hasResults ? Object.entries(weeklyResults)
+                                .sort(function(a, b) { return b[0].localeCompare(a[0]); }) // Most recent week first
+                                .map(function(weekEntry) {
+                                    var weekLabel = weekEntry[0];
+                                    var weekResults = weekEntry[1];
+                                    return '<div style="margin-bottom: 15px;">' +
+                                        '<h3 style="font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 4px; text-align: center;">' +
+                                            weekLabel +
+                                        '</h3>' +
+                                        weekResults.map(function(result) {
+                                            var homeGoals = result.homeGoals || result.homescore || 0;
+                                            var awayGoals = result.awayGoals || result.awayscore || 0;
+                                            var home = result.home || result.hometeam || 'Team A';
+                                            var away = result.away || result.awayteam || 'Team B';
+                                            var matchDate = new Date(result.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
+
+                                            return '<div class="mobile-match-item played">' +
+                                                '<div class="mobile-match-teams">' +
+                                                    '<div class="mobile-team home">' + getOverigeTeamNameWithLogo(home) + '</div>' +
+                                                    '<div class="mobile-score">' + homeGoals + ' - ' + awayGoals + '</div>' +
+                                                    '<div class="mobile-team away">' + getOverigeTeamNameWithLogo(away) + '</div>' +
+                                                '</div>' +
+                                            '</div>';
+                                        }).join('') +
+                                    '</div>';
+                                }).join('') :
+                                '<div class="col-12 text-center">' +
+                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 20px; margin: 15px;">' +
+                                        '<h3 style="color: #666; font-size: 1.2rem;">Geen uitslagen beschikbaar</h3>' +
+                                        '<p style="color: #888; font-size: 1.0rem;">Er zijn nog geen wedstrijden gespeeld</p>' +
+                                    '</div>' +
+                                '</div>') +
+                        '</div>' +
+                    '</div>';
+            } else {
+                // Desktop layout
+                slide.innerHTML =
+                    '<div>' +
+                        '<h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">' +
+                            'Apeldoornse Clubs' +
+                        '</h2>' +
+                        '<div class="row">' +
+                            (hasResults ? Object.entries(weeklyResults)
+                                .sort(function(a, b) { return b[0].localeCompare(a[0]); }) // Most recent week first
+                                .map(function(weekEntry) {
+                                    var weekLabel = weekEntry[0];
+                                    var weekResults = weekEntry[1];
+                                    return '<div class="col-12 mb-4">' +
+                                        '<h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; text-align: center;">' +
+                                            weekLabel +
+                                        '</h3>' +
+                                        '<div class="row">' +
+                                            weekResults.map(function(result) {
+                                                var homeGoals = result.homeGoals || result.homescore || 0;
+                                                var awayGoals = result.awayGoals || result.awayscore || 0;
+                                                var home = result.home || result.hometeam || 'Team A';
+                                                var away = result.away || result.awayteam || 'Team B';
+                                                return '<div class="col-12">' +
+                                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">' +
+                                                        '<div style="display: grid; grid-template-columns: 1fr 2fr 1fr 0.5fr 2fr 0.5fr; align-items: center;">' +
+                                                            '<div></div>' +
+                                                            '<div style="text-align: left; font-size: 2rem; font-weight: bold; color: #333;">' + getOverigeTeamNameWithLogo(home) + '</div>' +
+                                                            '<div style="text-align: center; font-size: 2rem; font-weight: bold; color: #0066cc;">' + homeGoals + ' - ' + awayGoals + '</div>' +
+                                                            '<div></div>' +
+                                                            '<div style="text-align: left; font-size: 2rem; font-weight: bold; color: #333;">' + getOverigeTeamNameWithLogo(away) + '</div>' +
+                                                            '<div></div>' +
+                                                        '</div>' +
+                                                    '</div>' +
+                                                '</div>';
+                                            }).join('') +
+                                        '</div>' +
+                                    '</div>';
+                                }).join('') :
+                                '<div class="col-12 text-center">' +
+                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 30px; margin: 20px;">' +
+                                        '<h3 style="color: #666; font-size: 1.8rem;">Geen uitslagen beschikbaar</h3>' +
+                                        '<p style="color: #888; font-size: 1.2rem;">Data wordt geladen of er zijn nog geen wedstrijden gespeeld</p>' +
+                                    '</div>' +
+                                '</div>') +
+                        '</div>' +
+                    '</div>';
+            }
+
+            var container = document.getElementById('slide-container');
+            if (container) {
+                container.appendChild(slide);
+            updateTotalSlides();
+        updateTotalSlides();
+            }
+        })
+        .catch(function(error) {
+            console.error('Error loading Overige Apeldoornse clubs data:', error);
+
+            // Show error slide
+            slide.innerHTML =
+                '<div class="col-12 text-center">' +
+                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 30px; margin: 20px;">' +
+                        '<h3 style="color: #666; font-size: 1.8rem;">Fout bij laden data</h3>' +
+                        '<p style="color: #888; font-size: 1.2rem;">Kon de gegevens niet laden</p>' +
+                    '</div>' +
+                '</div>';
+
+            var container = document.getElementById('slide-container');
+            if (container) {
+                container.appendChild(slide);
+            updateTotalSlides();
+        updateTotalSlides();
+            }
+        });
+}
+
+function groupOverigeResultsByWeek(results) {
+    var weeklyResults = {};
+
+    results.forEach(function(result) {
+        if (!result.date) {
+            return;
+        }
+
+        var matchDate = new Date(result.date);
+        var year = matchDate.getFullYear();
+        var weekNumber = getWeekNumber(matchDate);
+        var weekLabel = 'Week ' + weekNumber + ' (' + year + ')';
+
+        if (!weeklyResults[weekLabel]) {
+            weeklyResults[weekLabel] = [];
+        }
+
+        weeklyResults[weekLabel].push(result);
+    });
+
+    // Sort matches within each week by date (most recent first)
+    Object.keys(weeklyResults).forEach(function(week) {
+        weeklyResults[week].sort(function(a, b) {
+            return new Date(b.date) - new Date(a.date);
+        });
+    });
+
+    return weeklyResults;
+}
+
+function getOverigeTeamNameWithLogo(teamName) {
+    if (!teamName) return '';
+
+    // Mapping van clubnamen naar logo bestanden
+    var logoMapping = {
+        'Albatross': 'albatross.gif',
+        'TKA': 'tka.gif',
+        'WSV': 'wsv.gif',
+        'Victoria Boys': 'victoriaboys.gif',
+        'Loenermark': 'loenermark.gif',
+        'Robur et Velocitas': 'roburetvelocitas.gif',
+        'Brummen SP': 'brummensp.gif',
+        'Apeldoornse Boys': 'apeldoorncsv.gif',
+        'Apeldoorn CSV': 'apeldoorncsv.gif',
+        'Voorst': 'voorst.gif',
+        'CCW 16': 'ccw16.gif',
+        'WWNA': 'wwna.gif',
+        'Orderbos': 'orderbos.gif',
+        'Oeken': 'oeken.gif',
+        'Alexandria': 'Alexandria.gif',
+        'VIOS/V': 'viosv.gif',
+        'ZVV \'56': 'zvv56.gif'
+    };
+
+    var logoFile = logoMapping[teamName];
+    var logoUrl;
+
+    if (logoFile) {
+        logoUrl = '/static/images/overige/' + logoFile;
+    } else {
+        // Fallback naar default_team.png als er geen specifiek logo is
+        logoUrl = '/static/images/team_logos/default_team.png';
+    }
+
+    return '<img src="' + logoUrl + '" class="team-logo" alt="' + teamName + '" onerror="this.src=\'/static/images/team_logos/default_team.png\'">' + ' ' + teamName;
+}
+
+function addOverigeApeldoornseClubsKomendeWedstrijdenSlide() {
+    var slide = document.createElement('div');
+    slide.className = 'slide-item';
+
+    // Load data from komende_wedstrijden.json
+    fetch('/komende_wedstrijden.json')
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('HTTP error! status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            var matches = data || [];
+
+            // Filter matches to show only next 5 days
+            var today = new Date();
+            var fiveDaysFromNow = new Date();
+            fiveDaysFromNow.setDate(today.getDate() + 5);
+
+            var filteredMatches = matches.filter(function(match) {
+                if (!match.date) return false;
+                var matchDate = new Date(match.date);
+                return matchDate >= today && matchDate <= fiveDaysFromNow;
+            });
+
+            // Group filtered matches by date
+            var matchesByDate = {};
+            filteredMatches.forEach(function(match) {
+                if (!match.date) return;
+
+                var matchDate = new Date(match.date);
+                var dateKey = matchDate.toLocaleDateString('nl-NL', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long'
+                });
+
+                if (!matchesByDate[dateKey]) {
+                    matchesByDate[dateKey] = [];
+                }
+                matchesByDate[dateKey].push(match);
+            });
+
+            var hasMatches = Object.keys(matchesByDate).length > 0;
+
+            if (isMobile) {
+                // Mobile layout
+                slide.innerHTML =
+                    '<div class="mobile-matches-container">' +
+                        '<h2 class="mobile-header">' +
+                            'Apeldoornse Clubs' +
+                        '</h2>' +
+                        '<div>' +
+                            (hasMatches ? Object.entries(matchesByDate)
+                                .sort(function(a, b) {
+                                    var dateA = new Date(a[1][0].date);
+                                    var dateB = new Date(b[1][0].date);
+                                    return dateA - dateB;
+                                })
+                                .map(function(dateEntry) {
+                                    var dateLabel = dateEntry[0];
+                                    var dateMatches = dateEntry[1];
+                                    return '<div style="margin-bottom: 15px;">' +
+                                        '<h3 style="font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 4px; text-align: center;">' +
+                                            dateLabel +
+                                        '</h3>' +
+                                        dateMatches.map(function(match) {
+                                            var home = match.home || 'Team A';
+                                            var away = match.away || 'Team B';
+                                            var time = match.time || '';
+
+                                            return '<div class="mobile-match-item upcoming">' +
+                                                '<div class="mobile-match-teams">' +
+                                                    '<div class="mobile-team home">' + getOverigeTeamNameWithLogo(home) + '</div>' +
+                                                    '<div class="mobile-vs">vs</div>' +
+                                                    '<div class="mobile-team away">' + getOverigeTeamNameWithLogo(away) + '</div>' +
+                                                '</div>' +
+                                            '</div>';
+                                        }).join('') +
+                                    '</div>';
+                                }).join('') :
+                                '<div class="col-12 text-center">' +
+                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 20px; margin: 15px;">' +
+                                        '<h3 style="color: #666; font-size: 1.2rem;">Geen komende wedstrijden beschikbaar</h3>' +
+                                        '<p style="color: #888; font-size: 1.0rem;">Er zijn geen geplande wedstrijden gevonden</p>' +
+                                    '</div>' +
+                                '</div>') +
+                        '</div>' +
+                    '</div>';
+            } else {
+                // Desktop layout
+                slide.innerHTML =
+                    '<div>' +
+                        '<h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">' +
+                            'Apeldoornse Clubs - Komende Wedstrijden' +
+                        '</h2>' +
+                        '<div class="row">' +
+                            (hasMatches ? Object.entries(matchesByDate)
+                                .sort(function(a, b) {
+                                    var dateA = new Date(a[1][0].date);
+                                    var dateB = new Date(b[1][0].date);
+                                    return dateA - dateB;
+                                })
+                                .map(function(dateEntry) {
+                                    var dateLabel = dateEntry[0];
+                                    var dateMatches = dateEntry[1];
+                                    return '<div class="col-12 mb-4">' +
+                                        '<h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; text-align: center;">' +
+                                            dateLabel +
+                                        '</h3>' +
+                                        '<div class="row">' +
+                                            dateMatches.map(function(match) {
+                                                var home = match.home || 'Team A';
+                                                var away = match.away || 'Team B';
+                                                var time = match.time || '';
+                                                return '<div class="col-12">' +
+                                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">' +
+                                                        '<div style="display: grid; grid-template-columns: 1fr 2fr 1fr 0.5fr 2fr 0.5fr; align-items: center;">' +
+                                                            '<div></div>' +
+                                                            '<div style="text-align: left; font-size: 2rem; font-weight: bold; color: #333;">' + getOverigeTeamNameWithLogo(home) + '</div>' +
+                                                            '<div style="text-align: center; font-size: 1.5rem; font-weight: bold; color: #0066cc;">vs</div>' +
+                                                            '<div></div>' +
+                                                            '<div style="text-align: left; font-size: 2rem; font-weight: bold; color: #333;">' + getOverigeTeamNameWithLogo(away) + '</div>' +
+                                                            '<div></div>' +
+                                                        '</div>' +
+                                                    '</div>' +
+                                                '</div>';
+                                            }).join('') +
+                                        '</div>' +
+                                    '</div>';
+                                }).join('') :
+                                '<div class="col-12 text-center">' +
+                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 30px; margin: 20px;">' +
+                                        '<h3 style="color: #666; font-size: 1.8rem;">Geen komende wedstrijden beschikbaar</h3>' +
+                                        '<p style="color: #888; font-size: 1.2rem;">Data wordt geladen of er zijn geen geplande wedstrijden</p>' +
+                                    '</div>' +
+                                '</div>') +
+                        '</div>' +
+                    '</div>';
+            }
+
+            var container = document.getElementById('slide-container');
+            if (container) {
+                container.appendChild(slide);
+            updateTotalSlides();
+        updateTotalSlides();
+            }
+        })
+        .catch(function(error) {
+            console.error('Error loading komende wedstrijden data:', error);
+
+            // Show error slide
+            slide.innerHTML =
+                '<div class="col-12 text-center">' +
+                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 30px; margin: 20px;">' +
+                        '<h3 style="color: #d9534f; font-size: 1.8rem;">Fout bij laden van komende wedstrijden</h3>' +
+                        '<p style="color: #888; font-size: 1.2rem;">Probeer later opnieuw</p>' +
+                    '</div>' +
+                '</div>';
+
+            var container = document.getElementById('slide-container');
+            if (container) {
+                container.appendChild(slide);
+            updateTotalSlides();
+        updateTotalSlides();
+            }
+        });
 }
 
 function groupResultsByWeek(results) {
@@ -1098,15 +1505,18 @@ function addNextWeekMatchesSlide(matches) {
                                     const matchTime = matchDateTime.toLocaleTimeString('nl-NL', {hour: '2-digit', minute: '2-digit'});
                                     
                                     return `
-                                    <div class="col-6 offset-3">
+                                    <div class="col-12">
                                         <div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); ${isFeaturedMatch ? 'background-color: rgba(255, 215, 0, 0.2) !important; border: 2px solid #ffd700 !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;' : ''}">
-                                            <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 15px;">
+                                            <div style="display: grid; grid-template-columns: 1fr 2fr 1fr 0.5fr 2fr 0.5fr; align-items: center;">
+                                                <div></div>
                                                 <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${getTeamNameWithLogoLarge(home)}</div>
                                                 <div style="text-align: center;">
                                                     <div style="font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#0066cc'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}; line-height: 1;">${matchDate}</div>
                                                     <div style="font-size: 1.4rem; font-weight: 600; color: ${isFeaturedMatch ? '#333' : '#666'}; line-height: 1;">${matchTime}</div>
                                                 </div>
-                                                <div style="text-align: right; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${getTeamNameWithLogoLargeAfter(away)}</div>
+                                                <div></div>
+                                                <div style="text-align: left; font-size: 2rem; font-weight: bold; color: ${isFeaturedMatch ? '#000' : '#333'}; ${isFeaturedMatch ? 'font-weight: 900;' : ''}">${getTeamNameWithLogoLarge(away)}</div>
+                                                <div></div>
                                             </div>
                                         </div>
                                     </div>`;
@@ -1128,6 +1538,7 @@ function addNextWeekMatchesSlide(matches) {
     const container = document.getElementById('slide-container');
     if (container) {
         container.appendChild(slide);
+        updateTotalSlides();
     } else {
     }
 }
@@ -1145,8 +1556,9 @@ function addFeaturedMatchesSlide(matches) {
     // Separate played and upcoming matches using detailed status check
     const playedMatches = allMatches.filter(match => {
         const matchStatus = match.status || match.matchStatus || '';
-        return matchStatus === 'Gespeeld' || 
-               matchStatus === 'played' || 
+        return matchStatus === 'Gespeeld' ||
+               matchStatus === 'Uitgespeeld' ||
+               matchStatus === 'played' ||
                matchStatus === 'Afgelopen' ||
                matchStatus === 'Finished' ||
                matchStatus === 'Final' ||
@@ -1156,8 +1568,9 @@ function addFeaturedMatchesSlide(matches) {
     
     const upcomingMatches = allMatches.filter(match => {
         const matchStatus = match.status || match.matchStatus || '';
-        return !(matchStatus === 'Gespeeld' || 
-                matchStatus === 'played' || 
+        return !(matchStatus === 'Gespeeld' ||
+                matchStatus === 'Uitgespeeld' ||
+                matchStatus === 'played' ||
                 matchStatus === 'Afgelopen' ||
                 matchStatus === 'Finished' ||
                 matchStatus === 'Final' ||
@@ -1184,8 +1597,9 @@ function addFeaturedMatchesSlide(matches) {
                         const matchStatus = match.status || match.matchStatus || '';
                         
                         // Check if match is played
-                        const isPlayed = matchStatus === 'Gespeeld' || 
-                                       matchStatus === 'played' || 
+                        const isPlayed = matchStatus === 'Gespeeld' ||
+                                       matchStatus === 'Uitgespeeld' ||
+                                       matchStatus === 'played' ||
                                        matchStatus === 'Afgelopen' ||
                                        matchStatus === 'Finished' ||
                                        matchStatus === 'Final' ||
@@ -1200,7 +1614,6 @@ function addFeaturedMatchesSlide(matches) {
                             
                             return `
                             <div class="mobile-match-item played">
-                                <div class="mobile-match-date">${new Date(match.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'})}</div>
                                 <div class="mobile-match-teams">
                                     ${isHomeMatch ?
                                         `<div class="mobile-team home featured">${getTeamNameWithLogoLarge(featuredTeamName)}</div>
@@ -1252,8 +1665,9 @@ function addFeaturedMatchesSlide(matches) {
                         const matchStatus = match.status || match.matchStatus || '';
                         
                         // Check if match is played based on status field
-                        const isPlayed = matchStatus === 'Gespeeld' || 
-                                       matchStatus === 'played' || 
+                        const isPlayed = matchStatus === 'Gespeeld' ||
+                                       matchStatus === 'Uitgespeeld' ||
+                                       matchStatus === 'played' ||
                                        matchStatus === 'Afgelopen' ||
                                        matchStatus === 'Finished' ||
                                        matchStatus === 'Final' ||
@@ -1295,8 +1709,9 @@ function addFeaturedMatchesSlide(matches) {
                         const matchStatus = match.status || match.matchStatus || '';
                         
                         // Check if match is played based on status field
-                        const isPlayed = matchStatus === 'Gespeeld' || 
-                                       matchStatus === 'played' || 
+                        const isPlayed = matchStatus === 'Gespeeld' ||
+                                       matchStatus === 'Uitgespeeld' ||
+                                       matchStatus === 'played' ||
                                        matchStatus === 'Afgelopen' ||
                                        matchStatus === 'Finished' ||
                                        matchStatus === 'Final' ||
@@ -1336,6 +1751,7 @@ function addFeaturedMatchesSlide(matches) {
     const container = document.getElementById('slide-container');
     if (container) {
         container.appendChild(slide);
+        updateTotalSlides();
     } else {
     }
 }
@@ -1401,7 +1817,6 @@ function nextSlide() {
 
         // Alternate logo mode after each complete cycle
         logoMode = (logoMode === 'team') ? 'club' : 'team';
-        console.log('Cycle ' + fullCycleCount + ' completed. Switching to ' + logoMode + ' logos.');
 
         updateClub1919Animation();
 
@@ -1473,6 +1888,15 @@ function updateCountdownDisplay() {
     }
 }
 
+function updateTotalSlides() {
+    var slideContainer = document.getElementById('slide-container');
+    if (slideContainer) {
+        var slides = slideContainer.querySelectorAll('.slide-item');
+        totalSlides = slides.length;
+        updateScreenNumber();
+    }
+}
+
 function updateScreenNumber() {
     var element = document.getElementById('screen-number-display');
     if (element) {
@@ -1510,14 +1934,61 @@ window.addEventListener('resize', function() {
     }
 });
 
-// Refresh data every 30 minutes
+// Auto-refresh system - check for new data every 5 minutes
+var lastDataUpdate = null;
+
+function checkForUpdates() {
+    fetch('/api/data')
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('HTTP error! status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            var currentUpdate = data.last_updated;
+
+            if (lastDataUpdate && currentUpdate && currentUpdate !== lastDataUpdate) {
+                console.log('New data detected, refreshing page...');
+                // Reload the entire page to get fresh data and rebuild carousel
+                window.location.reload();
+            } else {
+                // Just update statistics for first load or no changes
+                updateMatchStatistics(data);
+                if (!lastDataUpdate) {
+                    lastDataUpdate = currentUpdate;
+                }
+            }
+        })
+        .catch(function(error) {
+            console.log('Error checking for updates:', error);
+            updateMatchStatistics(null);
+        });
+}
+
+// Check for updates every 5 minutes
+setInterval(checkForUpdates, 5 * 60 * 1000);
+
+// Also check for updates every 30 seconds on Saturday between 15:30-19:00
+function checkIfSaturdayGameTime() {
+    var now = new Date();
+    var day = now.getDay(); // 0 = Sunday, 6 = Saturday
+    var hour = now.getHours();
+    var minute = now.getMinutes();
+
+    // Saturday (6) between 15:30-19:00
+    if (day === 6 && ((hour === 15 && minute >= 30) || (hour >= 16 && hour < 19))) {
+        return true;
+    }
+    return false;
+}
+
+// Frequent updates during Saturday game time
 setInterval(function() {
-    loadData().then(function(data) {
-        updateMatchStatistics(data);
-    }).catch(function(error) {
-        updateMatchStatistics(null);
-    });
-}, 30 * 60 * 1000);
+    if (checkIfSaturdayGameTime()) {
+        checkForUpdates();
+    }
+}, 30 * 1000); // Every 30 seconds during game time
 
 // CLUB1919 Animation System
 function updateClub1919Animation() {

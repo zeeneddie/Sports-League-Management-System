@@ -25,12 +25,16 @@ class Config:
 
 class ScheduleConfig:
     """Schedule configuration for data fetching"""
-    DAILY_UPDATE_TIME = "10:00"
-    
-    # Saturday updates every 30 minutes from 16:00-19:00
-    SATURDAY_TIMES = [f"{hour}:{minute:02d}" 
-                      for hour in range(16, 20) 
-                      for minute in [0, 30]]
+
+    # Working scraper schedule
+    THURSDAY_MORNING_TIME = "09:00"
+    SATURDAY_MORNING_TIME = "09:00"
+
+    # Saturday updates every 15 minutes from 15:30 onwards
+    SATURDAY_QUARTER_HOUR_TIMES = [f"15:{minute:02d}" for minute in [30, 45]] + \
+                                  [f"{hour}:{minute:02d}"
+                                   for hour in range(16, 20)
+                                   for minute in [0, 15, 30, 45]]
 
 class TeamFieldMappings:
     """Standard field mappings for team data extraction"""
