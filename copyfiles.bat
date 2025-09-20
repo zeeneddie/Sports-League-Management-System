@@ -20,58 +20,58 @@ if %ERRORLEVEL% neq 0 (
 echo SSH connection verified. Proceeding with file transfers...
 
 REM Core Python files
-echo [1/8] Copying core Python files...
-scp app.py config.py scheduler.py hollandsevelden.py wsgi.py gunicorn.conf.py requirements.txt %SERVER%:%REMOTE_PATH%/
+echo [1/7] Copying core Python files...
+scp app.py config.py scheduler.py hollandsevelden.py overige_scraper.py wsgi.py gunicorn.conf.py requirements.txt %SERVER%:%REMOTE_PATH%/
 
-REM SSL and deployment scripts
-echo [2/8] Copying SSL and deployment files...
-scp generate_ssl_cert.py setup_letsencrypt.py test_ssl.py test_python_version.py %SERVER%:%REMOTE_PATH%/
-scp deploy_hostinger.sh post_deploy_hostinger.sh hostinger_upload.sh fix_python_issues.sh %SERVER%:%REMOTE_PATH%/
+REM JSON template files (for local data updates)
+echo [2/7] Copying JSON template files...
+scp league_data_template.json %SERVER%:%REMOTE_PATH%/league_data.json
+scp uitslagen_template.json %SERVER%:%REMOTE_PATH%/uitslagen.json
+scp komende_wedstrijden_template.json %SERVER%:%REMOTE_PATH%/komende_wedstrijden.json
+
+REM SSL and deployment scripts (essential only)
+echo [3/7] Copying essential deployment files...
+scp generate_ssl_cert.py setup_letsencrypt.py %SERVER%:%REMOTE_PATH%/
+scp deploy_hostinger.sh post_deploy_hostinger.sh %SERVER%:%REMOTE_PATH%/
 
 REM Environment and configuration
-echo [3/8] Copying configuration files...
+echo [4/7] Copying configuration files...
 scp .env.template %SERVER%:%REMOTE_PATH%/
 if exist .env scp .env %SERVER%:%REMOTE_PATH%/
 
-REM Documentation
-echo [4/8] Copying documentation...
-scp CLAUDE.md HOSTINGER_DEPLOYMENT.md %SERVER%:%REMOTE_PATH%/
+REM Documentation (essential only)
+echo [5/7] Skipping documentation files...
 
 REM Templates
-echo [5/8] Copying templates...
+echo [6/7] Copying templates...
 scp templates\dashboard.html templates\404.html templates\500.html %SERVER%:%REMOTE_PATH%/templates/
-
-REM Template includes
-echo [6/8] Copying template includes...
 scp templates\includes\*.html %SERVER%:%REMOTE_PATH%/templates/includes/
 
-REM Create static directories first
-echo [7/8] Creating static directories and copying CSS and JavaScript...
-ssh %SERVER% "mkdir -p %REMOTE_PATH%/static/css %REMOTE_PATH%/static/js %REMOTE_PATH%/static/images %REMOTE_PATH%/static/images/team_logos %REMOTE_PATH%/static/images/club_logos %REMOTE_PATH%/templates/includes"
+REM Create static directories and copy CSS/JavaScript
+echo [7/7] Creating static directories and copying CSS and JavaScript...
+ssh %SERVER% "mkdir -p %REMOTE_PATH%/static/css %REMOTE_PATH%/static/js %REMOTE_PATH%/static/images %REMOTE_PATH%/templates/includes"
 scp static\css\dashboard.css %SERVER%:%REMOTE_PATH%/static/css/
 scp static\js\dashboard.js %SERVER%:%REMOTE_PATH%/static/js/
-REM Exclude dashboard_tv.js to avoid conflicts with mobile fixes
 
-REM Images and favicon
-echo [8/8] Copying images and logos...
-REM Copy main images
-echo Copying main images...
+REM Essential images only
+echo Copying essential images...
 if exist static\images\favicon.png scp static\images\favicon.png %SERVER%:%REMOTE_PATH%/static/images/
 if exist static\images\icon.png scp static\images\icon.png %SERVER%:%REMOTE_PATH%/static/images/
-if exist static\images\default_player.png scp static\images\default_player.png %SERVER%:%REMOTE_PATH%/static/images/
-
-REM Copy logos
-echo Copying Club1919 logo...
 scp static\images\logo_club1919.png %SERVER%:%REMOTE_PATH%/static/images/
 
-REM Copy team logos
-echo Copying team logos...
-scp static\images\team_logos\t_184.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/
-if exist static\images\team_logos\*.png scp static\images\team_logos\*.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/ 2>nul
+REM Logo directories commented out as requested
+REM REM Copy team logos
+REM echo Copying team logos...
+REM ssh %SERVER% "mkdir -p %REMOTE_PATH%/static/images/team_logos"
+REM scp static\images\team_logos\t_184.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/
+REM if exist static\images\team_logos\*.png scp static\images\team_logos\*.png %SERVER%:%REMOTE_PATH%/static/images/team_logos/ 2>nul
 
-REM Copy club logos (NEW!)
-echo Copying club logos...
+REM Copy required image directories
+echo Copying club logos and overige images...
+ssh %SERVER% "mkdir -p %REMOTE_PATH%/static/images/club_logos %REMOTE_PATH%/static/images/overige"
 if exist static\images\club_logos\*.webp scp static\images\club_logos\*.webp %SERVER%:%REMOTE_PATH%/static/images/club_logos/ 2>nul
+if exist static\images\club_logos\*.png scp static\images\club_logos\*.png %SERVER%:%REMOTE_PATH%/static/images/club_logos/ 2>nul
+if exist static\images\overige\*.* scp static\images\overige\*.* %SERVER%:%REMOTE_PATH%/static/images/overige/ 2>nul
 
 echo.
 echo ========================================
@@ -98,7 +98,10 @@ echo Your site will be available at:
 echo - HTTP:  http://srv988862.hstgr.cloud
 echo - HTTPS: https://srv988862.hstgr.cloud (after SSL setup)
 echo.
-echo NEW: Club logos have been uploaded to /static/images/club_logos/
-echo     Logo alternation system is now active in dashboard.js
+echo NEW FEATURES:
+echo - Updated grid layout system for match displays
+echo - Automatic local JSON file integration
+echo - Template JSON files for manual data updates
+echo - Optimized file deployment (logos commented out)
 echo.
 pause

@@ -52,7 +52,8 @@ def get_data(use_test_data=None):
                     'losses': team.get('losses', 0),
                     'goals_for': team.get('goalsFor', team.get('goals_for', 0)),
                     'goals_against': team.get('goalsAgainst', team.get('goals_against', 0)),
-                    'points': team.get('points', 0)
+                    'points': team.get('points', 0),
+                    'shirt': team.get('shirt', '')  # Add shirt logo info
                 }
                 normalized_leaguetable.append(normalized_team)
             
@@ -97,26 +98,24 @@ def get_last_week_results(data):
     """Get results from the last 7 days, or all results in test mode"""
     if not data or 'results' not in data:
         return []
-    
+
     # In test mode, return all results since test data is not current
     if Config.USE_TEST_DATA:
         print(f"Test mode: returning all {len(data['results'])} results")
         return sorted(data['results'], key=lambda x: x.get('date', ''))
-    
+
     today = datetime.now()
     week_ago = today - timedelta(days=7)
-    
+
     last_week_results = []
     for match in data['results']:
         match_date_str = match.get('date', '')
         if match_date_str:
-            try:
-                match_date = datetime.strptime(match_date_str, '%Y-%m-%d')
-                if week_ago <= match_date <= today:
-                    last_week_results.append(match)
-            except ValueError:
-                continue
-    
+            # Use the existing _parse_match_date function that handles both formats
+            match_date = _parse_match_date(match_date_str)
+            if match_date and week_ago <= match_date <= today:
+                last_week_results.append(match)
+
     return sorted(last_week_results, key=lambda x: x.get('date', ''))
 
 
