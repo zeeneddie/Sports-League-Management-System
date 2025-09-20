@@ -2,7 +2,9 @@ from flask import Flask, render_template, jsonify, send_from_directory, request,
 from flask_wtf.csrf import CSRFProtect
 from config import Config
 from scheduler import data_scheduler
+from overige_scraper import filter_apeldoornse_clubs
 import os
+import json
 
 app = Flask(__name__) 
 app.secret_key = Config.SECRET_KEY
@@ -46,7 +48,7 @@ def set_security_headers(response):
         "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
         "img-src 'self' data:; "
         "font-src 'self' https://cdn.jsdelivr.net; "
-        "connect-src 'self';"
+        "connect-src 'self' https://cdn.jsdelivr.net;"
     )
     response.headers['Content-Security-Policy'] = csp
 
@@ -106,12 +108,19 @@ def get_data():
     data, error = _get_cached_data_with_error_handling()
     if error:
         return error
-    
+
+    # Check and integrate local files if they have been modified
+    if data_scheduler.check_local_files_modified():
+        print("Local files modified - integrating updates...")
+        data = data_scheduler.integrate_local_files(data)
+        # Update the cached data with integrated local files
+        data_scheduler.cached_data = data
+
     # Add featured team info to the main data endpoint
     if data:
         data['featured_team_name'] = Config.FEATURED_TEAM
         data['featured_team_key'] = Config.FEATURED_TEAM_KEY
-    
+
     return _format_api_response(data, None, None)
 
 @app.route('/api/standings')
@@ -178,6 +187,38 @@ def get_all_matches():
     if error:
         return error
     return _format_api_response(data, 'all_matches', 'matches')
+
+@app.route('/api/overige-apeldoornse-clubs')
+def get_overige_apeldoornse_clubs():
+    """Get filtered results for Overige Apeldoornse clubs"""
+    try:
+        # Lees uitslagen.json bestand
+        with open('uitslagen.json', 'r', encoding='utf-8') as f:
+            all_results = json.load(f)
+
+        # Filter voor Apeldoornse clubs
+        filtered_results = filter_apeldoornse_clubs(all_results)
+
+        return jsonify({
+            'results': filtered_results,
+            'last_updated': None  # Voeg timestamp toe als gewenst
+        })
+    except FileNotFoundError:
+        return jsonify({'error': 'Uitslagen file not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/komende_wedstrijden.json')
+def komende_wedstrijden():
+    """Serve komende wedstrijden JSON data"""
+    try:
+        with open('komende_wedstrijden.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return jsonify(data)
+    except FileNotFoundError:
+        return jsonify([]), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/refresh')
 def refresh_data():

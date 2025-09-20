@@ -1,10 +1,7 @@
 import schedule
 import time
 import threading
-import subprocess
-import sys
-import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 from hollandsevelden import (
     get_data,
     get_filtered_period_standings,
@@ -18,10 +15,7 @@ from hollandsevelden import (
 import json
 import os
 from dotenv import load_dotenv
-from config import Config, ScheduleConfig
-from live_score_scraper import scrape_live_scores
-from live_score_merger import merge_live_scores
-from live_score_config import Config as LiveConfig
+from config import Config
 
 # Load environment variables
 load_dotenv()
@@ -41,91 +35,176 @@ class DataScheduler:
         self.cached_data = None
         self.last_update = None
 
+    def check_local_files_modified(self):
+        """Check if local JSON files have been modified since last check"""
+        # Initialize local_files if not exists (for existing instances)
+        if not hasattr(self, 'local_files'):
+            self.local_files = {
+                'uitslagen.json': None,
+                'komende_wedstrijden.json': None,
+                'league_data.json': None
+            }
+
+        files_modified = False
+
+        for filename in self.local_files.keys():
+            if os.path.exists(filename):
+                current_mtime = os.path.getmtime(filename)
+                if self.local_files[filename] is None:
+                    # First time checking this file
+                    self.local_files[filename] = current_mtime
+                elif self.local_files[filename] != current_mtime:
+                    print(f"Local file {filename} has been modified")
+                    self.local_files[filename] = current_mtime
+                    files_modified = True
+
+        return files_modified
+
+    def integrate_local_files(self, data):
+        """Integrate local JSON files into the main data if they exist and have recent updates"""
+        if not data:
+            return data
+
+        # Check if local files have been modified recently (last 24 hours)
+        recent_threshold = datetime.now() - timedelta(hours=24)
+
+        # Check uitslagen.json for additional recent results
+        if os.path.exists('uitslagen.json'):
+            try:
+                with open('uitslagen.json', 'r', encoding='utf-8') as f:
+                    uitslagen_data = json.load(f)
+
+                # Add local results to last_week_results if they're recent
+                current_results = data.get('last_week_results', [])
+                existing_matches = set()
+                for result in current_results:
+                    match_key = f"{result.get('home', '')}_{result.get('away', '')}_{result.get('date', '')}"
+                    existing_matches.add(match_key)
+
+                added_count = 0
+                for local_result in uitslagen_data:
+                    result_date_str = local_result.get('date', '')
+                    if result_date_str:
+                        try:
+                            result_date = datetime.strptime(result_date_str, '%Y-%m-%d')
+                            if result_date >= recent_threshold:
+                                # Check if this match is not already in the results
+                                match_key = f"{local_result.get('home', '')}_{local_result.get('away', '')}_{result_date_str}"
+                                if match_key not in existing_matches:
+                                    # Add time to date if not present
+                                    if ' ' not in result_date_str:
+                                        local_result['date'] = f"{result_date_str} 15:00:00"
+                                    current_results.append(local_result)
+                                    existing_matches.add(match_key)
+                                    added_count += 1
+                        except ValueError:
+                            continue
+
+                if added_count > 0:
+                    data['last_week_results'] = sorted(current_results, key=lambda x: x.get('date', ''))
+                    print(f"Added {added_count} results from uitslagen.json")
+
+            except Exception as e:
+                print(f"Error integrating uitslagen.json: {e}")
+
+        # Check komende_wedstrijden.json for additional upcoming matches
+        if os.path.exists('komende_wedstrijden.json'):
+            try:
+                with open('komende_wedstrijden.json', 'r', encoding='utf-8') as f:
+                    upcoming_data = json.load(f)
+
+                # Add local upcoming matches to next_week_matches if they're recent
+                current_matches = data.get('next_week_matches', [])
+                existing_matches = set()
+                for match in current_matches:
+                    match_key = f"{match.get('home', '')}_{match.get('away', '')}_{match.get('date', '')}"
+                    existing_matches.add(match_key)
+
+                added_count = 0
+                for local_match in upcoming_data:
+                    match_date_str = local_match.get('date', '')
+                    if match_date_str:
+                        try:
+                            match_date = datetime.strptime(match_date_str.split(' ')[0], '%Y-%m-%d')
+                            # Add upcoming matches within next 2 weeks
+                            future_threshold = datetime.now() + timedelta(days=14)
+                            if datetime.now() <= match_date <= future_threshold:
+                                match_key = f"{local_match.get('home', '')}_{local_match.get('away', '')}_{match_date_str}"
+                                if match_key not in existing_matches:
+                                    current_matches.append(local_match)
+                                    existing_matches.add(match_key)
+                                    added_count += 1
+                        except (ValueError, IndexError):
+                            continue
+
+                if added_count > 0:
+                    data['next_week_matches'] = sorted(current_matches, key=lambda x: x.get('date', ''))
+                    print(f"Added {added_count} upcoming matches from komende_wedstrijden.json")
+
+            except Exception as e:
+                print(f"Error integrating komende_wedstrijden.json: {e}")
+
+        # Check league_data.json for complete data refresh
+        if os.path.exists('league_data.json'):
+            try:
+                file_mtime = os.path.getmtime('league_data.json')
+                file_time = datetime.fromtimestamp(file_mtime)
+
+                # If league_data.json is newer than current cached data, use it
+                current_update = data.get('last_update')
+                if current_update:
+                    if isinstance(current_update, str):
+                        try:
+                            current_time = datetime.fromisoformat(current_update.replace('Z', '+00:00'))
+                            if file_time > current_time:
+                                print("league_data.json is newer - loading fresh data")
+                                with open('league_data.json', 'r', encoding='utf-8') as f:
+                                    fresh_data = json.load(f)
+                                    # Merge with existing data to preserve any runtime additions
+                                    data.update(fresh_data)
+                                    print("Integrated fresh league_data.json")
+                        except (ValueError, TypeError):
+                            pass
+
+            except Exception as e:
+                print(f"Error integrating league_data.json: {e}")
+
+        return data
+
     def run_working_scraper(self):
-        """Run the working scraper to update uitslagen.json and komende_wedstrijden.json"""
-        print(f"Running working scraper at {datetime.now()}")
+        """Run the working_scraper.py to fetch latest overige clubs data"""
+        print(f"=== WORKING SCRAPER STARTED at {datetime.now()} ===")
 
         try:
-            # Run the working_scraper.py script
-            result = subprocess.run([
-                sys.executable, 'working_scraper.py'
-            ], capture_output=True, text=True, timeout=300)  # 5 minute timeout
+            import subprocess
+            result = subprocess.run(['python', 'working_scraper.py'],
+                                  capture_output=True, text=True, timeout=300)
 
             if result.returncode == 0:
                 print("Working scraper completed successfully")
-                print("STDOUT:", result.stdout[-500:] if len(result.stdout) > 500 else result.stdout)
+                print(f"Output: {result.stdout[-200:]}")  # Last 200 chars
+
+                # Force refresh of main data to integrate new local files
+                self.clear_cache()
+                self.fetch_and_process_data()
             else:
-                print(f"Working scraper failed with return code {result.returncode}")
-                print("STDERR:", result.stderr)
+                print(f"Working scraper failed with error: {result.stderr}")
 
         except subprocess.TimeoutExpired:
             print("Working scraper timed out after 5 minutes")
         except Exception as e:
             print(f"Error running working scraper: {e}")
 
-    def run_live_score_update(self):
-        """Run live score scraper and merge with existing data"""
-        print(f"Running live score update at {datetime.now()}")
+        print(f"=== WORKING SCRAPER COMPLETED at {datetime.now()} ===\n")
 
-        try:
-            # Check if we're in live time
-            if not LiveConfig.is_live_time():
-                print("Not in live time window, skipping live score update")
-                return
+    def run_api_update(self):
+        """Run only API data fetch for hollandsevelden data"""
+        print(f"=== API UPDATE CYCLE STARTED at {datetime.now()} ===")
 
-            # Run live score scraper
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-
-            try:
-                live_scores = loop.run_until_complete(scrape_live_scores(save_to_file=True))
-
-                if live_scores:
-                    print(f"Found {len(live_scores)} live matches")
-
-                    # Merge into target files
-                    target_files = [
-                        'komende_wedstrijden.json',
-                        'league_data.json'
-                    ]
-
-                    results = merge_live_scores(live_scores, target_files)
-
-                    success_count = sum(1 for success in results.values() if success)
-                    print(f"Live score merge results: {success_count}/{len(results)} files updated")
-
-                    # Update tracking
-                    self.last_live_update = datetime.now()
-                    self.live_scores_active = True
-
-                    # Force cache refresh for updated data
-                    self.cached_data = None
-
-                else:
-                    print("No live matches found for target teams")
-
-            finally:
-                loop.close()
-
-        except Exception as e:
-            print(f"Error in live score update: {e}")
-
-    def run_full_update(self):
-        """Run both working scraper and API data fetch"""
-        print(f"=== FULL UPDATE CYCLE STARTED at {datetime.now()} ===")
-
-        # First run the working scraper to get latest overige clubs data
-        self.run_working_scraper()
-
-        # Then run the main data fetch for hollandsevelden data
+        # Run the main data fetch for hollandsevelden data
         self.fetch_and_process_data()
 
-        # Run live score update if we're in live time window
-        if LiveConfig.is_live_time():
-            print("Live time detected, running live score update...")
-            self.run_live_score_update()
-
-        print(f"=== FULL UPDATE CYCLE COMPLETED at {datetime.now()} ===\n")
+        print(f"=== API UPDATE CYCLE COMPLETED at {datetime.now()} ===\n")
         
     def fetch_and_process_data(self):
         """Fetch data from API and process all required views"""
@@ -156,6 +235,9 @@ class DataScheduler:
                 'all_matches': get_all_matches(raw_data),
                 'last_updated': datetime.now().isoformat()
             }
+
+            # Integrate local JSON files if they have recent updates
+            processed_data = self.integrate_local_files(processed_data)
             
             # Save to file
             with open(self.data_file, 'w', encoding='utf-8') as f:
@@ -223,48 +305,62 @@ class DataScheduler:
                 print(f"Error loading cached data: {e}")
                 need_fresh_data = True
         
+        # Check if local files have been modified
+        local_files_changed = self.check_local_files_modified()
+        if local_files_changed and not need_fresh_data:
+            print("Local files have been modified, refreshing data...")
+            need_fresh_data = True
+
         # Fetch fresh data if needed
         if need_fresh_data:
             print("Fetching fresh API data...")
             self.fetch_and_process_data()
-        
+
         return self.cached_data
     
     def start_scheduler(self):
-        """Start the background scheduler"""
-        # Schedule Thursday morning update (working scraper + API data)
-        schedule.every().thursday.at(ScheduleConfig.THURSDAY_MORNING_TIME).do(self.run_full_update)
+        """Start the background scheduler with API and scraper updates"""
+        # Schedule daily API update at 10:00 AM
+        schedule.every().day.at("10:00").do(self.run_api_update)
 
-        # Schedule Saturday morning update (working scraper + API data)
-        schedule.every().saturday.at(ScheduleConfig.SATURDAY_MORNING_TIME).do(self.run_full_update)
+        # Schedule working scraper runs
+        # Daily at 9:00 AM (before API update)
+        schedule.every().day.at("09:00").do(self.run_working_scraper)
+        # Saturday evenings at 18:00 (after matches)
+        schedule.every().saturday.at("18:00").do(self.run_working_scraper)
+        # Sunday evenings at 18:00 (after matches)
+        schedule.every().sunday.at("18:00").do(self.run_working_scraper)
 
-        # Schedule Saturday quarter-hour updates from 15:30 onwards (working scraper + API data)
-        for time_slot in ScheduleConfig.SATURDAY_QUARTER_HOUR_TIMES:
-            schedule.every().saturday.at(time_slot).do(self.run_full_update)
+        # Saturday live updates - API updates every 15 minutes between 16:30-19:00
+        saturday_times = [
+            "16:30", "16:45", "17:00", "17:15", "17:30", "17:45",
+            "18:00", "18:15", "18:30", "18:45", "19:00"
+        ]
+        for time_slot in saturday_times:
+            schedule.every().saturday.at(time_slot).do(self.run_api_update)
 
-        # Schedule live score updates every 5 minutes on Saturday during live hours (14:00-17:00)
-        live_times = []
-        for hour in range(LiveConfig.LIVE_HOURS_START, LiveConfig.LIVE_HOURS_END + 1):
-            for minute in range(0, 60, LiveConfig.UPDATE_INTERVAL_MINUTES):
-                time_str = f"{hour:02d}:{minute:02d}"
-                live_times.append(time_str)
-                schedule.every().saturday.at(time_str).do(self.run_live_score_update)
+        print("Scheduled daily API updates at 10:00 AM")
+        print("Scheduled working scraper:")
+        print("  - Daily at 09:00 AM")
+        print("  - Saturdays at 18:00")
+        print("  - Sundays at 18:00")
+        print("Scheduled Saturday live API updates every 15 minutes:")
+        print("  - 16:30, 16:45, 17:00, 17:15, 17:30, 17:45")
+        print("  - 18:00, 18:15, 18:30, 18:45, 19:00")
 
-        print(f"Scheduled {len(live_times)} live score updates on Saturday ({LiveConfig.LIVE_HOURS_START}:00-{LiveConfig.LIVE_HOURS_END}:00)")
-        
         # Initial data fetch if no cached data
         if not os.path.exists(self.data_file):
             self.fetch_and_process_data()
-        
+
         def run_scheduler():
             while True:
                 schedule.run_pending()
                 time.sleep(60)  # Check every minute
-        
+
         # Start scheduler in background thread
         scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
         scheduler_thread.start()
-        print("Data scheduler started")
+        print("Data scheduler started (API-only mode)")
 
 
 # Global scheduler instance
