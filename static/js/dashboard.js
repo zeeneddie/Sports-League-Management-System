@@ -950,53 +950,84 @@ function addOverigeApeldoornseClubsSlide() {
         .then(function(data) {
             var results = data.results || [];
 
-            // Filter results to show only last 6 days
-            var sixDaysAgo = new Date();
-            sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
+            // Filter results based on current day of week
+            var today = new Date();
+            var dayOfWeek = today.getDay(); // 0=Sunday, 1=Monday, ..., 6=Saturday
+            var startDate = new Date();
+
+            if (dayOfWeek === 0) { // Sunday: show Sunday to Saturday
+                startDate.setDate(today.getDate() - 1); // Yesterday (Saturday)
+            } else if (dayOfWeek === 6) { // Saturday: show Saturday to Sunday
+                startDate.setDate(today.getDate() - 6); // Sunday of previous week
+            } else { // Monday-Friday: show Saturday to today
+                var daysToSaturday = dayOfWeek + 1; // Days back to last Saturday
+                startDate.setDate(today.getDate() - daysToSaturday);
+            }
+
+            // Reset startDate to beginning of day (00:00:00)
+            startDate.setHours(0, 0, 0, 0);
 
             var filteredResults = results.filter(function(result) {
                 if (!result.date) return false;
                 var matchDate = new Date(result.date);
-                return matchDate >= sixDaysAgo;
+                var endDate = new Date(today);
+                endDate.setHours(23, 59, 59, 999); // Include all of today
+                return matchDate >= startDate && matchDate <= endDate;
             });
 
             // Group filtered results by week
             var weeklyResults = groupOverigeResultsByWeek(filteredResults);
             var hasResults = Object.keys(weeklyResults).length > 0;
 
+            // Group results by date for two-column layout
+            var resultsByDate = {};
+
+            if (hasResults) {
+                filteredResults.forEach(function(result) {
+                    var matchDate = new Date(result.date);
+                    var dateLabel = matchDate.toLocaleDateString('nl-NL', {
+                        weekday: 'long',
+                        day: '2-digit',
+                        month: '2-digit'
+                    });
+
+                    if (!resultsByDate[dateLabel]) {
+                        resultsByDate[dateLabel] = {
+                            date: matchDate,
+                            matches: []
+                        };
+                    }
+                    resultsByDate[dateLabel].matches.push(result);
+                });
+            }
+
             if (isMobile) {
-                // Mobile layout
+                // Mobile layout: Single column (like Columbia mobile)
                 slide.innerHTML =
                     '<div class="mobile-matches-container">' +
                         '<h2 class="mobile-header">' +
                             'Apeldoornse Clubs' +
                         '</h2>' +
                         '<div>' +
-                            (hasResults ? Object.entries(weeklyResults)
-                                .sort(function(a, b) { return b[0].localeCompare(a[0]); }) // Most recent week first
-                                .map(function(weekEntry) {
-                                    var weekLabel = weekEntry[0];
-                                    var weekResults = weekEntry[1];
-                                    return '<div style="margin-bottom: 15px;">' +
-                                        '<h3 style="font-size: 1.3rem; font-weight: bold; margin-bottom: 8px; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 4px; text-align: center;">' +
-                                            weekLabel +
-                                        '</h3>' +
-                                        weekResults.map(function(result) {
-                                            var homeGoals = result.homeGoals || result.homescore || 0;
-                                            var awayGoals = result.awayGoals || result.awayscore || 0;
-                                            var home = result.home || result.hometeam || 'Team A';
-                                            var away = result.away || result.awayteam || 'Team B';
-                                            var matchDate = new Date(result.date).toLocaleDateString('nl-NL', {day: '2-digit', month: '2-digit'});
+                            (hasResults ? Object.entries(resultsByDate)
+                                .sort(function(a, b) { return b[1].date - a[1].date; }) // Most recent first
+                                .map(function(dateEntry) {
+                                    var dateLabel = dateEntry[0];
+                                    var dateMatches = dateEntry[1].matches;
+                                    return dateMatches.map(function(result) {
+                                        var homeGoals = result.homeGoals || result.homescore || 0;
+                                        var awayGoals = result.awayGoals || result.awayscore || 0;
+                                        var home = result.home || result.hometeam || 'Team A';
+                                        var away = result.away || result.awayteam || 'Team B';
 
-                                            return '<div class="mobile-match-item played">' +
-                                                '<div class="mobile-match-teams">' +
-                                                    '<div class="mobile-team home">' + getOverigeTeamNameWithLogo(home) + '</div>' +
-                                                    '<div class="mobile-score">' + homeGoals + ' - ' + awayGoals + '</div>' +
-                                                    '<div class="mobile-team away">' + getOverigeTeamNameWithLogo(away) + '</div>' +
-                                                '</div>' +
-                                            '</div>';
-                                        }).join('') +
-                                    '</div>';
+                                        return '<div class="mobile-match-item played">' +
+                                            '<div class="mobile-match-teams">' +
+                                                '<div class="mobile-team home">' + getOverigeTeamNameWithLogo(home) + '</div>' +
+                                                '<div class="mobile-score">' + homeGoals + ' - ' + awayGoals + '</div>' +
+                                                '<div class="mobile-team away">' + getOverigeTeamNameWithLogo(away) + '</div>' +
+                                            '</div>' +
+                                        '</div>';
+                                    }).join('');
                                 }).join('') :
                                 '<div class="col-12 text-center">' +
                                     '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 20px; margin: 15px;">' +
@@ -1007,50 +1038,81 @@ function addOverigeApeldoornseClubsSlide() {
                         '</div>' +
                     '</div>';
             } else {
-                // Desktop layout
+                // Desktop layout: Two columns (Left: Zaterdag + andere dagen, Right: Zondag)
+                var saturdayAndOtherMatches = [];
+                var sundayMatches = [];
+
+                Object.entries(resultsByDate).forEach(function(dateEntry) {
+                    var dateLabel = dateEntry[0];
+                    var dateData = dateEntry[1];
+                    var dateMatches = dateData.matches;
+                    var dayOfWeek = dateData.date.getDay(); // 0 = Sunday, 6 = Saturday
+
+                    if (dayOfWeek === 0) { // Sunday
+                        sundayMatches.push({ label: dateLabel, matches: dateMatches });
+                    } else { // Saturday and all other days
+                        saturdayAndOtherMatches.push({ label: dateLabel, matches: dateMatches });
+                    }
+                });
+
+                // Sort both columns by date (most recent first)
+                saturdayAndOtherMatches.sort(function(a, b) {
+                    return new Date(b.label.split(' ')[1] + '/' + b.label.split(' ')[2]) -
+                           new Date(a.label.split(' ')[1] + '/' + a.label.split(' ')[2]);
+                });
+                sundayMatches.sort(function(a, b) {
+                    return new Date(b.label.split(' ')[1] + '/' + b.label.split(' ')[2]) -
+                           new Date(a.label.split(' ')[1] + '/' + a.label.split(' ')[2]);
+                });
+
                 slide.innerHTML =
-                    '<div>' +
-                        '<h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">' +
-                            'Apeldoornse Clubs' +
+                    '<div style="height: calc(100vh - 120px); overflow-y: auto; overflow-x: hidden;">' +
+                        '<h2 style="font-size: 3.25rem; font-weight: bold; margin-bottom: 1rem; color: #333; text-align: center;">' +
+                            'Apeldoornse Clubs Uitslagen' +
                         '</h2>' +
                         '<div class="row">' +
-                            (hasResults ? Object.entries(weeklyResults)
-                                .sort(function(a, b) { return b[0].localeCompare(a[0]); }) // Most recent week first
-                                .map(function(weekEntry) {
-                                    var weekLabel = weekEntry[0];
-                                    var weekResults = weekEntry[1];
-                                    return '<div class="col-12 mb-4">' +
-                                        '<h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; text-align: center;">' +
-                                            weekLabel +
-                                        '</h3>' +
-                                        '<div class="row">' +
-                                            weekResults.map(function(result) {
-                                                var homeGoals = result.homeGoals || result.homescore || 0;
-                                                var awayGoals = result.awayGoals || result.awayscore || 0;
-                                                var home = result.home || result.hometeam || 'Team A';
-                                                var away = result.away || result.awayteam || 'Team B';
-                                                return '<div class="col-12">' +
-                                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">' +
-                                                        '<div style="display: grid; grid-template-columns: 1fr 2fr 1fr 0.5fr 2fr 0.5fr; align-items: center;">' +
-                                                            '<div></div>' +
-                                                            '<div style="text-align: left; font-size: 2rem; font-weight: bold; color: #333;">' + getOverigeTeamNameWithLogo(home) + '</div>' +
-                                                            '<div style="text-align: center; font-size: 2rem; font-weight: bold; color: #0066cc;">' + homeGoals + ' - ' + awayGoals + '</div>' +
-                                                            '<div></div>' +
-                                                            '<div style="text-align: left; font-size: 2rem; font-weight: bold; color: #333;">' + getOverigeTeamNameWithLogo(away) + '</div>' +
-                                                            '<div></div>' +
-                                                        '</div>' +
-                                                    '</div>' +
-                                                '</div>';
-                                            }).join('') +
-                                        '</div>' +
-                                    '</div>';
-                                }).join('') :
-                                '<div class="col-12 text-center">' +
-                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 30px; margin: 20px;">' +
-                                        '<h3 style="color: #666; font-size: 1.8rem;">Geen uitslagen beschikbaar</h3>' +
-                                        '<p style="color: #888; font-size: 1.2rem;">Data wordt geladen of er zijn nog geen wedstrijden gespeeld</p>' +
-                                    '</div>' +
-                                '</div>') +
+                            '<div class="col-md-6">' +
+                                '<h3 style="font-size: 2.6rem; font-weight: bold; margin-bottom: 0.5rem; color: #333; text-align: center;">ZATERDAG + OVERIGE</h3>' +
+                                (saturdayAndOtherMatches.length > 0 ?
+                                    saturdayAndOtherMatches.map(function(dateGroup) {
+                                        return dateGroup.matches.map(function(result) {
+                                            var homeGoals = result.homeGoals || result.homescore || 0;
+                                            var awayGoals = result.awayGoals || result.awayscore || 0;
+                                            var home = result.home || result.hometeam || 'Team A';
+                                            var away = result.away || result.awayteam || 'Team B';
+
+                                            return '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 3px 10px; margin-bottom: 2px; border-left: 3px solid #0066cc;">' +
+                                                '<div style="display: flex; align-items: center; font-size: 1.56rem; font-weight: bold; color: #333;">' +
+                                                    '<div style="flex: 4; text-align: left;">' + getOverigeTeamNameWithLogo(home) + '</div>' +
+                                                    '<div style="flex: 1; text-align: center; color: #0066cc;">' + homeGoals + ' - ' + awayGoals + '</div>' +
+                                                    '<div style="flex: 4; text-align: right;">' + getOverigeTeamNameWithLogoAfter(away) + '</div>' +
+                                                '</div>' +
+                                            '</div>';
+                                        }).join('');
+                                    }).join('') :
+                                    '<div style="text-align: center; color: #666; font-size: 1.2rem; margin-top: 20px;">Geen uitslagen</div>') +
+                            '</div>' +
+                            '<div class="col-md-6">' +
+                                '<h3 style="font-size: 2.6rem; font-weight: bold; margin-bottom: 0.5rem; color: #333; text-align: center;">ZONDAG</h3>' +
+                                (sundayMatches.length > 0 ?
+                                    sundayMatches.map(function(dateGroup) {
+                                        return dateGroup.matches.map(function(result) {
+                                            var homeGoals = result.homeGoals || result.homescore || 0;
+                                            var awayGoals = result.awayGoals || result.awayscore || 0;
+                                            var home = result.home || result.hometeam || 'Team A';
+                                            var away = result.away || result.awayteam || 'Team B';
+
+                                            return '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 3px 10px; margin-bottom: 2px; border-right: 3px solid #0066cc;">' +
+                                                '<div style="display: flex; align-items: center; font-size: 1.56rem; font-weight: bold; color: #333;">' +
+                                                    '<div style="flex: 4; text-align: left;">' + getOverigeTeamNameWithLogo(home) + '</div>' +
+                                                    '<div style="flex: 1; text-align: center; color: #0066cc;">' + homeGoals + ' - ' + awayGoals + '</div>' +
+                                                    '<div style="flex: 4; text-align: right;">' + getOverigeTeamNameWithLogoAfter(away) + '</div>' +
+                                                '</div>' +
+                                            '</div>';
+                                        }).join('');
+                                    }).join('') :
+                                    '<div style="text-align: center; color: #666; font-size: 1.2rem; margin-top: 20px;">Geen uitslagen</div>') +
+                            '</div>' +
                         '</div>' +
                     '</div>';
             }
@@ -1150,6 +1212,43 @@ function getOverigeTeamNameWithLogo(teamName) {
     return '<img src="' + logoUrl + '" class="team-logo" alt="' + teamName + '" onerror="this.src=\'/static/images/team_logos/default_team.png\'">' + ' ' + teamName;
 }
 
+function getOverigeTeamNameWithLogoAfter(teamName) {
+    if (!teamName) return '';
+
+    // Mapping van clubnamen naar logo bestanden
+    var logoMapping = {
+        'Albatross': 'albatross.gif',
+        'TKA': 'tka.gif',
+        'WSV': 'wsv.gif',
+        'Victoria Boys': 'victoriaboys.gif',
+        'Loenermark': 'loenermark.gif',
+        'Robur et Velocitas': 'roburetvelocitas.gif',
+        'Brummen SP': 'brummensp.gif',
+        'Apeldoornse Boys': 'apeldoorncsv.gif',
+        'Apeldoorn CSV': 'apeldoorncsv.gif',
+        'Voorst': 'voorst.gif',
+        'CCW 16': 'ccw16.gif',
+        'WWNA': 'wwna.gif',
+        'Orderbos': 'orderbos.gif',
+        'Oeken': 'oeken.gif',
+        'Alexandria': 'Alexandria.gif',
+        'VIOS/V': 'viosv.gif',
+        'ZVV \'56': 'zvv56.gif'
+    };
+
+    var logoFile = logoMapping[teamName];
+    var logoUrl;
+
+    if (logoFile) {
+        logoUrl = '/static/images/overige/' + logoFile;
+    } else {
+        // Fallback naar default_team.png als er geen specifiek logo is
+        logoUrl = '/static/images/team_logos/default_team.png';
+    }
+
+    return teamName + ' ' + '<img src="' + logoUrl + '" class="team-logo" alt="' + teamName + '" onerror="this.src=\'/static/images/team_logos/default_team.png\'">';
+}
+
 function addOverigeApeldoornseClubsKomendeWedstrijdenSlide() {
     var slide = document.createElement('div');
     slide.className = 'slide-item';
@@ -1165,15 +1264,40 @@ function addOverigeApeldoornseClubsKomendeWedstrijdenSlide() {
         .then(function(data) {
             var matches = data || [];
 
-            // Filter matches to show only next 5 days
-            var today = new Date();
-            var fiveDaysFromNow = new Date();
-            fiveDaysFromNow.setDate(today.getDate() + 5);
+            // Filter matches: vandaag (nog niet afgelopen) t/m 6 dagen vooruit
+            var now = new Date();
+            var todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            // 6 dagen vooruit vanaf vandaag
+            var sixDaysFromNow = new Date(todayStart);
+            sixDaysFromNow.setDate(sixDaysFromNow.getDate() + 6);
+            sixDaysFromNow.setHours(23, 59, 59, 999); // End of day
 
             var filteredMatches = matches.filter(function(match) {
                 if (!match.date) return false;
+
                 var matchDate = new Date(match.date);
-                return matchDate >= today && matchDate <= fiveDaysFromNow;
+                var matchTime = match.time || '';
+
+                // Voor wedstrijden van vandaag, check of ze nog niet afgelopen zijn (wedstrijdtijd + 2 uur)
+                if (matchDate.toDateString() === todayStart.toDateString()) {
+                    if (matchTime) {
+                        var timeParts = matchTime.split(':');
+                        var matchDateTime = new Date(matchDate);
+                        matchDateTime.setHours(parseInt(timeParts[0]), parseInt(timeParts[1]));
+
+                        // Add 2 hours to match start time
+                        var matchEndTime = new Date(matchDateTime.getTime() + (2 * 60 * 60 * 1000));
+
+                        // Only show if match hasn't ended yet
+                        if (now >= matchEndTime) {
+                            return false;
+                        }
+                    }
+                }
+
+                // Show matches from today through 6 days from now
+                return matchDate >= todayStart && matchDate <= sixDaysFromNow;
             });
 
             // Group filtered matches by date
@@ -1241,53 +1365,96 @@ function addOverigeApeldoornseClubsKomendeWedstrijdenSlide() {
                         '</div>' +
                     '</div>';
             } else {
-                // Desktop layout
+                // Desktop layout: Two columns (Left: Zaterdag + andere dagen, Right: Zondag)
+
+                // Separate matches by day of week
+                var saturdayAndOtherMatches = [];
+                var sundayMatches = [];
+
+                Object.entries(matchesByDate).forEach(function(dateEntry) {
+                    var dateLabel = dateEntry[0];
+                    var dateMatches = dateEntry[1];
+                    var firstMatchDate = new Date(dateMatches[0].date);
+                    var dayOfWeek = firstMatchDate.getDay(); // 0 = Sunday, 6 = Saturday
+
+                    if (dayOfWeek === 0) { // Sunday
+                        sundayMatches.push({ label: dateLabel, matches: dateMatches });
+                    } else { // Saturday and all other days
+                        saturdayAndOtherMatches.push({ label: dateLabel, matches: dateMatches });
+                    }
+                });
+
+                // Sort by date within each column
+                saturdayAndOtherMatches.sort(function(a, b) {
+                    return new Date(a.matches[0].date) - new Date(b.matches[0].date);
+                });
+                sundayMatches.sort(function(a, b) {
+                    return new Date(a.matches[0].date) - new Date(b.matches[0].date);
+                });
+
                 slide.innerHTML =
                     '<div>' +
                         '<h2 style="font-size: 3rem; font-weight: bold; margin-bottom: 2rem; color: #333; text-align: center;">' +
                             'Apeldoornse Clubs - Komende Wedstrijden' +
                         '</h2>' +
                         '<div class="row">' +
-                            (hasMatches ? Object.entries(matchesByDate)
-                                .sort(function(a, b) {
-                                    var dateA = new Date(a[1][0].date);
-                                    var dateB = new Date(b[1][0].date);
-                                    return dateA - dateB;
-                                })
-                                .map(function(dateEntry) {
-                                    var dateLabel = dateEntry[0];
-                                    var dateMatches = dateEntry[1];
-                                    return '<div class="col-12 mb-4">' +
-                                        '<h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 0.5rem; text-align: center;">' +
-                                            dateLabel +
-                                        '</h3>' +
-                                        '<div class="row">' +
-                                            dateMatches.map(function(match) {
+                            // Left column: Saturday and other days
+                            '<div class="col-md-6">' +
+                                '<h3 style="font-size: 2.6rem; font-weight: bold; margin-bottom: 0.5rem; color: #333; text-align: center;">ZATERDAG & ANDERE DAGEN</h3>' +
+                                (saturdayAndOtherMatches.length > 0 ?
+                                    saturdayAndOtherMatches.map(function(dayGroup) {
+                                        return '<div style="margin-bottom: 1.5rem;">' +
+                                            '<h4 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 0.8rem; color: #0066cc; text-align: center; border-bottom: 1px solid #0066cc; padding-bottom: 0.3rem;">' +
+                                                dayGroup.label +
+                                            '</h4>' +
+                                            dayGroup.matches.map(function(match) {
                                                 var home = match.home || 'Team A';
                                                 var away = match.away || 'Team B';
                                                 var time = match.time || '';
-                                                return '<div class="col-12">' +
-                                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 4px 15px; margin-bottom: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">' +
-                                                        '<div style="display: grid; grid-template-columns: 1fr 2fr 1fr 0.5fr 2fr 0.5fr; align-items: center;">' +
-                                                            '<div></div>' +
-                                                            '<div style="text-align: left; font-size: 2rem; font-weight: bold; color: #333;">' + getOverigeTeamNameWithLogo(home) + '</div>' +
-                                                            '<div style="text-align: center; font-size: 1.5rem; font-weight: bold; color: #0066cc;">vs</div>' +
-                                                            '<div></div>' +
-                                                            '<div style="text-align: left; font-size: 2rem; font-weight: bold; color: #333;">' + getOverigeTeamNameWithLogo(away) + '</div>' +
-                                                            '<div></div>' +
-                                                        '</div>' +
+                                                return '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 3px 10px; margin-bottom: 2px;">' +
+                                                    '<div style="display: flex; align-items: center; font-size: 1.56rem; font-weight: bold; color: #333;">' +
+                                                        '<div style="flex: 4; text-align: left;">' + getOverigeTeamNameWithLogo(home) + '</div>' +
+                                                        '<div style="flex: 1; text-align: center; color: #0066cc; font-weight: bold;">' + time + '</div>' +
+                                                        '<div style="flex: 4; text-align: right;">' + getOverigeTeamNameWithLogoAfter(away) + '</div>' +
                                                     '</div>' +
                                                 '</div>';
                                             }).join('') +
-                                        '</div>' +
-                                    '</div>';
-                                }).join('') :
-                                '<div class="col-12 text-center">' +
-                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 30px; margin: 20px;">' +
-                                        '<h3 style="color: #666; font-size: 1.8rem;">Geen komende wedstrijden beschikbaar</h3>' +
-                                        '<p style="color: #888; font-size: 1.2rem;">Data wordt geladen of er zijn geen geplande wedstrijden</p>' +
-                                    '</div>' +
-                                '</div>') +
+                                        '</div>';
+                                    }).join('') :
+                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 20px; margin: 15px; text-align: center;">' +
+                                        '<p style="color: #666; font-size: 1.2rem;">Geen wedstrijden</p>' +
+                                    '</div>'
+                                ) +
+                            '</div>' +
+
+                            // Right column: Sunday
+                            '<div class="col-md-6">' +
+                                '<h3 style="font-size: 2.6rem; font-weight: bold; margin-bottom: 0.5rem; color: #333; text-align: center;">ZONDAG</h3>' +
+                                (sundayMatches.length > 0 ?
+                                    sundayMatches.map(function(dayGroup) {
+                                        return '<div style="margin-bottom: 1.5rem;">' +
+                                            '<h4 style="font-size: 1.8rem; font-weight: bold; margin-bottom: 0.8rem; color: #0066cc; text-align: center; border-bottom: 1px solid #0066cc; padding-bottom: 0.3rem;">' +
+                                                dayGroup.label +
+                                            '</h4>' +
+                                            dayGroup.matches.map(function(match) {
+                                                var home = match.home || 'Team A';
+                                                var away = match.away || 'Team B';
+                                                var time = match.time || '';
+                                                return '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 3px 10px; margin-bottom: 2px;">' +
+                                                    '<div style="display: flex; align-items: center; font-size: 1.56rem; font-weight: bold; color: #333;">' +
+                                                        '<div style="flex: 4; text-align: left;">' + getOverigeTeamNameWithLogo(home) + '</div>' +
+                                                        '<div style="flex: 1; text-align: center; color: #0066cc; font-weight: bold;">' + time + '</div>' +
+                                                        '<div style="flex: 4; text-align: right;">' + getOverigeTeamNameWithLogoAfter(away) + '</div>' +
+                                                    '</div>' +
+                                                '</div>';
+                                            }).join('') +
+                                        '</div>';
+                                    }).join('') :
+                                    '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 20px; margin: 15px; text-align: center;">' +
+                                        '<p style="color: #666; font-size: 1.2rem;">Geen wedstrijden</p>' +
+                                    '</div>'
+                                ) +
+                            '</div>' +
                         '</div>' +
                     '</div>';
             }
