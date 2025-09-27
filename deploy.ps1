@@ -138,7 +138,7 @@ if ($Changes) {
     # Create commit message
     $CommitMsg = "🚀 DEPLOYMENT v$(Get-Date -Format 'yyyyMMdd_HHmmss'): Cross-platform deployment updates"
 
-    git commit -m $CommitMsg -m "" -m "🔧 Generated with [Claude Code](https://claude.ai/code)" -m "" -m "Co-Authored-By: Claude <noreply@anthropic.com>"
+    git commit -m $CommitMsg -m "" -m "Generated with Claude Code" -m "" -m "Co-Authored-By: Claude"
 
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Git commit failed"
@@ -295,7 +295,7 @@ if ($SpmsStatus -eq "active" -and $NginxStatus -eq "active" -and $AppStatus -eq 
     Write-Host "Application: " -ForegroundColor Cyan -NoNewline
     Write-Host "✅ Running" -ForegroundColor Green
     Write-Host "Services: " -ForegroundColor Cyan -NoNewline
-    Write-Host "✅ SPMS & Nginx Active" -ForegroundColor Green
+    Write-Host "✅ SPMS and Nginx Active" -ForegroundColor Green
 } else {
     Write-Host "Status: " -ForegroundColor Cyan -NoNewline
     Write-Host "✗ DEPLOYMENT ISSUES DETECTED" -ForegroundColor Red
