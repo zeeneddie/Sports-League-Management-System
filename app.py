@@ -208,6 +208,27 @@ def get_overige_apeldoornse_clubs():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/apeldoornse-clubs-upcoming')
+def get_apeldoornse_clubs_upcoming():
+    """Get upcoming matches for Apeldoornse clubs (working_scraper data)"""
+    try:
+        data = data_scheduler.get_cached_data()
+        if not data:
+            return jsonify({'error': 'No data available'}), 404
+
+        # Get the separated working_scraper data
+        apeldoornse_clubs_upcoming = data.get('apeldoornse_clubs_upcoming', [])
+
+        return jsonify(apeldoornse_clubs_upcoming)
+    except Exception as e:
+        app.logger.error(f"Error getting apeldoornse clubs upcoming data: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/test-endpoint')
+def test_endpoint():
+    """Simple test endpoint"""
+    return jsonify({'status': 'working', 'message': 'Test endpoint is functional'})
+
 @app.route('/komende_wedstrijden.json')
 def komende_wedstrijden():
     """Serve komende wedstrijden JSON data"""
