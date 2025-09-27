@@ -1125,7 +1125,7 @@ function addOverigeApeldoornseClubsSlide() {
             }
         })
         .catch(function(error) {
-            console.error('Error loading Overige Apeldoornse clubs data:', error);
+            console.error('Error loading Apeldoornse clubs upcoming data:', error);
 
             // Show error slide
             slide.innerHTML =
@@ -1253,8 +1253,8 @@ function addOverigeApeldoornseClubsKomendeWedstrijdenSlide() {
     var slide = document.createElement('div');
     slide.className = 'slide-item';
 
-    // Load data from komende_wedstrijden.json
-    fetch('/komende_wedstrijden.json')
+    // Load data from main API endpoint and extract working_scraper data
+    fetch('/api/data')
         .then(function(response) {
             if (!response.ok) {
                 throw new Error('HTTP error! status: ' + response.status);
@@ -1262,7 +1262,8 @@ function addOverigeApeldoornseClubsKomendeWedstrijdenSlide() {
             return response.json();
         })
         .then(function(data) {
-            var matches = data || [];
+            // Extract the working_scraper upcoming matches data
+            var matches = data.apeldoornse_clubs_upcoming || [];
 
             // Filter matches: vandaag (nog niet afgelopen) t/m 6 dagen vooruit
             var now = new Date();

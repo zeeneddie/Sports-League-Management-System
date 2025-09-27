@@ -68,59 +68,42 @@ class DataScheduler:
         # Check if local files have been modified recently (last 24 hours)
         recent_threshold = datetime.now() - timedelta(hours=24)
 
-        # Check uitslagen.json for additional recent results
+        # Check uitslagen.json for Apeldoornse clubs results (separate from API data)
         if os.path.exists('uitslagen.json'):
             try:
                 with open('uitslagen.json', 'r', encoding='utf-8') as f:
                     uitslagen_data = json.load(f)
 
-                # Add local results to last_week_results if they're recent
-                current_results = data.get('last_week_results', [])
-                existing_matches = set()
-                for result in current_results:
-                    match_key = f"{result.get('home', '')}_{result.get('away', '')}_{result.get('date', '')}"
-                    existing_matches.add(match_key)
-
-                added_count = 0
+                # Store Apeldoornse clubs results in separate field (don't mix with API data)
+                apeldoornse_results = []
                 for local_result in uitslagen_data:
                     result_date_str = local_result.get('date', '')
                     if result_date_str:
                         try:
                             result_date = datetime.strptime(result_date_str, '%Y-%m-%d')
                             if result_date >= recent_threshold:
-                                # Check if this match is not already in the results
-                                match_key = f"{local_result.get('home', '')}_{local_result.get('away', '')}_{result_date_str}"
-                                if match_key not in existing_matches:
-                                    # Add time to date if not present
-                                    if ' ' not in result_date_str:
-                                        local_result['date'] = f"{result_date_str} 15:00:00"
-                                    current_results.append(local_result)
-                                    existing_matches.add(match_key)
-                                    added_count += 1
+                                # Add time to date if not present
+                                if ' ' not in result_date_str:
+                                    local_result['date'] = f"{result_date_str} 15:00:00"
+                                apeldoornse_results.append(local_result)
                         except ValueError:
                             continue
 
-                if added_count > 0:
-                    data['last_week_results'] = sorted(current_results, key=lambda x: x.get('date', ''))
-                    print(f"Added {added_count} results from uitslagen.json")
+                if apeldoornse_results:
+                    data['apeldoornse_clubs_results'] = sorted(apeldoornse_results, key=lambda x: x.get('date', ''))
+                    print(f"Loaded {len(apeldoornse_results)} Apeldoornse clubs results")
 
             except Exception as e:
                 print(f"Error integrating uitslagen.json: {e}")
 
-        # Check komende_wedstrijden.json for additional upcoming matches
+        # Check komende_wedstrijden.json for Apeldoornse clubs data (separate from API data)
         if os.path.exists('komende_wedstrijden.json'):
             try:
                 with open('komende_wedstrijden.json', 'r', encoding='utf-8') as f:
                     upcoming_data = json.load(f)
 
-                # Add local upcoming matches to next_week_matches if they're recent
-                current_matches = data.get('next_week_matches', [])
-                existing_matches = set()
-                for match in current_matches:
-                    match_key = f"{match.get('home', '')}_{match.get('away', '')}_{match.get('date', '')}"
-                    existing_matches.add(match_key)
-
-                added_count = 0
+                # Store Apeldoornse clubs matches in separate field (don't mix with API data)
+                apeldoornse_matches = []
                 for local_match in upcoming_data:
                     match_date_str = local_match.get('date', '')
                     if match_date_str:
@@ -129,17 +112,13 @@ class DataScheduler:
                             # Add upcoming matches within next 2 weeks
                             future_threshold = datetime.now() + timedelta(days=14)
                             if datetime.now() <= match_date <= future_threshold:
-                                match_key = f"{local_match.get('home', '')}_{local_match.get('away', '')}_{match_date_str}"
-                                if match_key not in existing_matches:
-                                    current_matches.append(local_match)
-                                    existing_matches.add(match_key)
-                                    added_count += 1
+                                apeldoornse_matches.append(local_match)
                         except (ValueError, IndexError):
                             continue
 
-                if added_count > 0:
-                    data['next_week_matches'] = sorted(current_matches, key=lambda x: x.get('date', ''))
-                    print(f"Added {added_count} upcoming matches from komende_wedstrijden.json")
+                if apeldoornse_matches:
+                    data['apeldoornse_clubs_upcoming'] = sorted(apeldoornse_matches, key=lambda x: x.get('date', ''))
+                    print(f"Loaded {len(apeldoornse_matches)} Apeldoornse clubs upcoming matches")
 
             except Exception as e:
                 print(f"Error integrating komende_wedstrijden.json: {e}")
