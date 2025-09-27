@@ -141,7 +141,7 @@ Write-Host "[4/9] Pulling Latest Code on Ubuntu" -ForegroundColor Magenta
 Write-Host ""
 
 Write-Host "Pulling latest code from GitHub on Ubuntu server..." -ForegroundColor Blue
-ssh "$VpsUser@$VpsHost" "cd $VpsPath && if [ ! -d .git ]; then echo 'Initializing git repository...'; git init; git remote add origin $GitRemote; fi && echo 'Fetching latest changes from GitHub...' && git fetch origin main && echo 'Resetting to latest version...' && git reset --hard origin/main && echo 'Latest code pulled successfully' && echo `"Current commit: `$(git log -1 --oneline)`""
+ssh "$VpsUser@$VpsHost" "cd $VpsPath && git config --global --add safe.directory $VpsPath && if [ ! -d .git ]; then echo 'Initializing git repository...'; git init; git remote add origin $GitRemote; fi && echo 'Fetching latest changes from GitHub...' && git fetch origin main && echo 'Resetting to latest version...' && git reset --hard origin/main && echo 'Latest code pulled successfully' && echo `"Current commit: `$(git log -1 --oneline)`""
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[ERROR] Failed to pull code from GitHub" -ForegroundColor Red
