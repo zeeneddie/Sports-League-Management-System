@@ -44,7 +44,8 @@ def get_test_data():
                 'goals_for': team.get('goalsFor', 0),
                 'goals_against': team.get('goalsAgainst', 0),
                 'points': points,
-                'position': team.get('position', 0)
+                'position': team.get('position', 0),
+                'shirt': team.get('shirt', '')  # Add shirt logo info
             }
             converted_leaguetable.append(converted_team)
         

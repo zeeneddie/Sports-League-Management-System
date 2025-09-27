@@ -121,6 +121,7 @@ This script will:
 This script will:
 - Setup Python virtual environment
 - Install application dependencies
+- Install and configure Playwright browsers for working_scraper
 - Test Flask application
 - Setup SSL certificate with Let's Encrypt
 - Start and enable services
@@ -204,6 +205,11 @@ cd /var/www/spms
 git pull origin main  # if using git
 source venv/bin/activate
 pip install -r requirements.txt
+
+# If Playwright was updated, reinstall browsers
+playwright install chromium
+playwright install-deps
+
 sudo systemctl restart spms
 sudo systemctl reload nginx
 ```
@@ -278,6 +284,26 @@ sudo certbot renew --dry-run
 # Fix ownership
 sudo chown -R spms:spms /var/www/spms
 sudo chmod +x /var/www/spms/*.sh
+```
+
+**5. Working scraper (Playwright) issues:**
+```bash
+# Check if Playwright is installed
+source /var/www/spms/venv/bin/activate
+python -c "from playwright.async_api import async_playwright; print('Playwright OK')"
+
+# Reinstall Playwright if needed
+pip install playwright==1.46.0
+playwright install chromium
+playwright install-deps
+
+# Test working scraper manually
+cd /var/www/spms
+source venv/bin/activate
+timeout 30s python working_scraper.py
+
+# Check teams.config file exists
+ls -la teams.config
 ```
 
 ### Debug Mode

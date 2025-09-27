@@ -49,7 +49,9 @@
       "Read(c:\\Users\\eddie\\Downloads/**)",
       "Bash(where dos2unix)",
       "Bash(dos2unix:*)",
-      "Bash(scp:*)"
+      "Bash(scp:*)",
+      "Bash(git clean:*)",
+      "Read(//c/Users/eddie/Downloads/**)"
     ],
     "deny": [],
     "ask": [],

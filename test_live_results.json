@@ -1,0 +1,66 @@
+{
+  "testTime": "2025-09-20T15:31:02.302255",
+  "matchesFound": 6,
+  "matches": [
+    {
+      "home": "Apeldoorn CSV",
+      "away": "Veensche Boys Apeldoorn CSV",
+      "homeGoals": 0,
+      "awayGoals": 1,
+      "minute": "LIVE",
+      "status": "Live",
+      "lastUpdate": "2025-09-20T15:31:02.194268",
+      "source": "voetbaloost_live_context"
+    },
+    {
+      "home": "Robur et Velocitas",
+      "away": "Robur Velocitas Horst",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "minute": "LIVE",
+      "status": "Live",
+      "lastUpdate": "2025-09-20T15:31:02.194268",
+      "source": "voetbaloost_live_context"
+    },
+    {
+      "home": "Apeldoornse Boys",
+      "away": "Apeldoornse Boys Veluwse Boys",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "minute": "LIVE",
+      "status": "Live",
+      "lastUpdate": "2025-09-20T15:31:02.195266",
+      "source": "voetbaloost_live_context"
+    },
+    {
+      "home": "ZVV 56",
+      "away": "Almen ZVV",
+      "homeGoals": 0,
+      "awayGoals": 0,
+      "minute": "LIVE",
+      "status": "Live",
+      "lastUpdate": "2025-09-20T15:31:02.195266",
+      "source": "voetbaloost_live_context"
+    },
+    {
+      "home": "Brummen SP",
+      "away": "Eefde Brummen",
+      "homeGoals": 0,
+      "awayGoals": 1,
+      "minute": "LIVE",
+      "status": "Live",
+      "lastUpdate": "2025-09-20T15:31:02.195266",
+      "source": "voetbaloost_live_context"
+    },
+    {
+      "home": "Oeken",
+      "away": "Harfsen",
+      "homeGoals": 1,
+      "awayGoals": 0,
+      "minute": "LIVE",
+      "status": "Live",
+      "lastUpdate": "2025-09-20T15:31:02.195266",
+      "source": "voetbaloost_live_context"
+    }
+  ]
+}

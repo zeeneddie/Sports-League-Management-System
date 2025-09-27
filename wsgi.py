@@ -18,6 +18,10 @@ os.environ.setdefault('FLASK_ENV', 'production')
 # Import the Flask application
 from app import app
 
+# Start the scheduler in production
+from scheduler import data_scheduler
+data_scheduler.start_scheduler()
+
 # Configure for production
 if __name__ == "__main__":
     # This block is for development only
