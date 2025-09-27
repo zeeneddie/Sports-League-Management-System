@@ -38,6 +38,17 @@ gunicorn app:app
 pip install schedule==1.2.0
 ```
 
+### Deployment to Production
+```cmd
+# Deploy to Hostinger Ubuntu server via GitHub
+deploy_simple.bat
+```
+
+The deployment uses a GitHub-based workflow:
+1. **Windows**: Validates files, commits and pushes to GitHub
+2. **Ubuntu**: Pulls latest code, restarts services, verifies deployment
+3. **Reporting**: Comprehensive status reporting and error handling
+
 ### SSL/HTTPS Setup
 ```bash
 # Generate SSL certificate (Windows)

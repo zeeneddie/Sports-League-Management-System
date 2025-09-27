@@ -120,16 +120,18 @@ if /i not "%confirm%"=="y" (
 
 echo.
 
-REM Step 3: Backup current deployment
-echo [3/9] Creating Server Backup (via SSH)
+REM Step 3: Backup current deployment (rolling backup strategy)
+echo [3/9] Creating Rolling Backup (via SSH)
 echo.
 
-ssh %VPS_USER%@%VPS_HOST% "if [ -d %VPS_PATH% ]; then sudo tar -czf /tmp/spms_backup_$(date +%%Y%%m%%d_%%H%%M%%S).tar.gz -C %VPS_PATH% . 2>/dev/null; sudo chown %VPS_USER%:%VPS_USER% /tmp/spms_backup_*.tar.gz 2>/dev/null; echo 'Backup created on Ubuntu server'; fi"
+ssh %VPS_USER%@%VPS_HOST% "cd /var/www && echo 'Cleaning old backup...' && sudo rm -rf spms_backup 2>/dev/null && if [ -d spms ]; then echo 'Moving current production to backup...' && sudo mv spms spms_backup && echo 'Production moved to backup location'; else echo 'No existing production to backup'; fi"
 
 if errorlevel 1 (
-    echo   [WARN] Backup creation skipped (first deployment?)
+    echo   [ERROR] Backup operation failed
+    pause
+    exit /b 1
 ) else (
-    echo   [OK] Server backup created in /tmp/ on Ubuntu
+    echo   [OK] Rolling backup completed - current production moved to spms_backup
 )
 
 echo.
@@ -139,7 +141,7 @@ echo [4/9] Pulling Latest Code on Ubuntu
 echo.
 
 echo Pulling latest code from GitHub on Ubuntu server...
-ssh %VPS_USER%@%VPS_HOST% "cd %VPS_PATH% && if [ ! -d .git ]; then echo 'Initializing git repository...'; git init; git remote add origin %GITHUB_URL%; fi && echo 'Fetching latest changes from GitHub...' && git fetch origin main && echo 'Resetting to latest version...' && git reset --hard origin/main && echo 'Latest code pulled successfully'"
+ssh %VPS_USER%@%VPS_HOST% "cd /var/www && echo 'Cloning fresh from GitHub...' && sudo git clone %GITHUB_URL% spms && sudo chown -R spms:spms %VPS_PATH% && echo 'Repository cloned successfully' && cd %VPS_PATH% && echo \"Current commit: $(git log -1 --oneline)\""
 
 if errorlevel 1 (
     echo [ERROR] Failed to pull code from GitHub
@@ -211,8 +213,8 @@ REM Step 9: Cleanup and summary
 echo [9/9] Cleanup and Summary
 echo.
 
-ssh %VPS_USER%@%VPS_HOST% "rm -rf /tmp/spms_backup_* 2>/dev/null"
-echo   [OK] Server temporary files cleaned
+ssh %VPS_USER%@%VPS_HOST% "cd /var/www && if [ -d spms_backup ]; then sudo rm -rf spms_backup && echo 'Backup cleaned after successful deployment'; else echo 'No backup to clean'; fi"
+echo   [OK] Server backup cleaned after successful deployment
 
 echo.
 echo ===============================================================================
