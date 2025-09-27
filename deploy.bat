@@ -10,40 +10,31 @@ set VPS_USER=root
 set VPS_PATH=/var/www/spms
 set LOG_FILE=deployment_%date:~-4,4%%date:~-10,2%%date:~-7,2%_%time:~0,2%%time:~3,2%%time:~6,2%.log
 
-REM Colors (basic Windows support)
-set RED=[91m
-set GREEN=[92m
-set YELLOW=[93m
-set BLUE=[94m
-set CYAN=[96m
-set BOLD=[1m
-set NC=[0m
-
 echo.
-echo %BOLD%%BLUE%===============================================================================%NC%
-echo %BOLD%%CYAN%                    🚀 SPMS GitHub Deployment v6.0.2                    %NC%
-echo %BOLD%%BLUE%===============================================================================%NC%
-echo %CYAN%Method:%NC% Windows Commit → GitHub → Ubuntu Pull → Deploy
-echo %CYAN%Target:%NC% %VPS_HOST% (%VPS_PATH%)
-echo %CYAN%Started:%NC% %date% %time%
-echo %CYAN%Log File:%NC% %LOG_FILE%
+echo ===============================================================================
+echo                    SPMS GitHub Deployment v6.0.2
+echo ===============================================================================
+echo Method: Windows Commit - GitHub - Ubuntu Pull - Deploy
+echo Target: %VPS_HOST% (%VPS_PATH%)
+echo Started: %date% %time%
+echo Log File: %LOG_FILE%
 echo.
 
 REM Start logging
 echo SPMS Deployment Log - %date% %time% > %LOG_FILE%
 
 REM Step 1: Pre-deployment validation
-echo %BOLD%%BLUE%[1/9]%NC% %BLUE%Pre-deployment Validation (Windows)%NC%
+echo [1/9] Pre-deployment Validation (Windows)
 echo.
 
 REM Check required files
-echo %BLUE%Checking required files on Windows...%NC%
+echo Checking required files on Windows...
 set missing_files=0
 for %%f in (app.py scheduler.py working_scraper.py requirements.txt teams.config) do (
     if exist %%f (
-        echo %GREEN%✓ %%f found%NC%
+        echo   [OK] %%f found
     ) else (
-        echo %RED%✗ %%f missing%NC%
+        echo   [ERROR] %%f missing
         set /a missing_files+=1
     )
 )
