@@ -2,7 +2,6 @@ import requests
 import json
 import os
 from datetime import datetime, timedelta
-from test_data import get_test_data
 from dotenv import load_dotenv
 from config import Config, TeamFieldMappings
 
@@ -18,7 +17,15 @@ def get_data(use_test_data=None):
         use_test_data = os.getenv('USE_TEST_DATA', 'false').lower() == 'true'
     
     if use_test_data:
-        return get_test_data()
+        return {
+            "raw_data": {
+                "leaguetable": [],
+                "periods": [],
+                "results": [],
+                "upcoming": []
+            },
+            "last_updated": datetime.now().isoformat()
+        }
     
     # Use real API data
     user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0"
@@ -29,12 +36,28 @@ def get_data(use_test_data=None):
         response = requests.get(apiUrl, headers={"User-Agent": user_agent, "x-api-key": x_api_key})
         
         if response.status_code != 200:
-            return get_test_data()
+            return {
+                "raw_data": {
+                    "leaguetable": [],
+                    "periods": [],
+                    "results": [],
+                    "upcoming": []
+                },
+                "last_updated": datetime.now().isoformat()
+            }
         
         try:
             data = json.loads(response.text)
         except json.JSONDecodeError:
-            return get_test_data()
+            return {
+                "raw_data": {
+                    "leaguetable": [],
+                    "periods": [],
+                    "results": [],
+                    "upcoming": []
+                },
+                "last_updated": datetime.now().isoformat()
+            }
         
         result = {}
         
@@ -70,7 +93,15 @@ def get_data(use_test_data=None):
         return result
         
     except Exception:
-        return get_test_data()
+        return {
+            "raw_data": {
+                "leaguetable": [],
+                "periods": [],
+                "results": [],
+                "upcoming": []
+            },
+            "last_updated": datetime.now().isoformat()
+        }
 
 
 def get_filtered_period_standings(data):
