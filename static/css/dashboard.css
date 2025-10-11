@@ -708,6 +708,73 @@ body {
   50% { opacity: 0.6; }
 }
 
+/* === MOBILE NAVIGATION BUTTONS === */
+.nav-button {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  font-size: 3rem;
+  font-weight: 900;
+  padding: 20px 15px;
+  cursor: pointer;
+  z-index: 1001;
+  transition: all 0.3s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+
+  /* Initial state: visible with blink animation */
+  opacity: 1;
+  animation: navButtonBlink 0.8s ease-in-out infinite;
+}
+
+.nav-button-prev {
+  left: 10px;
+}
+
+.nav-button-next {
+  right: 10px;
+}
+
+/* Blink animation for first 3 seconds */
+@keyframes navButtonBlink {
+  0%, 100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: translateY(-50%) scale(0.95);
+  }
+}
+
+/* Hidden state (after 3 seconds) */
+.nav-button.nav-hidden {
+  opacity: 0;
+  pointer-events: all; /* Keep buttons clickable */
+  animation: none; /* Stop blinking */
+}
+
+/* Show briefly on click */
+.nav-button.nav-flash {
+  opacity: 1 !important;
+  animation: navButtonFlash 0.4s ease;
+}
+
+@keyframes navButtonFlash {
+  0% { opacity: 1; transform: translateY(-50%) scale(1); }
+  50% { opacity: 1; transform: translateY(-50%) scale(1.1); }
+  100% { opacity: 1; transform: translateY(-50%) scale(1); }
+}
+
+/* Active state (pressed) */
+.nav-button:active {
+  transform: translateY(-50%) scale(0.85);
+}
+
 /* === MOBILE & RESPONSIVE STYLES === */
 /* Mobile device detection */
 .mobile-mode {

@@ -2206,3 +2206,85 @@ function setConfiguration(screenDuration) {
     SCREEN_DURATION_SECONDS = screenDuration;
     currentCountdown = screenDuration;
 }
+
+// === MOBILE NAVIGATION BUTTONS ===
+// Initialize navigation buttons on page load
+document.addEventListener('DOMContentLoaded', function() {
+    var prevBtn = document.getElementById('nav-btn-prev');
+    var nextBtn = document.getElementById('nav-btn-next');
+
+    if (!prevBtn || !nextBtn) return;
+
+    // Hide buttons after 3 seconds
+    setTimeout(function() {
+        prevBtn.classList.add('nav-hidden');
+        nextBtn.classList.add('nav-hidden');
+    }, 3000);
+
+    // Previous button click handler
+    prevBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Show flash animation
+        prevBtn.classList.remove('nav-hidden');
+        prevBtn.classList.add('nav-flash');
+        nextBtn.classList.remove('nav-hidden');
+        nextBtn.classList.add('nav-flash');
+
+        // Navigate to previous slide
+        previousSlide();
+
+        // Hide buttons again after flash
+        setTimeout(function() {
+            prevBtn.classList.remove('nav-flash');
+            nextBtn.classList.remove('nav-flash');
+            prevBtn.classList.add('nav-hidden');
+            nextBtn.classList.add('nav-hidden');
+        }, 800);
+    });
+
+    // Next button click handler
+    nextBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Show flash animation
+        prevBtn.classList.remove('nav-hidden');
+        prevBtn.classList.add('nav-flash');
+        nextBtn.classList.remove('nav-hidden');
+        nextBtn.classList.add('nav-flash');
+
+        // Navigate to next slide
+        nextSlide();
+
+        // Hide buttons again after flash
+        setTimeout(function() {
+            prevBtn.classList.remove('nav-flash');
+            nextBtn.classList.remove('nav-flash');
+            prevBtn.classList.add('nav-hidden');
+            nextBtn.classList.add('nav-hidden');
+        }, 800);
+    });
+
+    // Touch event handlers for better mobile support
+    prevBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        this.style.transform = 'translateY(-50%) scale(0.9)';
+    });
+
+    prevBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        this.style.transform = 'translateY(-50%) scale(1)';
+    });
+
+    nextBtn.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        this.style.transform = 'translateY(-50%) scale(0.9)';
+    });
+
+    nextBtn.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        this.style.transform = 'translateY(-50%) scale(1)';
+    });
+});

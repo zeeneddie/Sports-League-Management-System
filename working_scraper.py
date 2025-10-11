@@ -96,11 +96,18 @@ async def get_football_results():
                             if score and date:
                                 break
 
-                        # Parse teams from the line
-                        # The format appears to be: "Team1\tTeam2"
-                        teams_parts = line.split('\t')
-                        home_team = teams_parts[0].strip() if len(teams_parts) > 0 else "Unknown"
-                        away_team = teams_parts[1].strip() if len(teams_parts) > 1 else "Unknown"
+                        # Parse teams from the line using improved parser
+                        home_team, away_team = parse_teams(line)
+
+                        # Skip if parsing failed
+                        if home_team == "Unknown" or away_team == "Unknown":
+                            print(f"  [!] Failed to parse teams, skipping")
+                            continue
+
+                        # Skip if no valid date found
+                        if not date or date == "Date not found":
+                            print(f"  [!] No valid date found, skipping")
+                            continue
 
                         # Create result
                         result = {
@@ -108,10 +115,11 @@ async def get_football_results():
                             'home_team': home_team,
                             'away_team': away_team,
                             'score': score or "Score not found",
-                            'date': date or "Date not found",
+                            'date': date,
                             'match_type': match_type or ""
                         }
                         results.append(result)
+                        print(f"  [OK] Added: {home_team} vs {away_team} on {date}")
 
             return results
 
@@ -145,29 +153,57 @@ def remove_duplicate_matches(results):
     return unique_results
 
 def convert_date_format(date_str):
-    """Convert date from '14 SEP' format to '2024-09-14' format"""
+    """Convert date from '14 SEP' or '14 OKT' format to '2024-09-14' format"""
     if not date_str or date_str == "Date not found":
         return datetime.now().strftime("%Y-%m-%d")
 
     try:
-        # Map month abbreviations to numbers
+        # Map month abbreviations to numbers (both English and Dutch)
         month_map = {
+            # English
             'JAN': '01', 'FEB': '02', 'MAR': '03', 'APR': '04',
             'MAY': '05', 'JUN': '06', 'JUL': '07', 'AUG': '08',
-            'SEP': '09', 'OCT': '10', 'NOV': '11', 'DEC': '12'
+            'SEP': '09', 'OCT': '10', 'NOV': '11', 'DEC': '12',
+            # Dutch
+            'MEI': '05', 'OKT': '10'
         }
 
         parts = date_str.strip().split()
         if len(parts) == 2:
             day, month_abbr = parts
             day = day.zfill(2)  # Ensure two digits
-            month = month_map.get(month_abbr, '01')
+            month = month_map.get(month_abbr.upper(), '01')
             year = datetime.now().year  # Use current year
             return f"{year}-{month}-{day}"
     except:
         pass
 
     return datetime.now().strftime("%Y-%m-%d")
+
+def parse_teams(line):
+    """Parse team names from a line using multiple strategies"""
+
+    # Strategy 1: Try TAB separator first (most reliable)
+    if '\t' in line:
+        teams_parts = line.split('\t')
+        if len(teams_parts) >= 2:
+            home_team = teams_parts[0].strip()
+            away_team = teams_parts[1].strip()
+            # Clean up extra info like "Aanvang 13.00 uur"
+            away_team = re.sub(r'\s+(Aanvang|aanvang).*', '', away_team).strip()
+            if home_team and away_team and away_team != "Unknown":
+                return home_team, away_team
+
+    # Strategy 2: Try "Team1 - Team2" pattern (common format)
+    match = re.match(r'^(.+?)\s+-\s+(.+?)(?:\s+(Aanvang|aanvang|Time).*)?$', line)
+    if match:
+        home_team = match.group(1).strip()
+        away_team = match.group(2).strip()
+        if home_team and away_team:
+            return home_team, away_team
+
+    # Strategy 3: Fallback - return Unknown
+    return "Unknown", "Unknown"
 
 def parse_score(score_str):
     """Parse score string to separate home and away goals"""
@@ -325,11 +361,18 @@ async def get_football_programme():
                             if match_time and date:
                                 break
 
-                        # Parse teams from the line
-                        # The format appears to be: "Team1\tTeam2"
-                        teams_parts = line.split('\t')
-                        home_team = teams_parts[0].strip() if len(teams_parts) > 0 else "Unknown"
-                        away_team = teams_parts[1].strip() if len(teams_parts) > 1 else "Unknown"
+                        # Parse teams from the line using improved parser
+                        home_team, away_team = parse_teams(line)
+
+                        # Skip if parsing failed
+                        if home_team == "Unknown" or away_team == "Unknown":
+                            print(f"  [!] Failed to parse teams, skipping")
+                            continue
+
+                        # Skip if no valid date found
+                        if not date or date == "Date not found":
+                            print(f"  [!] No valid date found, skipping")
+                            continue
 
                         # Create match
                         match = {
@@ -337,10 +380,11 @@ async def get_football_programme():
                             'home_team': home_team,
                             'away_team': away_team,
                             'time': match_time or "Time not found",
-                            'date': date or "Date not found",
+                            'date': date,
                             'match_type': match_type or ""
                         }
                         matches.append(match)
+                        print(f"  [OK] Added: {home_team} vs {away_team} on {date} at {match_time}")
 
             return matches
 
