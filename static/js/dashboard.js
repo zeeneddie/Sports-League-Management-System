@@ -1002,32 +1002,44 @@ function addOverigeApeldoornseClubsSlide() {
             }
 
             if (isMobile) {
-                // Mobile layout: Single column (like Columbia mobile)
+                // Mobile layout: Single column grouped by week
                 slide.innerHTML =
                     '<div class="mobile-matches-container">' +
                         '<h2 class="mobile-header">' +
                             'Apeldoornse Clubs' +
                         '</h2>' +
                         '<div>' +
-                            (hasResults ? Object.entries(resultsByDate)
-                                .sort(function(a, b) { return b[1].date - a[1].date; }) // Most recent first
-                                .map(function(dateEntry) {
-                                    var dateLabel = dateEntry[0];
-                                    var dateMatches = dateEntry[1].matches;
-                                    return dateMatches.map(function(result) {
-                                        var homeGoals = result.homeGoals || result.homescore || 0;
-                                        var awayGoals = result.awayGoals || result.awayscore || 0;
-                                        var home = result.home || result.hometeam || 'Team A';
-                                        var away = result.away || result.awayteam || 'Team B';
+                            (hasResults ? Object.entries(weeklyResults)
+                                .sort(function(a, b) {
+                                    // Extract week numbers for sorting (most recent first)
+                                    var weekA = parseInt(a[0].match(/Week (\d+)/)[1]);
+                                    var weekB = parseInt(b[0].match(/Week (\d+)/)[1]);
+                                    return weekB - weekA;
+                                })
+                                .map(function(weekEntry) {
+                                    var weekLabel = weekEntry[0]; // e.g., "Week 40 (2025)"
+                                    var weekMatches = weekEntry[1];
+                                    var weekNumber = weekLabel.match(/Week (\d+)/)[1]; // Extract just the number
 
-                                        return '<div class="mobile-match-item played">' +
-                                            '<div class="mobile-match-teams">' +
-                                                '<div class="mobile-team home">' + getOverigeTeamNameWithLogo(home) + '</div>' +
-                                                '<div class="mobile-score">' + homeGoals + ' - ' + awayGoals + '</div>' +
-                                                '<div class="mobile-team away">' + getOverigeTeamNameWithLogo(away) + '</div>' +
-                                            '</div>' +
-                                        '</div>';
-                                    }).join('');
+                                    return '<div style="margin-bottom: 12px;">' +
+                                        '<div style="background-color: rgba(255, 215, 0, 0.3); padding: 6px 10px; margin: 8px 0 4px 0; border-radius: 4px; border-left: 4px solid #ffd700;">' +
+                                            '<h3 style="margin: 0; font-size: 1.1rem; font-weight: 900; color: #000;">Week ' + weekNumber + '</h3>' +
+                                        '</div>' +
+                                        weekMatches.map(function(result) {
+                                            var homeGoals = result.homeGoals || result.homescore || 0;
+                                            var awayGoals = result.awayGoals || result.awayscore || 0;
+                                            var home = result.home || result.hometeam || 'Team A';
+                                            var away = result.away || result.awayteam || 'Team B';
+
+                                            return '<div class="mobile-match-item played">' +
+                                                '<div class="mobile-match-teams">' +
+                                                    '<div class="mobile-team home">' + getOverigeTeamNameWithLogo(home) + '</div>' +
+                                                    '<div class="mobile-score">' + homeGoals + ' - ' + awayGoals + '</div>' +
+                                                    '<div class="mobile-team away">' + getOverigeTeamNameWithLogo(away) + '</div>' +
+                                                '</div>' +
+                                            '</div>';
+                                        }).join('') +
+                                    '</div>';
                                 }).join('') :
                                 '<div class="col-12 text-center">' +
                                     '<div style="background-color: rgba(255, 255, 255, 0.9); border-radius: 8px; padding: 20px; margin: 15px;">' +
