@@ -2208,8 +2208,11 @@ function setConfiguration(screenDuration) {
 }
 
 // === MOBILE NAVIGATION BUTTONS ===
-// Initialize navigation buttons on page load
+// Initialize navigation buttons on page load (MOBILE ONLY)
 document.addEventListener('DOMContentLoaded', function() {
+    // Only initialize navigation buttons on mobile devices
+    if (!isMobileDevice()) return;
+
     var prevBtn = document.getElementById('nav-btn-prev');
     var nextBtn = document.getElementById('nav-btn-next');
 

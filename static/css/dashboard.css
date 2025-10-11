@@ -729,6 +729,16 @@ body {
   /* Initial state: visible with blink animation */
   opacity: 1;
   animation: navButtonBlink 0.8s ease-in-out infinite;
+
+  /* Hide on desktop/TV by default */
+  display: none;
+}
+
+/* Show only on mobile devices */
+@media (max-width: 768px), (max-width: 1200px) and (orientation: portrait) {
+  .nav-button {
+    display: block;
+  }
 }
 
 .nav-button-prev {
