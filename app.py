@@ -250,9 +250,10 @@ def refresh_data():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# Start the data scheduler (also works with gunicorn)
+data_scheduler.start_scheduler()
+
 if __name__ == '__main__':
-    # Start the data scheduler
-    data_scheduler.start_scheduler()
     
     # Only enable debug mode in development
     debug_mode = os.getenv('FLASK_ENV', 'production') == 'development'
