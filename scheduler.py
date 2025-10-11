@@ -319,14 +319,14 @@ class DataScheduler:
             schedule.every().saturday.at(time_slot).do(self.run_api_update)
 
         # TEST SCHEDULE - Working scraper test run (remove after testing)
-        schedule.every().day.at("13:56").do(self.run_working_scraper)
+        schedule.every().day.at("14:05").do(self.run_working_scraper)
 
         print("Scheduled daily API updates at 10:00 AM")
         print("Scheduled working scraper:")
         print("  - Daily at 09:00 AM")
         print("  - Saturdays at 18:00")
         print("  - Sundays at 18:00")
-        print("  - TEST: Today at 13:56 UTC")
+        print("  - TEST: Today at 14:05 UTC")
         print("Scheduled Saturday live API updates every 15 minutes:")
         print("  - 16:30, 16:45, 17:00, 17:15, 17:30, 17:45")
         print("  - 18:00, 18:15, 18:30, 18:45, 19:00")
