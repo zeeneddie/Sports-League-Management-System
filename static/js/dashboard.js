@@ -2268,23 +2268,75 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Touch event handlers for better mobile support
+    var touchHandled = false;
+
     prevBtn.addEventListener('touchstart', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+        touchHandled = false;
         this.style.transform = 'translateY(-50%) scale(0.9)';
     });
 
     prevBtn.addEventListener('touchend', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+
+        if (!touchHandled) {
+            touchHandled = true;
+
+            // Show flash animation
+            prevBtn.classList.remove('nav-hidden');
+            prevBtn.classList.add('nav-flash');
+            nextBtn.classList.remove('nav-hidden');
+            nextBtn.classList.add('nav-flash');
+
+            // Navigate to previous slide
+            previousSlide();
+
+            // Hide buttons again after flash
+            setTimeout(function() {
+                prevBtn.classList.remove('nav-flash');
+                nextBtn.classList.remove('nav-flash');
+                prevBtn.classList.add('nav-hidden');
+                nextBtn.classList.add('nav-hidden');
+            }, 800);
+        }
+
         this.style.transform = 'translateY(-50%) scale(1)';
     });
 
     nextBtn.addEventListener('touchstart', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+        touchHandled = false;
         this.style.transform = 'translateY(-50%) scale(0.9)';
     });
 
     nextBtn.addEventListener('touchend', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+
+        if (!touchHandled) {
+            touchHandled = true;
+
+            // Show flash animation
+            prevBtn.classList.remove('nav-hidden');
+            prevBtn.classList.add('nav-flash');
+            nextBtn.classList.remove('nav-hidden');
+            nextBtn.classList.add('nav-flash');
+
+            // Navigate to next slide
+            nextSlide();
+
+            // Hide buttons again after flash
+            setTimeout(function() {
+                prevBtn.classList.remove('nav-flash');
+                nextBtn.classList.remove('nav-flash');
+                prevBtn.classList.add('nav-hidden');
+                nextBtn.classList.add('nav-hidden');
+            }, 800);
+        }
+
         this.style.transform = 'translateY(-50%) scale(1)';
     });
 });
