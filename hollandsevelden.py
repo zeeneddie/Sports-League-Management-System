@@ -151,12 +151,25 @@ def get_last_week_results(data):
 
 
 def _parse_match_date(date_str):
-    """Parse match date string to datetime object"""
+    """Parse match date string to datetime object.
+    Supports formats:
+    - ISO 8601: 2026-01-17T14:00:00+01:00
+    - With space: 2025-09-27 14:30:00
+    - Date only: 2025-09-27
+    """
     if not date_str:
         return None
-    
+
     try:
-        if ' ' in date_str:
+        # Handle ISO 8601 format: 2026-01-17T14:00:00+01:00
+        if 'T' in date_str:
+            # Extract datetime part before timezone (remove +02:00 or -01:00)
+            datetime_part = date_str.split('T')
+            date_part = datetime_part[0]
+            time_part = datetime_part[1][:8]  # Take only HH:MM:SS
+            clean_date = f"{date_part} {time_part}"
+            return datetime.strptime(clean_date, '%Y-%m-%d %H:%M:%S')
+        elif ' ' in date_str:
             return datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
         else:
             return datetime.strptime(date_str, '%Y-%m-%d')
