@@ -212,7 +212,8 @@ class DataScheduler:
                 'weekly_results': get_weekly_results(raw_data),
                 'team_matrix': create_team_matrix(raw_data),
                 'all_matches': get_all_matches(raw_data),
-                'last_updated': datetime.now().isoformat()
+                'last_updated': datetime.now().isoformat(),
+                'data_mode': 'test' if use_test_data else 'production'
             }
 
             # Integrate local JSON files if they have recent updates
@@ -243,16 +244,14 @@ class DataScheduler:
         
         # Always check if cached data matches current mode, even if we have data in memory
         if self.cached_data is not None:
-            # Check if in-memory cached data matches current mode
-            cached_featured_team = self.cached_data.get('raw_data', {}).get('leaguetable', [{}])[0].get('team', '')
-            expected_team = Config.FEATURED_TEAM
-            
-            if not (expected_team in cached_featured_team or cached_featured_team in expected_team):
-                print(f"In-memory cached data is for different mode (found: {cached_featured_team}, expected: {expected_team})")
-                self.cached_data = None  # Force reload
+            expected_mode = 'test' if Config.USE_TEST_DATA else 'production'
+            cached_mode = self.cached_data.get('data_mode', 'production')
+
+            if cached_mode != expected_mode:
+                print(f"In-memory cached data is for different mode (found: {cached_mode}, expected: {expected_mode})")
+                self.cached_data = None
                 need_fresh_data = True
             else:
-                print(f"In-memory cached data matches current mode: {expected_team}")
                 return self.cached_data
         
         if self.cached_data is None:
@@ -262,19 +261,16 @@ class DataScheduler:
                     with open(self.data_file, 'r', encoding='utf-8') as f:
                         cached_file_data = json.load(f)
                         
-                    # Check if cached data matches current mode (API mode = Columbia, Test mode = Gorecht)
-                    cached_featured_team = cached_file_data.get('raw_data', {}).get('leaguetable', [{}])[0].get('team', '')
-                    expected_team = Config.FEATURED_TEAM  # Should be 'AVV Columbia' in API mode
-                    
-                    if expected_team in cached_featured_team or cached_featured_team in expected_team:
-                        # Cache matches current mode
+                    expected_mode = 'test' if Config.USE_TEST_DATA else 'production'
+                    cached_mode = cached_file_data.get('data_mode', 'production')
+
+                    if cached_mode == expected_mode:
                         self.cached_data = cached_file_data
                         if 'last_updated' in self.cached_data:
                             self.last_update = datetime.fromisoformat(self.cached_data['last_updated'])
-                        print(f"Loaded cached data matching current mode: {expected_team}")
+                        print(f"Loaded cached data matching current mode: {expected_mode}")
                     else:
-                        # Cache doesn't match current mode
-                        print(f"Cached data is for different mode (found: {cached_featured_team}, expected: {expected_team})")
+                        print(f"Cached data is for different mode (found: {cached_mode}, expected: {expected_mode})")
                         need_fresh_data = True
                 else:
                     print("No cached data file found")
