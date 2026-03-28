@@ -80,11 +80,29 @@ def get_data(use_test_data=None):
                 }
                 normalized_leaguetable.append(normalized_team)
             
+            # Normalize period data the same way as league table
+            normalized_periods = {}
+            for period_name in ['period1', 'period2', 'period3', 'period4']:
+                period_data = v.get(period_name, [])
+                normalized_period = []
+                for team in period_data:
+                    normalized_team = {
+                        'team': team.get('name', team.get('team', '')),
+                        'position': team.get('position', 0),
+                        'played': team.get('matches', team.get('played', 0)),
+                        'wins': team.get('wins', 0),
+                        'draws': team.get('ties', team.get('draws', 0)),
+                        'losses': team.get('losses', 0),
+                        'goals_for': team.get('goalsFor', team.get('goals_for', 0)),
+                        'goals_against': team.get('goalsAgainst', team.get('goals_against', 0)),
+                        'points': team.get('points', 0),
+                    }
+                    normalized_period.append(normalized_team)
+                normalized_periods[period_name] = normalized_period
+
             result = {
                 'leaguetable': normalized_leaguetable,
-                'period1': v.get('period1', []),
-                'period2': v.get('period2', []),
-                'period3': v.get('period3', []),
+                **normalized_periods,
                 'results': v.get('results', []),
                 'program': v.get('program', [])
             }
@@ -111,11 +129,13 @@ def get_filtered_period_standings(data):
     
     filtered_periods = []
     
-    for period_name in ['period1', 'period2', 'period3']:
+    for period_name in ['period1', 'period2', 'period3', 'period4']:
         period_data = data.get(period_name, [])
         if period_data:
-            # Check if any team has played at least 1 match
-            has_matches = any(team.get('played', 0) > 0 for team in period_data)
+            # Check if any team has played at least 1 match (supports both field names)
+            has_matches = any(
+                team.get('played', team.get('matches', 0)) > 0 for team in period_data
+            )
             if has_matches:
                 filtered_periods.append({
                     'name': period_name.replace('period', 'Periode '),
@@ -351,19 +371,16 @@ def get_weekly_results(data):
     for match in data['results']:
         match_date_str = match.get('date', '')
         if match_date_str:
-            try:
-                match_date = datetime.strptime(match_date_str, '%Y-%m-%d')
-                # Get ISO week number
+            match_date = _parse_match_date(match_date_str)
+            if match_date:
                 week_number = match_date.isocalendar()[1]
                 year = match_date.year
                 week_key = f"Week {week_number} ({year})"
-                
+
                 if week_key not in weekly_results:
                     weekly_results[week_key] = []
-                
+
                 weekly_results[week_key].append(match)
-            except ValueError:
-                continue
     
     # Sort matches within each week by date
     for week in weekly_results:
