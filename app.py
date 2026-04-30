@@ -68,10 +68,17 @@ def page_not_found(error):
 def internal_error(error):
     return render_template('500.html'), 500
 
+def _static_version(filename):
+    try:
+        return str(int(os.path.getmtime(os.path.join(app.static_folder, filename))))
+    except OSError:
+        return '0'
+
 @app.route('/')
 def landing():
-    return render_template('dashboard.html', 
-                         screen_duration_seconds=Config.SCREEN_DURATION_SECONDS)
+    return render_template('dashboard.html',
+                         screen_duration_seconds=Config.SCREEN_DURATION_SECONDS,
+                         js_version=_static_version('js/dashboard.js'))
 
 # API endpoint mappings
 API_DATA_MAPPINGS = {

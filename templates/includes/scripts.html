@@ -1,5 +1,5 @@
 <!-- Scripts -->
-<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js', v=js_version) }}"></script>
 <script>
   // Set configuration from Flask template
   setConfiguration({{ screen_duration_seconds }});
