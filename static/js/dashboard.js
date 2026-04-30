@@ -527,6 +527,7 @@ function calculateTeamForm(teamName, allMatches) {
 function addStandingsSlide(standings, allMatches = []) {
     const slide = document.createElement('div');
     slide.className = 'slide-item';
+    slide.setAttribute('data-duration', '30');
 
     if (isMobile) {
         // Mobile: Single column layout without form column
@@ -1726,6 +1727,7 @@ function addNextWeekMatchesSlide(matches) {
 function addFeaturedMatchesSlide(matches) {
     const slide = document.createElement('div');
     slide.className = 'slide-item';
+    slide.setAttribute('data-duration', '30');
     
     // Combine all matches and separate into played and upcoming
     const allMatches = [
@@ -2034,6 +2036,21 @@ function previousSlide() {
     startCountdown();
 }
 
+// Track per-slide duration so countdown total reflects custom data-duration
+var currentSlideDuration = SCREEN_DURATION_SECONDS;
+
+function getActiveSlideDuration() {
+    var slideContainer = document.getElementById('slide-container');
+    if (!slideContainer) return SCREEN_DURATION_SECONDS;
+    var slides = slideContainer.querySelectorAll('.slide-item');
+    var active = slides[currentSlideIndex];
+    if (active) {
+        var custom = parseInt(active.getAttribute('data-duration'), 10);
+        if (!isNaN(custom) && custom > 0) return custom;
+    }
+    return SCREEN_DURATION_SECONDS;
+}
+
 // Countdown functions
 function startCountdown() {
     // Force clear any existing intervals and reset to null
@@ -2041,10 +2058,11 @@ function startCountdown() {
         clearInterval(countdownInterval);
         countdownInterval = null;
     }
-    
-    currentCountdown = SCREEN_DURATION_SECONDS;
+
+    currentSlideDuration = getActiveSlideDuration();
+    currentCountdown = currentSlideDuration;
     updateCountdownDisplay();
-    
+
     countdownInterval = setInterval(function() {
         currentCountdown--;
         updateCountdownDisplay();
@@ -2062,7 +2080,7 @@ function updateCountdownDisplay() {
     if (element) {
         // Format as xx/xx (current/total)
         var currentFormatted = currentCountdown < 10 ? '0' + currentCountdown : currentCountdown;
-        var totalFormatted = SCREEN_DURATION_SECONDS < 10 ? '0' + SCREEN_DURATION_SECONDS : SCREEN_DURATION_SECONDS;
+        var totalFormatted = currentSlideDuration < 10 ? '0' + currentSlideDuration : currentSlideDuration;
         element.textContent = currentFormatted + '/' + totalFormatted;
     } else {
     }
