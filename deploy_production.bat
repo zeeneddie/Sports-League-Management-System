@@ -187,6 +187,15 @@ ssh %VPS_USER%@%VPS_HOST% "cd %VPS_PATH% && echo 'Checking scheduler configurati
 
 echo   [OK] Scheduler check completed
 
+REM Sync systemd unit file from repo if it differs from installed version
+ssh %VPS_USER%@%VPS_HOST% "if ! cmp -s %VPS_PATH%/deployment/spms.service /etc/systemd/system/spms.service; then echo 'Updating systemd unit file from repo...'; sudo cp %VPS_PATH%/deployment/spms.service /etc/systemd/system/spms.service && sudo systemctl daemon-reload && echo 'systemd unit updated and daemon reloaded'; else echo 'systemd unit already in sync with repo'; fi"
+
+if errorlevel 1 (
+    echo   [WARN] systemd unit sync had issues
+) else (
+    echo   [OK] systemd unit synced
+)
+
 echo.
 
 REM Step 9: Start services
