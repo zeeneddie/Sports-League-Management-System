@@ -171,3 +171,8 @@ C:Userseddie.ssh*
 ".bmad-core/"
 ".playwright-mcp/"
 ".venv/" 
+
+# Runtime-generated data (must not be tracked — overwritten by scheduler)
+league_data.json
+uitslagen.json
+komende_wedstrijden.json
