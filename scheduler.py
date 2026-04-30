@@ -65,29 +65,21 @@ class DataScheduler:
         if not data:
             return data
 
-        # Check if local files have been modified recently (last 24 hours)
-        recent_threshold = datetime.now() - timedelta(hours=24)
-
         # Check uitslagen.json for Apeldoornse clubs results (separate from API data)
         if os.path.exists('uitslagen.json'):
             try:
                 with open('uitslagen.json', 'r', encoding='utf-8') as f:
                     uitslagen_data = json.load(f)
 
-                # Store Apeldoornse clubs results in separate field (don't mix with API data)
+                # Store all Apeldoornse clubs results from the file (scraper manages freshness)
                 apeldoornse_results = []
                 for local_result in uitslagen_data:
                     result_date_str = local_result.get('date', '')
                     if result_date_str:
-                        try:
-                            result_date = datetime.strptime(result_date_str, '%Y-%m-%d')
-                            if result_date >= recent_threshold:
-                                # Add time to date if not present
-                                if ' ' not in result_date_str:
-                                    local_result['date'] = f"{result_date_str} 15:00:00"
-                                apeldoornse_results.append(local_result)
-                        except ValueError:
-                            continue
+                        # Add time to date if not present
+                        if ' ' not in result_date_str:
+                            local_result['date'] = f"{result_date_str} 15:00:00"
+                        apeldoornse_results.append(local_result)
 
                 if apeldoornse_results:
                     data['apeldoornse_clubs_results'] = sorted(apeldoornse_results, key=lambda x: x.get('date', ''))
@@ -102,19 +94,12 @@ class DataScheduler:
                 with open('komende_wedstrijden.json', 'r', encoding='utf-8') as f:
                     upcoming_data = json.load(f)
 
-                # Store Apeldoornse clubs matches in separate field (don't mix with API data)
+                # Store all Apeldoornse clubs upcoming matches (scraper manages freshness)
                 apeldoornse_matches = []
                 for local_match in upcoming_data:
                     match_date_str = local_match.get('date', '')
                     if match_date_str:
-                        try:
-                            match_date = datetime.strptime(match_date_str.split(' ')[0], '%Y-%m-%d')
-                            # Add upcoming matches within next 2 weeks
-                            future_threshold = datetime.now() + timedelta(days=14)
-                            if datetime.now() <= match_date <= future_threshold:
-                                apeldoornse_matches.append(local_match)
-                        except (ValueError, IndexError):
-                            continue
+                        apeldoornse_matches.append(local_match)
 
                 if apeldoornse_matches:
                     data['apeldoornse_clubs_upcoming'] = sorted(apeldoornse_matches, key=lambda x: x.get('date', ''))
@@ -306,22 +291,32 @@ class DataScheduler:
         # Sunday evenings at 18:00 (after matches)
         schedule.every().sunday.at("18:00").do(self.run_working_scraper)
 
-        # Saturday live updates - API updates every 15 minutes between 16:30-19:00
-        saturday_times = [
-            "16:30", "16:45", "17:00", "17:15", "17:30", "17:45",
+        # Saturday live updates (all times UTC, server runs UTC)
+        # Phase 1: every 10 min (15:00-16:30 UTC = 17:00-18:30 NL)
+        saturday_phase1 = [
+            "15:00", "15:10", "15:20", "15:30", "15:40", "15:50",
+            "16:00", "16:10", "16:20", "16:30"
+        ]
+        # Phase 2: every 15 min (16:45-19:00 UTC = 18:45-21:00 NL)
+        saturday_phase2 = [
+            "16:45", "17:00", "17:15", "17:30", "17:45",
             "18:00", "18:15", "18:30", "18:45", "19:00"
         ]
-        for time_slot in saturday_times:
+        # Phase 3: every 15 min (19:15-20:00 UTC = 21:15-22:00 NL)
+        saturday_phase3 = [
+            "19:15", "19:30", "19:45", "20:00"
+        ]
+        for time_slot in saturday_phase1 + saturday_phase2 + saturday_phase3:
             schedule.every().saturday.at(time_slot).do(self.run_api_update)
 
-        print("Scheduled daily API updates at 10:00 AM")
+        print("Scheduled daily API updates at 10:00 AM UTC")
         print("Scheduled working scraper:")
-        print("  - Daily at 09:00 AM")
-        print("  - Saturdays at 18:00")
-        print("  - Sundays at 18:00")
-        print("Scheduled Saturday live API updates every 15 minutes:")
-        print("  - 16:30, 16:45, 17:00, 17:15, 17:30, 17:45")
-        print("  - 18:00, 18:15, 18:30, 18:45, 19:00")
+        print("  - Daily at 09:00 AM UTC")
+        print("  - Saturdays at 18:00 UTC")
+        print("  - Sundays at 18:00 UTC")
+        print("Scheduled Saturday live API updates:")
+        print("  - 15:00-16:30 UTC (17:00-18:30 NL): every 10 min")
+        print("  - 16:45-20:00 UTC (18:45-22:00 NL): every 15 min")
 
         # Initial data fetch if no cached data
         if not os.path.exists(self.data_file):
