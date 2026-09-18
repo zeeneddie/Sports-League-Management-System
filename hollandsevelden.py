@@ -30,7 +30,9 @@ def get_data(use_test_data=None):
     # Use real API data
     user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0"
     x_api_key = os.getenv('HOLLANDSE_VELDEN_API_KEY', 'b73ibxfaivpaa7a68pbapckgpt0q947y')
-    apiUrl = 'https://api.hollandsevelden.nl/competities/2025-2026/oost/za/3n/'
+    # Nieuw endpoint (per sept 2026): volgt automatisch de huidige competitie
+    # van Columbia 1 - geen jaarlijkse aanpassing van seizoen/klasse meer nodig.
+    apiUrl = 'https://api.hollandsevelden.nl/clubs/c/columbia/1/'
     
     try:
         response = requests.get(apiUrl, headers={"User-Agent": user_agent, "x-api-key": x_api_key})
@@ -60,8 +62,11 @@ def get_data(use_test_data=None):
             }
         
         result = {}
-        
-        for k, v in data.items():
+
+        # Nieuw endpoint levert {'club': {...}, 'competition': {...}}.
+        # De relevante data (leaguetable/periods/results/program) zit onder 'competition'.
+        v = data.get('competition', {})
+        if v:
             # Normalize league table structure to match test data format
             leaguetable = v.get('leaguetable', [])
             normalized_leaguetable = []
@@ -106,8 +111,7 @@ def get_data(use_test_data=None):
                 'results': v.get('results', []),
                 'program': v.get('program', [])
             }
-            break
-        
+
         return result
         
     except Exception:
