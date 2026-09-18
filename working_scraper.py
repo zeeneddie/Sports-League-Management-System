@@ -75,10 +75,10 @@ async def get_football_results():
                         for j in range(i-1, max(0, i-15), -1):  # Look up to 15 lines back
                             check_line = lines[j].strip()
 
-                            # Look for score pattern first
-                            score_match = re.match(r'^(\d+)\s*-\s*(\d+)$', check_line)
+                            # Look for score pattern first (handles tabs and spaces: "1 - 0" or "1\t-\t0")
+                            score_match = re.match(r'^(\d+)[\s\t]*-[\s\t]*(\d+)$', check_line)
                             if score_match and not score:
-                                score = check_line
+                                score = f"{score_match.group(1)}\t-\t{score_match.group(2)}"
                                 print(f"  Found score: {score}")
 
                             # Look for date pattern
@@ -164,8 +164,9 @@ def convert_date_format(date_str):
             'JAN': '01', 'FEB': '02', 'MAR': '03', 'APR': '04',
             'MAY': '05', 'JUN': '06', 'JUL': '07', 'AUG': '08',
             'SEP': '09', 'OCT': '10', 'NOV': '11', 'DEC': '12',
-            # Dutch
-            'MEI': '05', 'OKT': '10'
+            # Dutch (voetbaloost.nl uses these)
+            'MRT': '03', 'MEI': '05', 'OKT': '10',
+            'JUL': '07', 'AUG': '08',
         }
 
         parts = date_str.strip().split()
@@ -238,7 +239,7 @@ def results_to_json(results):
             "away": result['away_team'],
             "homeGoals": home_goals,
             "awayGoals": away_goals,
-            "result": result['score'] if result['score'] != "Score not found" else ""
+            "result": f"{home_goals} - {away_goals}" if result['score'] != "Score not found" else ""
         }
         json_results.append(json_result)
 
