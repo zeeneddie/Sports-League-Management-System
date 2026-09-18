@@ -197,6 +197,8 @@ class DataScheduler:
                 'weekly_results': get_weekly_results(raw_data),
                 'team_matrix': create_team_matrix(raw_data),
                 'all_matches': get_all_matches(raw_data),
+                'meta': {k: raw_data.get('meta', {}).get(k)
+                         for k in ('title', 'district', 'season')},
                 'last_updated': datetime.now().isoformat(),
                 'data_mode': 'test' if use_test_data else 'production'
             }
