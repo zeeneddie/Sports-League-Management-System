@@ -11,21 +11,24 @@ var featuredTeamName = "";
 var carouselInitialized = false;
 var teamShirtData = {}; // Store team shirt data from API
 var logoMode = 'team'; // 'team' or 'club' - alternates each cycle
+// Club-logo mapping voor de huidige competitie (3e klasse E, seizoen 2026/2027).
+// Bestandsnamen komen overeen met het 'logo'-veld uit de hollandsevelden API;
+// de webp-bestanden staan in static/images/club_logos/.
 var clubLogoMapping = {
-    'AGOVV': 'agovv.webp',
+    'Advendo \'57': 'advendo-57.webp',
+    'Candia \'66': 'candia-66.webp',
     'AVV Columbia': 'columbia.webp',
-    'SV Epe': 'epe.webp',
-    'Groen Wit \'62': 'groenwit.webp',
-    'SV \'t Harde': 'tharde.webp',
-    'VV Hattem': 'hattem.webp',
-    'SV Hatto Heim': 'hatoheim.webp',
-    'VV Heerde': 'heerde.webp',
-    'OWIOS': 'owios.webp',
-    'VV SEH': 'seh.webp',
-    'SP Teuge': 'teuge.webp',
-    'VIOS V': 'vios.webp',
+    'VV Dieren': 'dieren.webp',
+    'VV DUNO': 'duno-d.webp',
+    'Fortissimo KSV': 'fortissimo-ksv.webp',
+    'Groen Wit \'62': 'groen-wit-62.webp',
+    'KCVO': 'kcvo.webp',
+    'ONA \'53': 'ona-53.webp',
+    'SV De Paasberg': 'paasberg-de.webp',
+    'SP Teuge': 'teuge-sp.webp',
+    'VIOS V': 'vios-v.webp',
     'VVOP': 'vvop.webp',
-    'Zwart-Wit \'63': 'zwartwit.webp'
+    'WAVV': 'wavv.webp'
 };
 
 // Mobile detection function (dynamic) - improved for wide mobile screens
