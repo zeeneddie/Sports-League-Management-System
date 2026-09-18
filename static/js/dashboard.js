@@ -240,6 +240,9 @@ function loadData() {
         featuredTeamName = data.featured_team_name || "Featured Team";
         updateTeamName();
 
+        // Update competitienaam + seizoen dynamisch uit de API-meta
+        updateCompetitionDetails(data);
+
         // Check and display TEST MODE indicator
         checkTestMode(data);
         
@@ -286,6 +289,17 @@ function updateTeamName() {
     if (titleElement && featuredTeamName) {
         titleElement.textContent = featuredTeamName.toUpperCase();
     }
+}
+
+function updateCompetitionDetails(data) {
+    // Toont competitienaam + seizoen dynamisch op basis van de API-meta,
+    // zodat dit niet jaarlijks handmatig hoeft te worden aangepast.
+    var element = document.getElementById('competition-details-text');
+    if (!element || !data || !data.meta) return;
+    var meta = data.meta;
+    if (!meta.title || !meta.season) return;
+    var district = meta.district ? ' ' + meta.district : '';
+    element.textContent = 'Zaterdag ' + meta.title + district + ' • Seizoen ' + meta.season;
 }
 
 function updateMatchStatistics(data) {

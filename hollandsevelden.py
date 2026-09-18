@@ -109,7 +109,8 @@ def get_data(use_test_data=None):
                 'leaguetable': normalized_leaguetable,
                 **normalized_periods,
                 'results': v.get('results', []),
-                'program': v.get('program', [])
+                'program': v.get('program', []),
+                'meta': v.get('meta', {})  # competitienaam, district, seizoen
             }
 
         return result
