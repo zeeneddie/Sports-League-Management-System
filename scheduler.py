@@ -26,6 +26,7 @@ class DataScheduler:
         self.data_file = 'league_data.json'
         self.last_update = None
         self.cached_data = None
+        self._cache_mtime = None
         self.live_scores_active = False
         self.last_live_update = None
         
@@ -209,9 +210,13 @@ class DataScheduler:
             # Save to file
             with open(self.data_file, 'w', encoding='utf-8') as f:
                 json.dump(processed_data, f, ensure_ascii=False, indent=2)
-            
+
             self.cached_data = processed_data
             self.last_update = datetime.now()
+            try:
+                self._cache_mtime = os.path.getmtime(self.data_file)
+            except OSError:
+                self._cache_mtime = None
             print(f"Data successfully updated and saved at {self.last_update}")
             
         except Exception as e:
@@ -239,6 +244,26 @@ class DataScheduler:
                 self.cached_data = None
                 need_fresh_data = True
             else:
+                # Detect if the on-disk file is newer than our in-memory cache
+                # (another process wrote it, or the scheduler thread got stuck).
+                try:
+                    if os.path.exists(self.data_file):
+                        disk_mtime = os.path.getmtime(self.data_file)
+                        if self._cache_mtime is None or disk_mtime > self._cache_mtime:
+                            print(f"On-disk {self.data_file} is newer than in-memory cache, reloading...")
+                            with open(self.data_file, 'r', encoding='utf-8') as f:
+                                disk_data = json.load(f)
+                            disk_mode = disk_data.get('data_mode', 'production')
+                            if disk_mode == expected_mode:
+                                self.cached_data = disk_data
+                                self._cache_mtime = disk_mtime
+                                if 'last_updated' in disk_data:
+                                    try:
+                                        self.last_update = datetime.fromisoformat(disk_data['last_updated'])
+                                    except (ValueError, TypeError):
+                                        pass
+                except Exception as e:
+                    print(f"Error checking disk mtime for {self.data_file}: {e}")
                 return self.cached_data
         
         if self.cached_data is None:
@@ -253,6 +278,10 @@ class DataScheduler:
 
                     if cached_mode == expected_mode:
                         self.cached_data = cached_file_data
+                        try:
+                            self._cache_mtime = os.path.getmtime(self.data_file)
+                        except OSError:
+                            self._cache_mtime = None
                         if 'last_updated' in self.cached_data:
                             self.last_update = datetime.fromisoformat(self.cached_data['last_updated'])
                         print(f"Loaded cached data matching current mode: {expected_mode}")
