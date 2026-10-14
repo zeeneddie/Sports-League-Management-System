@@ -702,22 +702,23 @@ body {
 }
 
 .data-attribution .attribution-text {
-  font-size: 1.35rem;
+  font-size: 1.8rem;
   font-weight: 600;
   color: #333;
   text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
 }
 
 .data-attribution .attribution-logo {
-  height: 46px;
+  /* Even groot als het clublogo linksboven op de slide (100px). */
+  height: 100px;
   width: auto;
   display: block;
   /* Het logo is een palet-PNG met witte achtergrond; als afgeronde badge
      tonen zodat het geen los wit blok wordt op de gekleurde slides. */
   background-color: #fff;
-  padding: 3px 7px;
-  border-radius: 7px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  padding: 6px 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   box-sizing: content-box;
 }
 
@@ -1106,13 +1107,14 @@ body {
   }
 
   .data-attribution .attribution-text {
-    font-size: 0.8rem !important;
+    font-size: 0.95rem !important;
   }
 
+  /* Even groot als het clublogo linksboven op mobiel (30px). */
   .data-attribution .attribution-logo {
-    height: 24px !important;
-    padding: 2px 4px !important;
-    border-radius: 5px !important;
+    height: 30px !important;
+    padding: 3px 6px !important;
+    border-radius: 6px !important;
   }
   
   /* Mobile matches container specific height adjustment */
