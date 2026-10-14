@@ -838,6 +838,19 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
     }
 }
 
+/**
+ * Attributieblok voor Hollandse Velden, gecentreerd onderaan de slide.
+ * Wordt gebruikt op de openingspagina (in dashboard.html), de uitslagen
+ * en de komende wedstrijden.
+ */
+function dataAttributionHtml() {
+    return `
+        <div class="data-attribution">
+            <span class="attribution-text">Data wordt geleverd door:</span>
+            <img class="attribution-logo" src="/static/images/hollandsevelden_logo.png" alt="Hollandse Velden">
+        </div>`;
+}
+
 function addLastWeekResultsSlide(results) {
     const slide = document.createElement('div');
     slide.className = 'slide-item';
@@ -894,6 +907,7 @@ function addLastWeekResultsSlide(results) {
                         </div>`}
                 </div>
             </div>
+            ${dataAttributionHtml()}
         `;
     } else {
         // Desktop layout: Original large format
@@ -942,6 +956,7 @@ function addLastWeekResultsSlide(results) {
                     </div>`}
                 </div>
             </div>
+            ${dataAttributionHtml()}
         `;
     }
     
@@ -1675,6 +1690,7 @@ function addNextWeekMatchesSlide(matches) {
                         </div>`}
                 </div>
             </div>
+            ${dataAttributionHtml()}
         `;
     } else {
         // Desktop layout: Original large format
@@ -1730,6 +1746,7 @@ function addNextWeekMatchesSlide(matches) {
                     </div>`}
                 </div>
             </div>
+            ${dataAttributionHtml()}
         `;
     }
     
