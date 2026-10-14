@@ -252,8 +252,15 @@ def komende_wedstrijden():
 def refresh_data():
     """Force refresh of data"""
     try:
-        data_scheduler.fetch_and_process_data()
-        return jsonify({'success': True, 'message': 'Data refreshed successfully'})
+        if data_scheduler.fetch_and_process_data():
+            return jsonify({'success': True, 'message': 'Data refreshed successfully'})
+
+        # Ophalen mislukte: bestaande cache is bewust behouden.
+        return jsonify({
+            'success': False,
+            'error': data_scheduler.last_fetch_error or 'API-ophaalactie mislukt',
+            'message': 'Bestaande data behouden, niets overschreven'
+        }), 503
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 

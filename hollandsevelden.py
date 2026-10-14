@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import time
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from config import Config, TeamFieldMappings
@@ -8,14 +9,33 @@ from config import Config, TeamFieldMappings
 # Load environment variables
 load_dotenv()
 
+# De API zit achter Cloudflare met een strakke rate limit: losse calls geven
+# regelmatig een 429. Daarom opnieuw proberen met oplopende wachttijd.
+API_MAX_ATTEMPTS = 4
+API_RETRY_DELAYS = [20, 60, 120]  # seconden tussen poging 1-2, 2-3, 3-4
+API_TIMEOUT = 30
+
+
+class HollandseVeldenError(Exception):
+    """De API-data kon niet opgehaald worden.
+
+    Belangrijk: dit wordt bewust als fout opgegooid in plaats van een lege
+    dataset terug te geven. Een lege dataset is niet te onderscheiden van
+    'competitie zonder wedstrijden' en overschreef daardoor de goede cache.
+    """
+
 
 def get_data(use_test_data=None):
-    """Fetch data from API or use test data based on configuration"""
-    
+    """Fetch data from API or use test data based on configuration
+
+    Raises:
+        HollandseVeldenError: als de API na alle pogingen geen bruikbare data levert.
+    """
+
     # Check if we should use test data
     if use_test_data is None:
         use_test_data = os.getenv('USE_TEST_DATA', 'false').lower() == 'true'
-    
+
     if use_test_data:
         return {
             "raw_data": {
@@ -26,46 +46,65 @@ def get_data(use_test_data=None):
             },
             "last_updated": datetime.now().isoformat()
         }
-    
+
     # Use real API data
     user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0"
     x_api_key = os.getenv('HOLLANDSE_VELDEN_API_KEY', 'b73ibxfaivpaa7a68pbapckgpt0q947y')
     # Nieuw endpoint (per sept 2026): volgt automatisch de huidige competitie
     # van Columbia 1 - geen jaarlijkse aanpassing van seizoen/klasse meer nodig.
     apiUrl = 'https://api.hollandsevelden.nl/clubs/c/columbia/1/'
-    
-    try:
-        response = requests.get(apiUrl, headers={"User-Agent": user_agent, "x-api-key": x_api_key})
-        
-        if response.status_code != 200:
-            return {
-                "raw_data": {
-                    "leaguetable": [],
-                    "periods": [],
-                    "results": [],
-                    "upcoming": []
-                },
-                "last_updated": datetime.now().isoformat()
-            }
-        
+
+    data = None
+    last_error = None
+
+    for attempt in range(1, API_MAX_ATTEMPTS + 1):
         try:
-            data = json.loads(response.text)
-        except json.JSONDecodeError:
-            return {
-                "raw_data": {
-                    "leaguetable": [],
-                    "periods": [],
-                    "results": [],
-                    "upcoming": []
-                },
-                "last_updated": datetime.now().isoformat()
-            }
-        
+            response = requests.get(
+                apiUrl,
+                headers={"User-Agent": user_agent, "x-api-key": x_api_key},
+                timeout=API_TIMEOUT,
+            )
+        except requests.RequestException as e:
+            last_error = f"verbindingsfout: {e}"
+            print(f"[hollandsevelden] poging {attempt}/{API_MAX_ATTEMPTS} mislukt - {last_error}")
+        else:
+            if response.status_code == 200:
+                try:
+                    data = json.loads(response.text)
+                    break
+                except json.JSONDecodeError as e:
+                    last_error = f"ongeldige JSON in antwoord: {e}"
+                    print(f"[hollandsevelden] poging {attempt}/{API_MAX_ATTEMPTS} mislukt - {last_error}")
+            else:
+                last_error = f"HTTP {response.status_code}"
+                print(f"[hollandsevelden] poging {attempt}/{API_MAX_ATTEMPTS} mislukt - {last_error}")
+
+                # 4xx anders dan 429 (bv. 401 ongeldige key) lost zich niet op
+                # door opnieuw te proberen.
+                if 400 <= response.status_code < 500 and response.status_code != 429:
+                    break
+
+        if attempt < API_MAX_ATTEMPTS:
+            delay = API_RETRY_DELAYS[min(attempt - 1, len(API_RETRY_DELAYS) - 1)]
+            print(f"[hollandsevelden] opnieuw proberen over {delay}s...")
+            time.sleep(delay)
+
+    if data is None:
+        pogingen = attempt
+        raise HollandseVeldenError(
+            f"API leverde geen bruikbare data na {pogingen} poging(en) ({last_error})"
+        )
+
+    try:
         result = {}
 
         # Nieuw endpoint levert {'club': {...}, 'competition': {...}}.
         # De relevante data (leaguetable/periods/results/program) zit onder 'competition'.
         v = data.get('competition', {})
+        if not v:
+            raise HollandseVeldenError(
+                "API-antwoord bevat geen 'competition'-blok - endpoint of key gewijzigd?"
+            )
         if v:
             # Normalize league table structure to match test data format
             leaguetable = v.get('leaguetable', [])
@@ -114,17 +153,11 @@ def get_data(use_test_data=None):
             }
 
         return result
-        
-    except Exception:
-        return {
-            "raw_data": {
-                "leaguetable": [],
-                "periods": [],
-                "results": [],
-                "upcoming": []
-            },
-            "last_updated": datetime.now().isoformat()
-        }
+
+    except HollandseVeldenError:
+        raise
+    except Exception as e:
+        raise HollandseVeldenError(f"verwerken van API-antwoord mislukt: {e}") from e
 
 
 def get_filtered_period_standings(data):
