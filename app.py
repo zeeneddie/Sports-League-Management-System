@@ -74,6 +74,21 @@ def _static_version(filename):
     except OSError:
         return '0'
 
+
+@app.context_processor
+def inject_static_versions():
+    """Versienummers voor alle templates.
+
+    Nginx serveert /static/ met "expires 1y" en "Cache-Control: immutable",
+    dus browsers revalideren nooit. Zonder deze querystring blijft een
+    gewijzigde CSS of JS een jaar lang hangen in de cache van bezoekers
+    en van de tv.
+    """
+    return {
+        'css_version': _static_version('css/dashboard.css'),
+        'js_version': _static_version('js/dashboard.js'),
+    }
+
 @app.route('/')
 def landing():
     return render_template('dashboard.html',
