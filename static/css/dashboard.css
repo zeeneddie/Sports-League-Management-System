@@ -686,6 +686,41 @@ body {
   display: none;
 }
 
+/* === DATA ATTRIBUTIE (Hollandse Velden) === */
+/* Staat onderaan de slide, gecentreerd, net boven de vaste tv-footer. */
+.data-attribution {
+  position: absolute;
+  bottom: 58px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.data-attribution .attribution-text {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #333;
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.8);
+}
+
+.data-attribution .attribution-logo {
+  height: 46px;
+  width: auto;
+  display: block;
+  /* Het logo is een palet-PNG met witte achtergrond; als afgeronde badge
+     tonen zodat het geen los wit blok wordt op de gekleurde slides. */
+  background-color: #fff;
+  padding: 3px 7px;
+  border-radius: 7px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  box-sizing: content-box;
+}
+
 /* === TEST MODE INDICATOR === */
 .test-mode-indicator {
   position: fixed;
@@ -1062,6 +1097,22 @@ body {
   .slide-item,
   .carousel-item {
     padding: 15px 10px 40px 10px !important;
+  }
+
+  /* Data-attributie compacter op mobiel */
+  .data-attribution {
+    bottom: 42px !important;
+    gap: 8px !important;
+  }
+
+  .data-attribution .attribution-text {
+    font-size: 0.8rem !important;
+  }
+
+  .data-attribution .attribution-logo {
+    height: 24px !important;
+    padding: 2px 4px !important;
+    border-radius: 5px !important;
   }
   
   /* Mobile matches container specific height adjustment */
