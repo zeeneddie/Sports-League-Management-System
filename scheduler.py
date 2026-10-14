@@ -4,6 +4,7 @@ import threading
 from datetime import datetime, timedelta
 from hollandsevelden import (
     get_data,
+    HollandseVeldenError,
     get_filtered_period_standings,
     get_last_week_results,
     get_next_week_matches,
@@ -29,7 +30,10 @@ class DataScheduler:
         self._cache_mtime = None
         self.live_scores_active = False
         self.last_live_update = None
-        
+        self.last_fetch_error = None
+        self.last_fetch_error_at = None
+
+
     def clear_cache(self):
         """Force clear all cached data"""
         print("Clearing cached data...")
@@ -172,21 +176,35 @@ class DataScheduler:
         print(f"=== API UPDATE CYCLE COMPLETED at {datetime.now()} ===\n")
         
     def fetch_and_process_data(self):
-        """Fetch data from API and process all required views"""
+        """Fetch data from API and process all required views
+
+        Returns:
+            bool: True als er nieuwe data is weggeschreven, False bij een
+            mislukte ophaalactie. Bij een mislukking blijft de bestaande
+            league_data.json ongemoeid - beter oude data dan een leeg scherm.
+        """
         print(f"Fetching data at {datetime.now()}")
-        
+
         # Check if we should use test data
         use_test_data = Config.USE_TEST_DATA
         print(f"Scheduler: USE_TEST_DATA = {use_test_data}")
-        
+
         try:
             # Get raw data (will use test data if configured)
-            raw_data = get_data(use_test_data=use_test_data)
+            try:
+                raw_data = get_data(use_test_data=use_test_data)
+            except HollandseVeldenError as e:
+                print(f"!! API-ophaalactie mislukt: {e}")
+                print("!! Bestaande league_data.json blijft behouden (geen lege data weggeschreven)")
+                self.last_fetch_error = str(e)
+                self.last_fetch_error_at = datetime.now()
+                return False
+
             if not raw_data:
                 print("Failed to fetch data")
-                return
-            
-            
+                return False
+
+
             # Process all required views
             processed_data = {
                 'raw_data': raw_data,
@@ -218,9 +236,15 @@ class DataScheduler:
             except OSError:
                 self._cache_mtime = None
             print(f"Data successfully updated and saved at {self.last_update}")
-            
+            self.last_fetch_error = None
+            self.last_fetch_error_at = None
+            return True
+
         except Exception as e:
             print(f"Error fetching/processing data: {e}")
+            self.last_fetch_error = str(e)
+            self.last_fetch_error_at = datetime.now()
+            return False
     
     def get_cached_data(self):
         """Get cached data, load from file if not in memory"""
