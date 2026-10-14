@@ -846,7 +846,7 @@ function addPeriodSlide(periodData, periodTitle, periodKey, forceShow = false) {
 function dataAttributionHtml() {
     return `
         <div class="data-attribution">
-            <span class="attribution-text">Data wordt geleverd door:</span>
+            <span class="attribution-text">geleverd door:</span>
             <img class="attribution-logo" src="/static/images/hollandsevelden_logo.png" alt="Hollandse Velden">
         </div>`;
 }
